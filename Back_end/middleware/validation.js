@@ -33,31 +33,26 @@ const validatePatientRegistration = [
   //   .isInt({ min: 0, max: 120 }).withMessage('Âge invalide'),
 
   body('cin')
-  .trim()
-  .custom((value, { req }) => {
-    const age = calculateAge(req.body.date_naissance);
-
-    if (age >= 16) {
-      // Age > 16 ans → CIN obligatoire
-      if (!value) {
-        throw new Error('La CNI est obligatoire pour un patient majeur');
-      }
-      if (value.length < 5 || value.length > 50) {
-        throw new Error('CNI invalide');
-      }
-    } else {
-      if (value) {
-        throw new Error('La CNI ne doit pas être fournie pour un patient dpnt l’âge est inférieur à 16 ans');
-      }
-    }
-
-    return true;
-  }),
-
-  body('tuteur')
     .trim()
-    .optional()
-    .isLength({ min: 0, max: 100 }).withMessage('Le tuteur doit contenir entre 2 et 100 caractères'),
+    .custom((value, { req }) => {
+      const age = calculateAge(req.body.date_naissance);
+
+      if (age >= 16) {
+        // Age > 16 ans → CIN obligatoire
+        if (!value) {
+          throw new Error('La CNI est obligatoire pour un patient majeur');
+        }
+        if (value.length < 5 || value.length > 50) {
+          throw new Error('CNI invalide');
+        }
+      } else {
+        if (value) {
+          throw new Error('La CNI ne doit pas être fournie pour un patient dpnt l’âge est inférieur à 16 ans');
+        }
+      }
+
+      return true;
+    }),
 
   body('sexe')
     .isIn(['homme', 'femme', 'autre']).withMessage('Sexe invalide'),

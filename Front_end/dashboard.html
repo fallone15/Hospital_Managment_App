@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,6 +85,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -109,17 +111,22 @@
             right: -50%;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
             animation: moveBackground 20s linear infinite;
         }
 
         @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(20px, 20px); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(20px, 20px);
+            }
         }
 
-        .welcome-card > * {
+        .welcome-card>* {
             position: relative;
             z-index: 1;
         }
@@ -311,7 +318,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s ease;
         }
 
@@ -381,23 +388,276 @@
             }
         }
 
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: white;
-            margin: 0 2px;
-            animation: pulse 1.5s infinite;
+        /* Modal famille */
+        #familyModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 15, 40, 0.55);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+        .family-modal-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .family-modal-box h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.3rem;
+        }
+
+        .family-modal-box .modal-subtitle {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1.5rem;
+        }
+
+        .family-close-btn {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: #f0f4ff;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .family-close-btn:hover {
+            background: #e0e7ff;
+        }
+
+        .family-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .family-form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .family-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .family-field label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #667;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .family-field input,
+        .family-field select {
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafbff;
+            font-family: inherit;
+        }
+
+        .family-field input:focus,
+        .family-field select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+            background: white;
+        }
+
+        .family-submit-btn {
+            width: 100%;
+            margin-top: 1.2rem;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
+        }
+
+        .family-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45);
+        }
+
+        /* Carte membre famille */
+        .family-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1rem;
+            background: #f8faff;
+            border-radius: 12px;
+            border: 1px solid #e8eeff;
+            margin-bottom: 0.7rem;
+            transition: all 0.2s;
+        }
+
+        .family-card:hover {
+            border-color: #c5d2ff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .family-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .family-avatar.boy {
+            background: linear-gradient(135deg, #4D96FF, #6BCB77);
+            color: white;
+        }
+
+        .family-avatar.girl {
+            background: linear-gradient(135deg, #FF6B9D, #ffa8c5);
+            color: white;
+        }
+
+        .family-avatar.other {
+            background: linear-gradient(135deg, #FFD93D, #ff914d);
+            color: white;
+        }
+
+        .family-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .family-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .family-meta {
+            font-size: 0.78rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .family-lien-badge {
+            background: #eef2ff;
+            color: #667eea;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .family-delete-btn {
+            background: #fff0f0;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: #e74c3c;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .family-delete-btn:hover {
+            background: #ffd5d5;
+            transform: scale(1.1);
+        }
+
+        .family-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #aaa;
+        }
+
+        .family-empty i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #dde;
+        }
+
+        #addFamilyBtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        #addFamilyBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>
+
 <body>
 
     <!-- Navbar -->
@@ -481,9 +741,14 @@
             <!-- Répertoire familial -->
             <div class="info-card">
                 <h3>👨‍👩‍👧‍👦 Répertoire familial</h3>
-                <button id="addFamilyBtn" style="margin-bottom: 1rem; background: #667eea; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Ajouter un membre</button>
+                <button id="addFamilyBtn">
+                    <i class="fas fa-plus-circle"></i> Ajouter un membre
+                </button>
                 <div id="familyList">
-                    <p style="text-align: center; color: #999;">Chargement...</p>
+                    <div class="family-empty">
+                        <i class="fas fa-users"></i>
+                        Chargement...
+                    </div>
                 </div>
             </div>
         </div>
@@ -532,104 +797,158 @@
 
     <script>
 
-                // -------- Répertoire familial --------
-                async function loadFamilyMembers() {
-                    const token = checkAuth();
-                    if (!token) return;
-                    const familyList = document.getElementById('familyList');
-                    familyList.innerHTML = '<p style="text-align:center;color:#999;">Chargement...</p>';
-                    try {
-                        const res = await fetch(`${API_URL}/family`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        const result = await res.json();
-                        if (result.success && result.members.length > 0) {
-                            familyList.innerHTML = result.members.map(m => `
-                                <div class="info-row">
-                                    <span class="info-label">${m.prenom} ${m.nom} (${m.lien || 'Enfant'})</span>
-                                    <span class="info-value">${new Date(m.date_naissance).toLocaleDateString('fr-FR')} | ${m.sexe} <button onclick="deleteFamilyMember(${m.id_member})" style="margin-left:10px;color:#e74c3c;background:none;border:none;cursor:pointer;">Supprimer</button></span>
-                                </div>
-                            `).join('');
-                        } else {
-                            familyList.innerHTML = '<p style="text-align:center;color:#999;">Aucun membre rattaché.</p>';
-                        }
-                    } catch (e) {
-                        familyList.innerHTML = '<p style="color:#e74c3c;">Erreur lors du chargement.</p>';
-                    }
-                }
+        // -------- Répertoire familial --------
+        function avatarClass(sexe) {
+            if (sexe === 'homme') return 'boy';
+            if (sexe === 'femme') return 'girl';
+            return 'other';
+        }
 
-                async function deleteFamilyMember(id) {
-                    if (!confirm('Supprimer ce membre ?')) return;
-                    const token = checkAuth();
-                    await fetch(`${API_URL}/family/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    loadFamilyMembers();
-                }
-
-                // Modale d'ajout
-                function showFamilyModal() {
-                    if (document.getElementById('familyModal')) return;
-                    const modal = document.createElement('div');
-                    modal.id = 'familyModal';
-                    modal.style = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:9999;';
-                    modal.innerHTML = `
-                        <div style="background:white;padding:2rem 2.5rem;border-radius:12px;min-width:320px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
-                            <button onclick="document.getElementById('familyModal').remove()" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
-                            <h2 style="margin-bottom:1rem;">Ajouter un membre</h2>
-                            <form id="familyForm">
-                                <input name="nom" placeholder="Nom" required style="width:100%;margin-bottom:10px;padding:8px;">
-                                <input name="prenom" placeholder="Prénom" required style="width:100%;margin-bottom:10px;padding:8px;">
-                                <input name="date_naissance" type="date" required style="width:100%;margin-bottom:10px;padding:8px;">
-                                <select name="sexe" required style="width:100%;margin-bottom:10px;padding:8px;">
-                                    <option value="">Sexe</option>
-                                    <option value="homme">Homme</option>
-                                    <option value="femme">Femme</option>
-                                    <option value="autre">Autre</option>
-                                </select>
-                                <input name="lien" placeholder="Lien (ex: fils, fille)" style="width:100%;margin-bottom:10px;padding:8px;">
-                                <input name="groupe_sanguin" placeholder="Groupe sanguin" style="width:100%;margin-bottom:10px;padding:8px;">
-                                <input name="allergies" placeholder="Allergies (séparées par virgule)" style="width:100%;margin-bottom:10px;padding:8px;">
-                                <button type="submit" style="background:#667eea;color:white;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;width:100%;">Ajouter</button>
-                            </form>
-                        </div>
-                    `;
-                    document.body.appendChild(modal);
-                    document.getElementById('familyForm').onsubmit = async function(e) {
-                        e.preventDefault();
-                        const form = e.target;
-                        const data = Object.fromEntries(new FormData(form));
-                        data.allergies = data.allergies ? data.allergies.split(',').map(a=>a.trim()).filter(Boolean) : [];
-                        const today = new Date();
-                        const birthDate = new Date(data.date_naissance);
-                        let age = today.getFullYear() - birthDate.getFullYear();
-                        const monthDiff = today.getMonth() - birthDate.getMonth();
-                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
-                        if (age >= 16) {
-                            alert('Seuls les membres de moins de 16 ans peuvent être ajoutés.');
-                            return;
-                        }
-                        const token = checkAuth();
-                        const res = await fetch(`${API_URL}/family`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify(data)
-                        });
-                        if (res.ok) {
-                            document.getElementById('familyModal').remove();
-                            loadFamilyMembers();
-                        } else {
-                            alert('Erreur lors de l\'ajout du membre.');
-                        }
-                    };
-                }
-
-                document.addEventListener('DOMContentLoaded', function() {
-                    loadUserInfo();
-                    loadFamilyMembers();
-                    document.getElementById('addFamilyBtn').onclick = showFamilyModal;
+        async function loadFamilyMembers() {
+            const token = checkAuth();
+            if (!token) return;
+            const familyList = document.getElementById('familyList');
+            familyList.innerHTML = '<div class="family-empty"><i class="fas fa-spinner fa-spin"></i><span>Chargement...</span></div>';
+            try {
+                const res = await fetch(`${API_URL}/family`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
+                const result = await res.json();
+                if (result.success && result.members.length > 0) {
+                    familyList.innerHTML = result.members.map(m => {
+                        const initials = `${m.prenom[0]}${m.nom[0]}`.toUpperCase();
+                        const dob = new Date(m.date_naissance).toLocaleDateString('fr-FR');
+                        const age = Math.floor((new Date() - new Date(m.date_naissance)) / (365.25 * 24 * 3600 * 1000));
+                        return `
+                                <div class="family-card">
+                                    <div class="family-avatar ${avatarClass(m.sexe)}">${initials}</div>
+                                    <div class="family-info">
+                                        <div class="family-name">${m.prenom} ${m.nom}</div>
+                                        <div class="family-meta">${dob} &nbsp;·&nbsp; ${age} ans</div>
+                                    </div>
+                                    <span class="family-lien-badge">${m.lien || 'Enfant'}</span>
+                                    <button class="family-delete-btn" onclick="deleteFamilyMember(${m.id_member})" title="Supprimer">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>`;
+                    }).join('');
+                } else {
+                    familyList.innerHTML = '<div class="family-empty"><i class="fas fa-users"></i><span>Aucun membre rattaché.</span></div>';
+                }
+            } catch (e) {
+                familyList.innerHTML = '<div class="family-empty"><i class="fas fa-exclamation-circle" style="color:#e74c3c"></i><span style="color:#e74c3c">Erreur lors du chargement.</span></div>';
+            }
+        }
+
+        async function deleteFamilyMember(id) {
+            if (!confirm('Voulez-vous vraiment supprimer ce membre ?')) return;
+            const token = checkAuth();
+            await fetch(`${API_URL}/family/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadFamilyMembers();
+        }
+
+        function showFamilyModal() {
+            if (document.getElementById('familyModal')) return;
+            const modal = document.createElement('div');
+            modal.id = 'familyModal';
+            modal.innerHTML = `
+                        <div class="family-modal-box">
+                            <button class="family-close-btn" onclick="document.getElementById('familyModal').remove()" title="Fermer">&times;</button>
+                            <h2>Ajouter un membre</h2>
+                            <p class="modal-subtitle">Seuls les enfants de moins de 16 ans peuvent être ajoutés.</p>
+                            <form id="familyForm">
+                                <div class="family-form-grid">
+                                    <div class="family-field">
+                                        <label>Nom *</label>
+                                        <input name="nom" placeholder="Ex: Dupont" required>
+                                    </div>
+                                    <div class="family-field">
+                                        <label>Prénom *</label>
+                                        <input name="prenom" placeholder="Ex: Léa" required>
+                                    </div>
+                                    <div class="family-field">
+                                        <label>Date de naissance *</label>
+                                        <input name="date_naissance" type="date" required>
+                                    </div>
+                                    <div class="family-field">
+                                        <label>Sexe *</label>
+                                        <select name="sexe" required>
+                                            <option value="">Sélectionner</option>
+                                            <option value="homme">Homme</option>
+                                            <option value="femme">Femme</option>
+                                            <option value="autre">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div class="family-field">
+                                        <label>Lien de parenté</label>
+                                        <input name="lien" placeholder="Ex: fils, fille...">
+                                    </div>
+                                    <div class="family-field">
+                                        <label>Groupe sanguin</label>
+                                        <select name="groupe_sanguin">
+                                            <option value="">Inconnu</option>
+                                            <option>A+</option><option>A-</option>
+                                            <option>B+</option><option>B-</option>
+                                            <option>AB+</option><option>AB-</option>
+                                            <option>O+</option><option>O-</option>
+                                        </select>
+                                    </div>
+                                    <div class="family-field full">
+                                        <label>Allergies (séparées par virgule)</label>
+                                        <input name="allergies" placeholder="Ex: Pénicilline, Aspirine">
+                                    </div>
+                                </div>
+                                <button type="submit" class="family-submit-btn">
+                                    <i class="fas fa-user-plus"></i> &nbsp;Ajouter le membre
+                                </button>
+                            </form>
+                        </div>`;
+            document.body.appendChild(modal);
+            // Fermer en cliquant en dehors
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+            document.getElementById('familyForm').onsubmit = async function (e) {
+                e.preventDefault();
+                const form = e.target;
+                const data = Object.fromEntries(new FormData(form));
+                data.allergies = data.allergies ? data.allergies.split(',').map(a => a.trim()).filter(Boolean) : [];
+                const today = new Date();
+                const birthDate = new Date(data.date_naissance);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+                if (age >= 16) {
+                    alert('Seuls les membres de moins de 16 ans peuvent être ajoutés.');
+                    return;
+                }
+                const submitBtn = form.querySelector('.family-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
+                const token = checkAuth();
+                const res = await fetch(`${API_URL}/family`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    document.getElementById('familyModal').remove();
+                    loadFamilyMembers();
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> &nbsp;Ajouter le membre';
+                    alert('Erreur lors de l\'ajout du membre.');
+                }
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadUserInfo();
+            loadFamilyMembers();
+            document.getElementById('addFamilyBtn').onclick = showFamilyModal;
+        });
         const API_URL = 'http://localhost:5000/api';
 
         // Vérifier l'authentification
@@ -658,9 +977,9 @@
 
                 if (result.success) {
                     const user = result.data;
-                    
+
                     // Message de bienvenue
-                    document.getElementById('welcomeMessage').innerHTML = 
+                    document.getElementById('welcomeMessage').innerHTML =
                         `Bienvenue <strong>${user.prenom} ${user.nom}</strong> 👋`;
 
                     // RFID Number
@@ -731,14 +1050,17 @@
         // Gestion des actions
         function handleAction(action, event) {
             event.preventDefault();
-            const messages = {
-                'consultation': 'Prise de rendez-vous en cours de développement 🔄',
-                'dossier': 'Consultation du dossier médical en cours de développement 🔄',
-                'rendezvous': 'Gestion des rendez-vous en cours de développement 🔄',
-                'paiements': 'Historique des paiements en cours de développement 🔄'
-            };
-            
-            alert(messages[action] || 'Fonctionnalité en développement');
+            if (action === 'consultation') {
+                window.location.href = 'consultation.html';
+            } else if (action === 'dossier') {
+                window.location.href = 'dossier-medical.html';
+            } else if (action === 'rendezvous') {
+                window.location.href = 'mes-consultations.html';
+            } else if (action === 'paiements') {
+                alert('La gestion des paiements est en cours de développement 🔄');
+            } else {
+                alert('Fonctionnalité en développement');
+            }
         }
 
         // Déconnexion
@@ -754,4 +1076,5 @@
     </script>
 
 </body>
+
 </html>

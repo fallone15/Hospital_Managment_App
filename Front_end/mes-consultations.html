@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Rendez-vous — CareTrack</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0d8abc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f0f4ff;
+            color: #667eea;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #e0e7ff;
+            transform: translateX(-3px);
+        }
+
+        .main {
+            max-width: 1000px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .page-title p {
+            color: #888;
+            margin-top: 0.3rem;
+        }
+
+        /* Filters */
+        .filter-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .tab:hover {
+            background: #f8faff;
+            color: #667eea;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .search-wrap {
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .search-wrap select {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1.5px solid #e0e7ff;
+            border-radius: 10px;
+            background: #fafbff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: #444;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* RDV Cards */
+        .rdv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width:600px) {
+            .rdv-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rdv-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            position: relative;
+            border-left: 5px solid #667eea;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .rdv-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .rdv-card.status-confirme {
+            border-left-color: #10b981;
+        }
+
+        .rdv-card.status-annule {
+            border-left-color: #ef4444;
+            opacity: 0.8;
+        }
+
+        .rdv-card.status-termine {
+            border-left-color: #6366f1;
+        }
+
+        .rdv-card.status-attente {
+            border-left-color: #f59e0b;
+        }
+
+        .rdv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .rdv-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .badge-attente {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-confirme {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-annule {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-termine {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .rdv-main {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .rdv-date-box {
+            text-align: center;
+            background: #f8faff;
+            border: 1px solid #e8eeff;
+            padding: 0.6rem;
+            border-radius: 12px;
+            min-width: 70px;
+        }
+
+        .rdv-date-box .day {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            line-height: 1;
+        }
+
+        .rdv-date-box .month {
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 0.1rem;
+        }
+
+        .rdv-date-box .time {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 0.3rem;
+            border-top: 1px dotted #c5d2ff;
+            padding-top: 0.2rem;
+        }
+
+        .rdv-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .rdv-info .doctor {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.1rem;
+        }
+
+        .rdv-info .motif {
+            font-size: 0.8rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 0.4rem;
+        }
+
+        .rdv-footer {
+            border-top: 1px solid #f3f4f6;
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .patient-tag {
+            background: #f0f3ff;
+            color: #667eea;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .cancel-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .cancel-btn:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #eee;
+        }
+
+        .empty-state h3 {
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a class="navbar-brand" href="dashboard.html"><i class="fas fa-hospital"></i> CareTrack</a>
+        <a class="back-btn" href="dashboard.html"><i class="fas fa-arrow-left"></i> Tableau de bord</a>
+    </nav>
+
+    <div class="main">
+        <div class="header-flex">
+            <div class="page-title">
+                <h1>Mes Rendez-vous</h1>
+                <p>Historique et gestion des consultations programmées</p>
+            </div>
+            <a href="consultation.html"
+                style="background:linear-gradient(135deg,#667eea,#764ba2); color:white; text-decoration:none; padding:0.8rem 1.5rem; border-radius:10px; font-weight:600; font-size:0.9rem; box-shadow:0 10px 20px rgba(102,126,234,0.2)">
+                + Nouveau RDV
+            </a>
+        </div>
+
+        <div class="filter-bar">
+            <div class="tabs" id="statusTabs">
+                <div class="tab active" onclick="filterStatut('', this)">Tous</div>
+                <div class="tab" onclick="filterStatut('en_attente', this)">À venir</div>
+                <div class="tab" onclick="filterStatut('termine', this)">Passés</div>
+                <div class="tab" onclick="filterStatut('annule', this)">Annulés</div>
+            </div>
+            <div class="search-wrap">
+                <i class="fas fa-users"></i>
+                <select id="memberFilter" onchange="loadRDV()">
+                    <option value="all">Toute la famille</option>
+                    <option value="self">Moi uniquement</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="rdv-grid" id="rdvGrid">
+            <!-- JS inserts cards here -->
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        let currentStatut = '';
+
+        if (!token) window.location.href = 'login.html';
+
+        async function init() {
+            await loadMembers();
+            await loadRDV();
+        }
+
+        async function loadMembers() {
+            try {
+                const res = await fetch(`${API_URL}/family`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const result = await res.json();
+                const filter = document.getElementById('memberFilter');
+                if (result.success) {
+                    result.members.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.id_member;
+                        opt.textContent = `${m.prenom} (Membre)`;
+                        filter.appendChild(opt);
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function filterStatut(statut, el) {
+            currentStatut = statut;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            loadRDV();
+        }
+
+        async function loadRDV() {
+            const grid = document.getElementById('rdvGrid');
+            const memberId = document.getElementById('memberFilter').value;
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#aaa"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+            try {
+                let url = `${API_URL}/rdv/patient?`;
+                if (currentStatut) url += `statut=${currentStatut}&`;
+                if (memberId !== 'all') url += `id_member=${memberId}`;
+
+                const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    grid.innerHTML = result.data.map(r => renderRDVCard(r)).join('');
+                } else {
+                    grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1">
+                        <i class="fas fa-calendar-times"></i>
+                        <h3>Aucun rendez-vous trouvé</h3>
+                        <p>Vous n'avez pas de rendez-vous correspondant à ces critères.</p>
+                    </div>`;
+                }
+            } catch (e) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#e74c3c">Erreur de chargement.</div>';
+            }
+        }
+
+        function renderRDVCard(r) {
+            const date = new Date(r.date_rdv);
+            const day = date.getDate();
+            const month = date.toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase().replace('.', '');
+            const time = r.heure_rdv.substring(0, 5);
+
+            const statusMap = { en_attente: 'En attente', confirme: 'Confirmé', annule: 'Annulé', termine: 'Terminé' };
+            const statusClass = r.statut || 'attente';
+            const badgeClass = `badge-${r.statut || 'attente'}`;
+
+            const patientName = r.id_member ? `${r.member_prenom} ${r.member_nom}` : 'Moi';
+
+            return `
+            <div class="rdv-card status-${statusClass}">
+                <div class="rdv-header">
+                    <span class="rdv-badge ${badgeClass}">${statusMap[r.statut] || r.statut}</span>
+                </div>
+                
+                <div class="rdv-main">
+                    <div class="rdv-date-box">
+                        <div class="day">${day}</div>
+                        <div class="month">${month}</div>
+                        <div class="time">${time}</div>
+                    </div>
+                    <div class="rdv-info">
+                        <h3>${r.service_nom || 'Consultation'}</h3>
+                        <div class="doctor">Dr. ${r.medecin_prenom} ${r.medecin_nom} · ${r.specialite}</div>
+                        ${r.motif ? `<div class="motif">"${r.motif}"</div>` : ''}
+                    </div>
+                </div>
+
+                <div class="rdv-footer">
+                    <div class="patient-label">
+                        <i class="fas fa-user-circle"></i> 
+                        ${patientName} ${r.id_member ? '<span class="patient-tag">Membre</span>' : ''}
+                    </div>
+                    ${r.statut === 'en_attente' ? `
+                        <button class="cancel-btn" onclick="cancelRDV(${r.id})">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        }
+
+        async function cancelRDV(id) {
+            if (!confirm('Voulez-vous vraiment annuler ce rendez-vous ?')) return;
+            try {
+                const res = await fetch(`${API_URL}/rdv/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (result.success) loadRDV();
+                else alert(result.message);
+            } catch (e) { alert('Erreur lors de l\'annulation'); }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

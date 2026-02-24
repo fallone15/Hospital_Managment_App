@@ -1,216 +1,392 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html class="scroll-smooth" lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareTrack - Système Hospitalier Intelligent</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CareTrack | Votre Hôpital Intelligent</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0EA5E9",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('hospital_rabat.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
-<body>
 
-<!-- NAVIGATION PUBLIQUE -->
-<nav class="public-nav">
-    <div class="container">
-        <div class="nav-brand">
-            <i class="fas fa-hospital-alt"></i>
-            <span>CareTrack</span>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="#accueil">Accueil</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#fonctionnement">Comment ça marche</a></li>
-            <li><a href="#avantages">Avantages</a></li>
-            <li><a href="#contact">Contact et localisation</a></li>
-        </ul>
-        <div class="nav-buttons">
-            <a href="login.html" class="btn btn-outline">
-                <i class="fas fa-sign-in-alt"></i> Connexion
-            </a>
-            <a href="register.html" class="btn btn-primary">
-                <i class="fas fa-user-plus"></i> Inscription
-            </a>
-        </div>
-    </div>
-</nav>
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 transition-colors duration-300">
 
-<!-- HERO -->
-<section id="accueil" class="hero-section">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title">Bienvenue à votre Hôpital en ligne CareTrack</h1>
-        <p class="hero-subtitle">Le premier système hospitalier 100% automatisé et intelligent</p>
-        <p class="hero-description">
-            Découvrez une nouvelle expérience médicale où technologie et soins de santé se rencontrent.
-        </p>
-        <!-- <div class="hero-buttons">
-            <a href="login.html" class="btn btn-primary btn-large">
-                <i class="fas fa-sign-in-alt"></i> Accéder à mon espace
-            </a>
-            <a href="register.html" class="btn btn-secondary btn-large">
-                <i class="fas fa-user-plus"></i> Créer mon compte
-            </a>
-        </div> -->
-    </div>
-</section>
-
-<!-- SERVICES -->
-<section id="services" class="services-section">
-    <div class="container">
-        <div class="section-header" style="margin-top: 2rem;">
-            <span class="section-tag">Nos Services</span>
-            <h2>Un Système Médical Complet</h2>
-        </div>
-
-        <div class="services-grid-home">
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-credit-card"></i></div>
-                <h3>Carte Magnétique</h3>
-                <p>Identification sécurisée et accès rapide au dossier médical.</p>
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-3 rounded-full shadow-lg">
+            <div class="flex items-center gap-2">
+                <span class="material-icons-round text-primary text-3xl">health_and_safety</span>
+                <span
+                    class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">CareTrack</span>
             </div>
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-calendar-alt"></i></div>
-                <h3>Rendez-vous en ligne</h3>
-                <p>Réservez vos consultations 24h/24.</p>
+            <div class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-medium hover:text-primary transition-colors" href="#accueil">Accueil</a>
+                <a class="text-sm font-medium hover:text-primary transition-colors" href="#services">Services</a>
+                <a class="text-sm font-medium hover:text-primary transition-colors"
+                    href="#fonctionnement">Fonctionnement</a>
+                <a class="text-sm font-medium hover:text-primary transition-colors" href="#avantages">Avantages</a>
+                <a class="text-sm font-medium hover:text-primary transition-colors" href="#contact">Contact</a>
             </div>
-             <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-file-medical-alt"></i></div>
-                <h3>Votre dossier medical 100% digital et sécurisé</h3>
-                <p>Accédez à votre dossier à n'importe quelle heure et n'importe où.</p>
+            <div class="flex items-center gap-3">
+                <button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    onclick="document.documentElement.classList.toggle('dark')">
+                    <span class="material-icons-round dark:hidden">dark_mode</span>
+                    <span class="material-icons-round hidden dark:block">light_mode</span>
+                </button>
+                <a class="text-sm font-semibold border border-primary text-primary px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-300"
+                    href="login.html">Connexion</a>
+                <a class="text-sm font-semibold bg-primary text-white px-5 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+                    href="register.html">Inscription</a>
             </div>
         </div>
-    </div>
-</section>
+    </nav>
 
-<section id="fonctionnement" class="section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Fonctionnement</span>
-            <h2>Comment ça marche ?</h2>
-            <p>Un parcours simple et rapide pour les patients</p>
-        </div>
-
-        <div class="services-grid-home">
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-id-card"></i></div>
-                <h3>Identification</h3>
-                <p>Connexion sécurisée avec carte et informations personnelles.</p>
-            </div>
-
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-calendar-check"></i></div>
-                <h3>Choix du service</h3>
-                <p>Consultation, examen ou suivi médical en ligne.</p>
-            </div>
-
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-user-md"></i></div>
-                <h3>Consultation</h3>
-                <p>Accès rapide au médecin et au dossier médical.</p>
+    <!-- HERO -->
+    <header id="accueil" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="relative z-10 text-center max-w-4xl px-6">
+            <span
+                class="inline-block px-4 py-1.5 mb-6 text-sm font-semibold tracking-wider text-white uppercase bg-primary/20 backdrop-blur-md rounded-full border border-white/20">
+                Santé Digitale de Demain
+            </span>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+                Bienvenue à votre Hôpital en ligne <span class="text-primary">CareTrack</span>
+            </h1>
+            <p class="text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Le premier système hospitalier 100% automatisé et intelligent. Une nouvelle expérience médicale où
+                technologie et soins de santé se rencontrent.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="register.html"
+                    class="w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-xl hover:bg-blue-600 transition-all transform hover:-translate-y-1 text-center">
+                    Prendre Rendez-vous
+                </a>
+                <a href="#services"
+                    class="w-full sm:w-auto px-8 py-4 glass text-white font-bold rounded-xl shadow-lg border-white/10 hover:bg-white/10 transition-all text-center">
+                    Découvrir nos solutions
+                </a>
             </div>
         </div>
-    </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-<section id="avantages" class="section white">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-tag">Avantages</span>
-            <h2>Pourquoi choisir CareTrack ?</h2>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <span class="material-icons-round text-white text-3xl">expand_more</span>
         </div>
+    </header>
 
-        <div class="services-grid-home">
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-clock"></i></div>
-                <h3>Gain de temps</h3>
-                <p>Moins d’attente, plus d’efficacité.</p>
-            </div>
-
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-shield-alt"></i></div>
-                <h3>Sécurité</h3>
-                <p>Données médicales protégées et confidentielles.</p>
-            </div>
-
-            <div class="service-card-home">
-                <div class="service-icon-home"><i class="fas fa-mobile-alt"></i></div>
-                <h3>Accessible 24/7</h3>
-                <p>Depuis n’importe où, à tout moment.</p>
-            </div>
+    <!-- SERVICES -->
+    <section class="py-24 px-6 bg-slate-50 dark:bg-slate-900/50" id="services">
+        <div class="max-w-7xl mx-auto text-center mb-16">
+            <h3 class="text-primary font-bold tracking-widest uppercase text-sm mb-4">Nos Services</h3>
+            <h2 class="text-4xl font-extrabold dark:text-white mb-4">Un Système Médical Complet</h2>
+            <div class="w-20 h-1.5 bg-primary mx-auto rounded-full"></div>
         </div>
-    </div>
-</section>
-
-
-
-<section id="contact" class="section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Contact & Localisation</h2>
-            <p>Nous sommes à votre écoute et facilement accessibles</p>
-        </div>
-
-        <div class="contact-layout">
-            <!-- GAUCHE : LOCALISATION -->
-            <div class="contact-left">
-                <h3>Localisation de l'Hôpital</h3>
-                 <p>Retrouvez-nous facilement grâce à la carte interactive</p>
-                <div class="map-container">
-                    <iframe 
-                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2533.1244410809436!2d-6.8715460254798515!3d33.977872173185034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda76cdb80527cdd%3A0x8c9c0b3655aa197d!2sH%C3%B4pital%20Cheikh%20Zayd!5e1!3m2!1sfr!2snl!4v1771262849285!5m2!1sfr!2snl"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+                class="group p-8 glass dark:bg-slate-800/40 rounded-3xl border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2">
+                <div
+                    class="w-16 h-16 bg-blue-100 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <span class="material-icons-round text-primary text-3xl">contactless</span>
                 </div>
-
-                <p><strong>Adresse :</strong> Rabat, Maroc</p>
-                <p><strong>Téléphone :</strong> +212 5 37 68 68 68</p>
-                <p><strong>Email :</strong> contact@fcz.ma</p>
-            
+                <h4 class="text-2xl font-bold mb-4 dark:text-white">Carte Magnétique</h4>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Identification sécurisée et accès ultra-rapide au dossier médical via technologie NFC.
+                </p>
             </div>
-
-            <!-- DROITE : CONTACT -->
-            <div class="contact-right">
-                <h3>Contactez-nous</h3>
-
-                <form class="contact-form-home">
-                    <div class="form-group">
-                        <input type="text" placeholder="Nom complet" required>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="email" placeholder="Email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <textarea placeholder="Votre message"></textarea>
-                    </div>
-
-                    <button class="btn btn-primary">Envoyer</button>
-                </form>
+            <div
+                class="group p-8 glass dark:bg-slate-800/40 rounded-3xl border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2">
+                <div
+                    class="w-16 h-16 bg-blue-100 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <span class="material-icons-round text-primary text-3xl">event_available</span>
+                </div>
+                <h4 class="text-2xl font-bold mb-4 dark:text-white">Rendez-vous en ligne</h4>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Réservez vos consultations 24h/24 et 7j/7 en quelques clics avec confirmation instantanée.
+                </p>
+            </div>
+            <div
+                class="group p-8 glass dark:bg-slate-800/40 rounded-3xl border-slate-200 dark:border-slate-700/50 shadow-xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2">
+                <div
+                    class="w-16 h-16 bg-blue-100 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <span class="material-icons-round text-primary text-3xl">folder_shared</span>
+                </div>
+                <h4 class="text-2xl font-bold mb-4 dark:text-white">Dossier Digital Sécurisé</h4>
+                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Accédez à votre historique médical complet, vos ordonnances et vos résultats d'examens partout.
+                </p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-bottom">
-            <p>&copy; 2026 CareTrack Hospital. Tous droits réservés.</p>
+    <!-- FONCTIONNEMENT -->
+    <section class="py-24 px-6 overflow-hidden" id="fonctionnement">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20">
+                <h3 class="text-primary font-bold tracking-widest uppercase text-sm mb-4">Fonctionnement</h3>
+                <h2 class="text-4xl font-extrabold dark:text-white mb-4">Comment ça marche ?</h2>
+                <p class="text-slate-500">Un parcours patient digitalisé, simple et fluide</p>
+            </div>
+            <div class="relative grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -z-10">
+                </div>
+                <div class="relative flex flex-col items-center">
+                    <div
+                        class="w-24 h-24 rounded-full bg-white dark:bg-slate-800 shadow-2xl flex items-center justify-center mb-8 border-4 border-primary">
+                        <span class="material-icons-round text-primary text-4xl">badge</span>
+                    </div>
+                    <div
+                        class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">
+                        1</div>
+                    <h4 class="text-xl font-bold mb-3 dark:text-white">Identification</h4>
+                    <p class="text-slate-500 dark:text-slate-400">Connexion sécurisée avec votre carte ou vos
+                        identifiants personnels.</p>
+                </div>
+                <div class="relative flex flex-col items-center">
+                    <div
+                        class="w-24 h-24 rounded-full bg-white dark:bg-slate-800 shadow-2xl flex items-center justify-center mb-8 border-4 border-primary">
+                        <span class="material-icons-round text-primary text-4xl">medical_services</span>
+                    </div>
+                    <div
+                        class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">
+                        2</div>
+                    <h4 class="text-xl font-bold mb-3 dark:text-white">Choix du Service</h4>
+                    <p class="text-slate-500 dark:text-slate-400">Consultation, examen spécialisé ou suivi médical
+                        régulier en ligne.</p>
+                </div>
+                <div class="relative flex flex-col items-center">
+                    <div
+                        class="w-24 h-24 rounded-full bg-white dark:bg-slate-800 shadow-2xl flex items-center justify-center mb-8 border-4 border-primary">
+                        <span class="material-icons-round text-primary text-4xl">health_and_safety</span>
+                    </div>
+                    <div
+                        class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">
+                        3</div>
+                    <h4 class="text-xl font-bold mb-3 dark:text-white">Consultation</h4>
+                    <p class="text-slate-500 dark:text-slate-400">Accès rapide au médecin et consultation de votre
+                        dossier en temps réel.</p>
+                </div>
+            </div>
         </div>
-    </div>
-</footer>
+    </section>
 
-<script src="script.js"></script>
+    <!-- AVANTAGES -->
+    <section class="py-24 px-6 bg-slate-100 dark:bg-slate-900" id="avantages">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2">
+                    <h3 class="text-primary font-bold tracking-widest uppercase text-sm mb-4">Avantages</h3>
+                    <h2 class="text-4xl font-extrabold dark:text-white mb-8">Pourquoi choisir CareTrack ?</h2>
+                    <div class="space-y-8">
+                        <div class="flex gap-6 group">
+                            <div
+                                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                <span
+                                    class="material-icons-round text-primary group-hover:text-white transition-colors">schedule</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2 dark:text-white">Gain de temps</h4>
+                                <p class="text-slate-500 dark:text-slate-400">Plus de files d'attente interminables.
+                                    Tout est optimisé pour votre confort.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <div
+                                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                <span
+                                    class="material-icons-round text-primary group-hover:text-white transition-colors">verified_user</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2 dark:text-white">Sécurité Maximale</h4>
+                                <p class="text-slate-500 dark:text-slate-400">Vos données médicales sont cryptées et
+                                    protégées par les plus hauts standards de sécurité.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <div
+                                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                <span
+                                    class="material-icons-round text-primary group-hover:text-white transition-colors">phonelink</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2 dark:text-white">Accessible 24/7</h4>
+                                <p class="text-slate-500 dark:text-slate-400">Votre santé n'attend pas. Accédez à nos
+                                    services depuis n'importe quel appareil, n'importe quand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 relative">
+                    <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
+                        <img alt="Médecin utilisant une tablette" class="w-full h-auto"
+                            src="Medecin-stethoscope.jpg" />
+                    </div>
+                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse">
+                    </div>
+                    <div
+                        class="absolute -bottom-6 -left-6 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl animate-pulse delay-700">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT & LOCALISATION -->
+    <section class="py-24 px-6 bg-white dark:bg-slate-950" id="contact">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold dark:text-white mb-4">Contact &amp; Localisation</h2>
+                <p class="text-slate-500">Nous sommes à votre écoute et facilement accessibles</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="space-y-8">
+                    <!-- Google Maps Embed -->
+                    <div class="rounded-3xl h-80 overflow-hidden relative shadow-inner">
+                        <iframe class="w-full h-full border-0"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2533.1244410809436!2d-6.8715460254798515!3d33.977872173185034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda76cdb80527cdd%3A0x8c9c0b3655aa197d!2sH%C3%B4pital%20Cheikh%20Zayd!5e1!3m2!1sfr!2snl!4v1771262849285!5m2!1sfr!2snl"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div
+                            class="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <h5 class="font-bold dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-icons-round text-primary text-xl">place</span> Adresse
+                            </h5>
+                            <p class="text-slate-500 text-sm">Rabat, Maroc<br />Avenue des Nations Unies</p>
+                        </div>
+                        <div
+                            class="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <h5 class="font-bold dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-icons-round text-primary text-xl">call</span> Téléphone
+                            </h5>
+                            <p class="text-slate-500 text-sm">+212 5 37 68 68 68</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-10 rounded-3xl shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -mr-20 -mt-20 blur-3xl">
+                    </div>
+                    <form class="space-y-6 relative z-10">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 dark:text-slate-300">Nom complet</label>
+                            <input
+                                class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                placeholder="Nacoulma Fallone" type="text" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 dark:text-slate-300">Email</label>
+                            <input
+                                class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                placeholder="fallone@example.com" type="email" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 dark:text-slate-300">Votre message</label>
+                            <textarea
+                                class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
+                                placeholder="Comment pouvons-nous vous aider ?" rows="4"></textarea>
+                        </div>
+                        <button
+                            class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/30 hover:scale-[1.02] transition-all"
+                            type="submit">
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-12 border-t border-slate-200 dark:border-slate-800 px-6 bg-slate-50 dark:bg-slate-950">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <span class="material-icons-round text-primary text-2xl">health_and_safety</span>
+                <span class="text-xl font-bold dark:text-white">CareTrack</span>
+            </div>
+            <p class="text-slate-500 text-sm">
+                &copy; 2026 CareTrack Hospital. Tous droits réservés.
+            </p>
+            <div class="flex items-center gap-6">
+                <a class="text-slate-400 hover:text-primary transition-colors" href="#">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z">
+                        </path>
+                    </svg>
+                </a>
+                <a class="text-slate-400 hover:text-primary transition-colors" href="#">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.054 1.805.249 2.227.412.56.216.96.474 1.38.894.42.42.678.82.894 1.38.163.422.358 1.057.412 2.227.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.054 1.17-.249 1.805-.412 2.227-.216.56-.474.96-.894 1.38-.42.42-.82.678-1.38.894-.422.163-1.057.358-2.227.412-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.054-1.805-.249-2.227-.412-.56-.216-.96-.474-1.38-.894-.42-.42-.678-.82-.894-1.38-.163-.422-.358-1.057-.412-2.227-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.054-1.17.249-1.805.412-2.227.216-.56.474-.96.894-1.38.42-.42.82-.678 1.38-.894.422-.163 1.057-.358 2.227-.412 1.266-.058 1.646-.07 4.85-.07m0-2.163c-3.259 0-3.667.014-4.947.072-1.277.057-2.148.261-2.911.558-.788.306-1.457.715-2.123 1.381-.666.666-1.075 1.335-1.381 2.123-.297.763-.501 1.634-.558 2.911-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.057 1.277.261 2.148.558 2.911.306.788.715 1.457 1.381 2.123.666.666 1.335 1.075 2.123 1.381.763.297 1.634.501 2.911.558 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.277-.057 2.148-.261 2.911-.558.788-.306 1.457-.715 2.123-1.381.666-.666 1.075-1.335 1.381-2.123.297-.763.501-1.634.558-2.911.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.057-1.277-.261-2.148-.558-2.911-.306-.788-.715-1.457-1.381-2.123-.666-.666-1.335-1.075-2.123-1.381-.763-.297-1.634-.501-2.911-.558-1.28-.058-1.688-.072-4.947-.072z">
+                        </path>
+                        <circle cx="12" cy="12" r="3.5"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth reveal animations on scroll -->
+    <script>
+        const observerOptions = {
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('section > div').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+            observer.observe(section);
+        });
+    </script>
+
 </body>
+
 </html>

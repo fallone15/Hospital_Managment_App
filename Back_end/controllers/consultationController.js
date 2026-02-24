@@ -4,7 +4,18 @@ const { query } = require('../config/database');
 const createConsultation = async (req, res) => {
   try {
     const patient_id = req.user.id;
-    const { id_service, motif } = req.body;
+    const { id_service, motif, id_member } = req.body;
+
+    // Si un membre familial est spécifié, vérifier qu'il appartient au patient
+    if (id_member) {
+      const memberCheck = await query(
+        'SELECT id_member FROM family_members WHERE id_member = $1 AND id_titulaire = $2 AND actif = TRUE',
+        [id_member, patient_id]
+      );
+      if (memberCheck.rows.length === 0) {
+        return res.status(403).json({ success: false, message: 'Membre familial introuvable.' });
+      }
+    }
 
     // Générer un numéro de file d'attente
     const today = new Date().toISOString().split('T')[0];
@@ -13,16 +24,16 @@ const createConsultation = async (req, res) => {
        WHERE DATE(heure_arrivee) = $1 AND id_service = $2`,
       [today, id_service]
     );
-    
+
     const numero_file = `S${id_service}-${String(parseInt(countResult.rows[0].count) + 1).padStart(3, '0')}`;
 
     // Créer la consultation
     const result = await query(
       `INSERT INTO consultations 
-       (id_patient, id_service, numero_file, motif, statut) 
-       VALUES ($1, $2, $3, $4, 'en_attente') 
+       (id_patient, id_member, id_service, numero_file, motif, statut) 
+       VALUES ($1, $2, $3, $4, $5, 'en_attente') 
        RETURNING *`,
-      [patient_id, id_service, numero_file, motif]
+      [patient_id, id_member || null, id_service, numero_file, motif]
     );
 
     // Récupérer les infos du service
@@ -86,28 +97,37 @@ const getFileAttente = async (req, res) => {
   }
 };
 
-// Récupérer les consultations d'un patient
+// Récupérer les consultations d'un patient (et de ses membres familiaux)
 const getConsultationsPatient = async (req, res) => {
   try {
     const patient_id = req.user.id;
-    const { statut } = req.query;
+    const { statut, id_member } = req.query;
 
     let sqlQuery = `
       SELECT c.*, 
              s.nom as service_nom, s.tarif,
              m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
-             sa.numero_salle, sa.batiment, sa.etage
+             sa.numero_salle, sa.batiment, sa.etage,
+             fm.nom as member_nom, fm.prenom as member_prenom, fm.lien as member_lien
       FROM consultations c
       JOIN services s ON c.id_service = s.id_service
       LEFT JOIN medecins m ON c.id_medecin = m.id_medecin
       LEFT JOIN salles sa ON c.id_salle = sa.id_salle
+      LEFT JOIN family_members fm ON c.id_member = fm.id_member
       WHERE c.id_patient = $1
     `;
 
     const params = [patient_id];
+    let idx = 2;
+
+    if (id_member && id_member !== 'all') {
+      sqlQuery += ` AND c.id_member = $${idx}`;
+      params.push(id_member);
+      idx++;
+    }
 
     if (statut) {
-      sqlQuery += ' AND c.statut = $2';
+      sqlQuery += ` AND c.statut = $${idx}`;
       params.push(statut);
     }
 

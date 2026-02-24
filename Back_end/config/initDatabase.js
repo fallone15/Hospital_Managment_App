@@ -1,8 +1,13 @@
 const { pool } = require('./database');
 
 const createTables = async () => {
-      // Table membres familiaux (enfants mineurs rattachés à un patient titulaire)
-      await client.query(`
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Table membres familiaux (enfants mineurs rattachés à un patient titulaire)
+    await client.query(`
         CREATE TABLE IF NOT EXISTS family_members (
           id_member SERIAL PRIMARY KEY,
           id_titulaire INTEGER NOT NULL REFERENCES patients(id_patient) ON DELETE CASCADE,
@@ -11,16 +16,13 @@ const createTables = async () => {
           date_naissance DATE NOT NULL,
           sexe VARCHAR(10) CHECK (sexe IN ('homme', 'femme', 'autre')),
           lien VARCHAR(50), -- ex: fils, fille, frère, soeur, etc.
+          tuteur VARCHAR(100), -- Nom complet du titulaire qui a ajouté le membre
           allergies TEXT[],
           groupe_sanguin VARCHAR(5),
           actif BOOLEAN DEFAULT TRUE,
           date_ajout TIMESTAMP DEFAULT NOW()
         );
       `);
-  const client = await pool.connect();
-  
-  try {
-    await client.query('BEGIN');
 
     // Table pour les inscriptions en attente de vérification email
     await client.query(`
@@ -49,7 +51,6 @@ const createTables = async () => {
         email VARCHAR(100) UNIQUE,
         telephone VARCHAR(20),
         cin VARCHAR(20) UNIQUE,
-        tuteur VARCHAR(100),
         numero_secu VARCHAR(25),
         mutuelle VARCHAR(100),
         groupe_sanguin VARCHAR(5),
@@ -117,6 +118,7 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS consultations (
         id_consultation SERIAL PRIMARY KEY,
         id_patient INT REFERENCES patients(id_patient) NOT NULL,
+        id_member INT REFERENCES family_members(id_member),
         id_service INT REFERENCES services(id_service) NOT NULL,
         id_medecin INT REFERENCES medecins(id_medecin),
         id_salle INT REFERENCES salles(id_salle),
@@ -134,11 +136,41 @@ const createTables = async () => {
       );
     `);
 
+
+    // Table rendez-vous
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS rendez_vous (
+        id SERIAL PRIMARY KEY,
+        patient_id INTEGER NOT NULL REFERENCES patients(id_patient) ON DELETE CASCADE,
+        id_member INTEGER REFERENCES family_members(id_member),
+        medecin_id INTEGER NOT NULL REFERENCES medecins(id_medecin) ON DELETE CASCADE,
+        date_rdv DATE NOT NULL,
+        heure_rdv TIME NOT NULL,
+        motif TEXT,
+        statut VARCHAR(20) DEFAULT 'en_attente' CHECK (statut IN ('en_attente', 'confirme', 'annule', 'termine')),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // Table disponibilités des médecins
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS disponibilites (
+        id_dispo SERIAL PRIMARY KEY,
+        medecin_id INTEGER NOT NULL REFERENCES medecins(id_medecin) ON DELETE CASCADE,
+        jour_semaine INTEGER NOT NULL CHECK (jour_semaine BETWEEN 0 AND 6), -- 0=Dimanche, 1=Lundi...
+        heure_debut TIME NOT NULL,
+        heure_fin TIME NOT NULL,
+        UNIQUE(medecin_id, jour_semaine)
+      );
+    `);
+
     // Table résultats examens
     await client.query(`
       CREATE TABLE IF NOT EXISTS resultats_examens (
         id_resultat SERIAL PRIMARY KEY,
-        id_consultation INT REFERENCES consultations(id_consultation) NOT NULL,
+        id_consultation INT REFERENCES consultations(id_consultation),
+        rendez_vous_id INT REFERENCES rendez_vous(id),
         id_patient INT REFERENCES patients(id_patient) NOT NULL,
         type_examen VARCHAR(100) NOT NULL,
         date_examen TIMESTAMP DEFAULT NOW(),
@@ -168,6 +200,7 @@ const createTables = async () => {
         id_constante SERIAL PRIMARY KEY,
         id_patient INT REFERENCES patients(id_patient) NOT NULL,
         id_consultation INT REFERENCES consultations(id_consultation),
+        rendez_vous_id INT REFERENCES rendez_vous(id),
         temperature DECIMAL(4,2),
         frequence_cardiaque INT,
         spo2 INT,
@@ -182,7 +215,8 @@ const createTables = async () => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS ordonnances (
         id_ordonnance SERIAL PRIMARY KEY,
-        id_consultation INT REFERENCES consultations(id_consultation) NOT NULL,
+        id_consultation INT REFERENCES consultations(id_consultation),
+        rendez_vous_id INT REFERENCES rendez_vous(id),
         id_medecin INT REFERENCES medecins(id_medecin) NOT NULL,
         date_prescription TIMESTAMP DEFAULT NOW(),
         medicaments JSONB NOT NULL,
@@ -201,9 +235,12 @@ const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_medecins_rfid ON medecins(carte_rfid);
       CREATE INDEX IF NOT EXISTS idx_consultations_patient ON consultations(id_patient);
       CREATE INDEX IF NOT EXISTS idx_consultations_statut ON consultations(statut);
+      CREATE INDEX IF NOT EXISTS idx_rendezvous_patient ON rendez_vous(patient_id);
+      CREATE INDEX IF NOT EXISTS idx_rendezvous_date ON rendez_vous(date_rdv);
       CREATE INDEX IF NOT EXISTS idx_constantes_patient ON constantes_vitales(id_patient);
       CREATE INDEX IF NOT EXISTS idx_constantes_timestamp ON constantes_vitales(timestamp);
     `);
+
 
     await client.query('COMMIT');
     console.log('✅ Tables créées avec succès');
@@ -224,7 +261,7 @@ const createTables = async () => {
 const insertTestData = async (client) => {
   try {
     const bcrypt = require('bcryptjs');
-    
+
     // Vérifier si des données existent déjà
     const { rows } = await client.query('SELECT COUNT(*) FROM services');
     if (parseInt(rows[0].count) > 0) {
@@ -273,9 +310,17 @@ const insertTestData = async (client) => {
     `, [hashedPin]);
 
     console.log('✅ Données de test insérées avec succès');
-    console.log('📌 Comptes de test (PIN: 1234):');
-    console.log('   Patients: PAT001, PAT002, PAT003');
-    console.log('   Médecins: MED001, MED002, MED003');
+
+    // Insérer disponibilités de test pour les médecins
+    await client.query(`
+      INSERT INTO disponibilites (medecin_id, jour_semaine, heure_debut, heure_fin) VALUES
+      (1, 1, '09:00', '17:00'), (1, 2, '09:00', '17:00'), (1, 3, '09:00', '17:00'), (1, 4, '09:00', '17:00'), (1, 5, '09:00', '17:00'), -- Dr Sophie (Échographie)
+      (2, 1, '08:00', '18:00'), (2, 2, '08:00', '18:00'), (2, 3, '08:00', '18:00'), (2, 4, '08:00', '18:00'), (2, 5, '08:00', '18:00'), -- Dr Jean (Générale)
+      (3, 1, '09:00', '16:00'), (3, 2, '09:00', '16:00'), (3, 4, '09:00', '16:00'), (3, 5, '09:00', '16:00')                      -- Dr Marie (Radiologie)
+      ON CONFLICT DO NOTHING;
+    `);
+
+    console.log('✅ Disponibilités de test insérées');
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion des données de test:', error);
   }

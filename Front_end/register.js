@@ -8,11 +8,11 @@ let iti = null;
 
 // === Attendre que TOUT soit chargé ===
 window.addEventListener('load', function () {
-    
+
     // === Toggle du code PIN (voir/masquer) ===
     const pinInput = document.getElementById('pin');
     const togglePinBtn = document.getElementById('togglePin');
-    
+
     if (togglePinBtn && pinInput) {
         togglePinBtn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -40,7 +40,7 @@ window.addEventListener('load', function () {
         return age;
     }
     if (registerForm && dateNaissanceInput) {
-        registerForm.addEventListener('submit', function(e) {
+        registerForm.addEventListener('submit', function (e) {
             var dateValue = dateNaissanceInput.value;
             if (dateValue) {
                 var age = calculateAge(dateValue);
@@ -52,7 +52,7 @@ window.addEventListener('load', function () {
             }
         });
     }
-// Bloc d'options orphelin supprimé (erreur de syntaxe)
+    // Bloc d'options orphelin supprimé (erreur de syntaxe)
     var phoneInput = document.getElementById('phone');
     if (phoneInput && window.intlTelInput) {
         iti = window.intlTelInput(phoneInput, {
@@ -195,7 +195,7 @@ function validateEmail(email) {
 // === Afficher le récapitulatif ===
 function displaySummary() {
     const summaryContent = document.getElementById('summaryContent');
-    
+
     // Calculer l'âge pour la date de naissance
     const dateNaissance = document.getElementById('dateNaissance').value;
     const today = new Date();
@@ -203,7 +203,7 @@ function displaySummary() {
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
+        age--;
     }
 
     const data = {
@@ -221,17 +221,12 @@ function displaySummary() {
         "Groupe Sanguin": document.getElementById('groupeSanguin').value || "Non renseigné",
         "Allergies": document.getElementById('allergies').value || "Aucune"
     };
-    
+
     // Ajouter CIN seulement si l'âge >= 16
     if (age >= 16) {
         data["CIN/Passeport"] = document.getElementById('cin').value;
     }
-    
-    // Ajouter tuteur s'il existe et si mineur
-    const tuteurValue = document.getElementById('tuteur').value;
-    if (age < 16 && tuteurValue) {
-        data["Tuteur"] = tuteurValue;
-    }
+
 
     let html = '';
     for (const [label, value] of Object.entries(data)) {
@@ -272,7 +267,7 @@ if (form) {
         const allergies = allergiesInput ? allergiesInput.split(',').map(a => a.trim()) : [];
 
         const cinValue = document.getElementById('cin').value.toUpperCase();
-        const tuteurValue = document.getElementById('tuteur') ? document.getElementById('tuteur').value : null;
+
 
         const formData = {
             nom: document.getElementById('nom').value.toUpperCase(),
@@ -285,7 +280,6 @@ if (form) {
             email: document.getElementById('email').value,
             telephone: iti ? iti.getNumber() : document.getElementById('phone').value,
             cin: cinValue || null,
-            tuteur: tuteurValue || null,
             numero_secu: document.getElementById('numeroSecu').value || null,
             mutuelle: document.getElementById('mutuelle').value || null,
             allergies: allergies,

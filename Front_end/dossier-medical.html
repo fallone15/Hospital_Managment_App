@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Dossier Médical — CareTrack</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0d8abc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f0f4ff;
+            color: #667eea;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #e0e7ff;
+            transform: translateX(-3px);
+        }
+
+        .main {
+            max-width: 900px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .page-header p {
+            color: #888;
+            margin-top: 0.3rem;
+        }
+
+        /* Patient selector */
+        .patient-selector {
+            background: white;
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .patient-selector label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .patient-chips {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            border: 2px solid #e0e7ff;
+            background: #fafbff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: #c5d2ff;
+            background: #f0f3ff;
+        }
+
+        .chip.active {
+            border-color: #667eea;
+            background: #f0f3ff;
+            color: #667eea;
+        }
+
+        .chip-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0d8abc, #0a6f80);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .chip-avatar.boy {
+            background: linear-gradient(135deg, #4D96FF, #6BCB77);
+        }
+
+        .chip-avatar.girl {
+            background: linear-gradient(135deg, #FF6B9D, #ffa8c5);
+        }
+
+        /* Patient info banner */
+        .patient-banner {
+            background: linear-gradient(135deg, #0a6f96, #0d8abc);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 8px 25px rgba(13, 138, 188, 0.3);
+        }
+
+        .banner-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            letter-spacing: -0.05em;
+        }
+
+        .banner-info h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .banner-info p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 0.2rem;
+        }
+
+        .banner-stats {
+            margin-left: auto;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .banner-stat {
+            text-align: center;
+        }
+
+        .banner-stat .num {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .banner-stat .lbl {
+            font-size: 0.7rem;
+            opacity: 0.75;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 22px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #e0e7ff, transparent);
+        }
+
+        .timeline-entry {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-dot.diagnostic {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .timeline-dot.consultation {
+            background: linear-gradient(135deg, #4D96FF, #6BCB77);
+        }
+
+        .timeline-card {
+            flex: 1;
+            background: white;
+            border-radius: 14px;
+            padding: 1.4rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            transition: all 0.2s;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .timeline-date {
+            font-size: 0.78rem;
+            color: #888;
+        }
+
+        .timeline-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .timeline-card .doctor {
+            font-size: 0.82rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.1rem;
+        }
+
+        .entry-section {
+            margin-top: 1rem;
+        }
+
+        .entry-section-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #aaa;
+            margin-bottom: 0.4rem;
+        }
+
+        .entry-text {
+            font-size: 0.88rem;
+            color: #444;
+            line-height: 1.6;
+            background: #fafbff;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #f0f0f0;
+        }
+
+        .entry-collapsed .entry-section {
+            display: none;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: #f0f3ff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: #aaa;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: #dde;
+        }
+
+        .empty-state h3 {
+            color: #888;
+        }
+
+        @media (max-width:600px) {
+            .banner-stats {
+                display: none;
+            }
+
+            .patient-banner {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a class="navbar-brand" href="dashboard.html"><i class="fas fa-hospital"></i> CareTrack</a>
+        <a class="back-btn" href="dashboard.html"><i class="fas fa-arrow-left"></i> Tableau de bord</a>
+    </nav>
+
+    <div class="main">
+        <div class="page-header">
+            <h1><i class="fas fa-file-medical" style="color:#FF6B9D"></i> Dossier Médical</h1>
+            <p>Historique médical complet du patient sélectionné</p>
+        </div>
+
+        <!-- Patient selector -->
+        <div class="patient-selector">
+            <label><i class="fas fa-users"></i> Patient</label>
+            <div class="patient-chips" id="patientChips">
+                <div style="color:#aaa; font-size:0.85rem;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>
+            </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="patient-banner" id="patientBanner" style="display:none">
+            <div class="banner-avatar" id="bannerAvatar">—</div>
+            <div class="banner-info">
+                <h2 id="bannerName">—</h2>
+                <p id="bannerSub">—</p>
+            </div>
+            <div class="banner-stats">
+                <div class="banner-stat">
+                    <div class="num" id="statNbConsult">—</div>
+                    <div class="lbl">Consultations</div>
+                </div>
+                <div class="banner-stat">
+                    <div class="num" id="statNbDossiers">—</div>
+                    <div class="lbl">Dossiers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline" id="timeline">
+            <div class="empty-state">
+                <i class="fas fa-user-md"></i>
+                <h3>Sélectionnez un patient pour voir son dossier médical</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentPatientId = null;
+        let currentPatientType = 'self'; // 'self' | 'member'
+        let selfUser = null;
+        let familyMembers = [];
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) { window.location.href = 'login.html'; return null; }
+            return token;
+        }
+
+        async function init() {
+            const token = checkAuth();
+            // Load profile
+            const pr = await fetch(`${API_URL}/auth/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const profileData = await pr.json();
+            if (profileData.success) selfUser = profileData.data;
+
+            // Load family members
+            const fr = await fetch(`${API_URL}/family`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const familyData = await fr.json();
+            familyMembers = familyData.success ? familyData.members : [];
+
+            buildChips();
+            // Auto-select self
+            selectPatient('self', selfUser);
+        }
+
+        function buildChips() {
+            const chips = document.getElementById('patientChips');
+            const initials = selfUser ? `${selfUser.prenom[0]}${selfUser.nom[0]}`.toUpperCase() : 'M';
+            let html = `<div class="chip active" id="chip-self" onclick="selectPatient('self', selfUser)">
+            <div class="chip-avatar">${initials}</div>
+            ${selfUser ? selfUser.prenom + ' ' + selfUser.nom : 'Moi'}
+        </div>`;
+            familyMembers.forEach(m => {
+                const mi = `${m.prenom[0]}${m.nom[0]}`.toUpperCase();
+                const cls = m.sexe === 'homme' ? 'boy' : m.sexe === 'femme' ? 'girl' : '';
+                html += `<div class="chip" id="chip-${m.id_member}" onclick="selectPatient('member', ${JSON.stringify(m).replace(/"/g, '&quot;')})">
+                <div class="chip-avatar ${cls}">${mi}</div>
+                ${m.prenom} ${m.nom}
+            </div>`;
+            });
+            chips.innerHTML = html;
+        }
+
+        async function selectPatient(type, patient) {
+            // Update active chip
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            const chipId = type === 'self' ? 'chip-self' : `chip-${patient.id_member}`;
+            document.getElementById(chipId)?.classList.add('active');
+
+            currentPatientType = type;
+            currentPatientId = type === 'self' ? selfUser?.id_patient : patient.id_member;
+
+            // Update banner
+            const banner = document.getElementById('patientBanner');
+            banner.style.display = 'flex';
+            const initials = `${patient.prenom[0]}${patient.nom[0]}`.toUpperCase();
+            document.getElementById('bannerAvatar').textContent = initials;
+            document.getElementById('bannerName').textContent = `${patient.prenom} ${patient.nom}`;
+            const dob = patient.date_naissance
+                ? new Date(patient.date_naissance).toLocaleDateString('fr-FR')
+                : '—';
+            const sub = type === 'self' ? `Email : ${patient.email}` : `${patient.lien || 'Enfant'} · Né(e) le ${dob}`;
+            document.getElementById('bannerSub').textContent = sub;
+
+            await loadDossier(type, patient);
+        }
+
+        async function loadDossier(type, patient) {
+            const token = checkAuth();
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin fa-2x" style="font-size:2rem;color:#888"></i><h3 style="margin-top:1rem">Chargement...</h3></div>';
+
+            try {
+                let consultations = [];
+                let rdv = [];
+                let dossiers = [];
+
+                // Récupération des données selon le type (soi-même ou membre)
+                const baseParams = type === 'self' ? '' : `?id_member=${patient.id_member}`;
+
+                // 1. Consultations
+                const cr = await fetch(`${API_URL}/consultations/patient${baseParams}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cd = await cr.json();
+                consultations = cd.success ? (type === 'self' ? cd.data.filter(c => !c.id_member) : cd.data) : [];
+
+                // 2. Rendez-vous
+                const rr = await fetch(`${API_URL}/rdv/patient${baseParams}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const rd = await rr.json();
+                rdv = rd.success ? rd.data : [];
+
+                // 3. Dossiers médicaux (seulement pour titulaire pour le moment)
+                if (type === 'self') {
+                    const dr = await fetch(`${API_URL}/dossier/${selfUser.id_patient}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const dd = await dr.json();
+                    dossiers = dd.success ? dd.data : [];
+                }
+
+                document.getElementById('statNbConsult').textContent = consultations.length + rdv.length;
+                document.getElementById('statNbDossiers').textContent = dossiers.length;
+
+                renderTimeline(consultations, rdv, dossiers);
+            } catch (e) {
+                timeline.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle" style="color:#e74c3c"></i><h3>Erreur de chargement</h3></div>';
+            }
+        }
+
+        function renderTimeline(consultations, rdv, dossiers) {
+            const timeline = document.getElementById('timeline');
+            const statusMap = {
+                en_attente: 'En attente', confirme: 'Confirmé', annule: 'Annulé', termine: 'Terminé',
+                en_cours: 'En cours', terminee: 'Terminée', annulee: 'Annulée'
+            };
+            const statusColor = {
+                en_attente: '#f59e0b', confirme: '#10b981', annule: '#ef4444', termine: '#6366f1',
+                en_cours: '#3b82f6', terminee: '#10b981', annulee: '#ef4444'
+            };
+
+            // Fusion et tri par date décroissante
+            const entries = [
+                ...dossiers.map(d => ({ ...d, _type: 'dossier', _date: new Date(d.date_consultation) })),
+                ...consultations.map(c => ({ ...c, _type: 'consultation', _date: new Date(c.heure_arrivee) })),
+                ...rdv.map(r => ({ ...r, _type: 'rdv', _date: new Date(r.date_rdv + ' ' + r.heure_rdv) }))
+            ].sort((a, b) => b._date - a._date);
+
+            if (!entries.length) {
+                timeline.innerHTML = `<div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <h3>Aucune entrée dans le dossier</h3>
+                <p>Aucune consultation ni rendez-vous enregistré pour ce patient.</p>
+            </div>`;
+                return;
+            }
+
+            timeline.innerHTML = entries.map((e, i) => {
+                const dateStr = e._date.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+                const timeStr = e._date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+                if (e._type === 'dossier') {
+                    return `<div class="timeline-entry">
+                    <div class="timeline-dot diagnostic"><i class="fas fa-notes-medical"></i></div>
+                    <div class="timeline-card entry-collapsed" id="entry-${i}">
+                        <div class="timeline-header">
+                            <div>
+                                <h3><i class="fas fa-file-medical" style="color:#667eea;margin-right:0.4rem"></i>Dossier médical</h3>
+                                <div class="doctor">Dr. ${e.medecin_prenom || ''} ${e.medecin_nom || ''} ${e.specialite ? '· ' + e.specialite : ''}</div>
+                            </div>
+                            <div class="timeline-date">${dateStr}</div>
+                        </div>
+                        ${e.diagnostic ? `<div class="entry-section"><div class="entry-section-title">Diagnostic</div><div class="entry-text">${e.diagnostic}</div></div>` : ''}
+                        ${e.prescription ? `<div class="entry-section"><div class="entry-section-title">Prescription</div><div class="entry-text">${e.prescription}</div></div>` : ''}
+                        ${e.notes ? `<div class="entry-section"><div class="entry-section-title">Notes</div><div class="entry-text">${e.notes}</div></div>` : ''}
+                        <button class="toggle-btn" onclick="toggleEntry('entry-${i}', this)"><i class="fas fa-chevron-down"></i> Voir plus</button>
+                    </div>
+                </div>`;
+                } else {
+                    const isRDV = e._type === 'rdv';
+                    const color = statusColor[e.statut] || '#888';
+                    const icon = isRDV ? 'fa-calendar-alt' : 'fa-stethoscope';
+                    const title = isRDV ? `Rendez-vous : ${e.service_nom || 'Consultation'}` : (e.service_nom || 'Consultation');
+
+                    return `<div class="timeline-entry">
+                    <div class="timeline-dot ${isRDV ? 'consultation' : 'consultation'}" style="${isRDV ? 'background:linear-gradient(135deg,#667eea,#45a049)' : ''}">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-header">
+                            <div>
+                                <h3>${title}</h3>
+                                <div class="doctor">Dr. ${e.medecin_prenom} ${e.medecin_nom}</div>
+                            </div>
+                            <div style="text-align:right">
+                                <span style="background:${color}22;color:${color};padding:0.25rem 0.8rem;border-radius:20px;font-size:0.72rem;font-weight:700">${statusMap[e.statut] || e.statut}</span>
+                                <div class="timeline-date" style="margin-top:0.3rem">${dateStr} à ${timeStr}</div>
+                            </div>
+                        </div>
+                        ${e.motif ? `<div class="entry-section"><div class="entry-section-title">Motif</div><div class="entry-text">${e.motif}</div></div>` : ''}
+                        ${e.diagnostic ? `<div class="entry-section"><div class="entry-section-title">Diagnostic</div><div class="entry-text">${e.diagnostic}</div></div>` : ''}
+                        ${e.observations ? `<div class="entry-section"><div class="entry-section-title">Observations</div><div class="entry-text">${e.observations}</div></div>` : ''}
+                    </div>
+                </div>`;
+                }
+            }).join('');
+        }
+
+        function toggleEntry(id, btn) {
+            const card = document.getElementById(id);
+            if (card.classList.contains('entry-collapsed')) {
+                card.classList.remove('entry-collapsed');
+                btn.innerHTML = '<i class="fas fa-chevron-up"></i> Réduire';
+            } else {
+                card.classList.add('entry-collapsed');
+                btn.innerHTML = '<i class="fas fa-chevron-down"></i> Voir les détails';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

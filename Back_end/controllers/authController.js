@@ -27,7 +27,6 @@ const registerPatient = async (req, res) => {
       email,
       telephone,
       cin,
-      tuteur,
       numero_secu,
       mutuelle,
       allergies,
@@ -104,7 +103,6 @@ const registerPatient = async (req, res) => {
       ville,
       telephone,
       cin: cin || null,
-      tuteur: tuteur || null,
       numero_secu: numero_secu || null,
       mutuelle: mutuelle || null,
       allergies: allergies || [],
@@ -184,13 +182,13 @@ const verifyEmail = async (req, res) => {
     const patientResult = await query(
       `INSERT INTO patients 
        (carte_rfid, nom, prenom, date_naissance, sexe, adresse, code_postal, ville, 
-        email, telephone, cin, numero_secu, mutuelle, allergies, groupe_sanguin, code_pin, tuteur, email_verified)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, TRUE)
+        email, telephone, cin, numero_secu, mutuelle, allergies, groupe_sanguin, code_pin, email_verified)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, TRUE)
        RETURNING id_patient, carte_rfid, nom, prenom, email`,
-      [data.carte_rfid, data.nom, data.prenom, data.date_naissance, data.sexe, 
-       data.adresse, data.code_postal, data.ville, email, data.telephone, 
-       data.cin || null, data.numero_secu, data.mutuelle, data.allergies, 
-       data.groupe_sanguin, data.code_pin_hashed, data.tuteur || null]
+      [data.carte_rfid, data.nom, data.prenom, data.date_naissance, data.sexe,
+      data.adresse, data.code_postal, data.ville, email, data.telephone,
+      data.cin || null, data.numero_secu, data.mutuelle, data.allergies,
+      data.groupe_sanguin, data.code_pin_hashed]
     );
 
     const patient = patientResult.rows[0];

@@ -71,7 +71,9 @@
                         </div>
 
                         <!-- Affichage de l'âge calculé -->
-                        <div class="form-group" style="background: #f0f4ff; padding: 15px; border-radius: 5px; display: none;" id="ageDisplay">
+                        <div class="form-group"
+                            style="background: #f0f4ff; padding: 15px; border-radius: 5px; display: none;"
+                            id="ageDisplay">
                             <p style="margin: 0; color: #667eea; font-weight: 600;">
                                 Âge: <span id="ageValue">-</span> ans
                             </p>
@@ -84,12 +86,6 @@
                             <small id="cinHelp" style="color: #999; display: none;">
                                 Non obligatoire pour les mineurs
                             </small>
-                        </div>
-
-                        <!-- Champ tuteur - visible seulement pour les moins de 16 ans -->
-                        <div class="form-group" style="display: none;" id="guardianSection">
-                            <label>Information du tuteur *</label>
-                            <input type="text" name="tuteur" id="tuteur" placeholder="Nom complet du tuteur">
                         </div>
 
                         <div class="form-group">
@@ -200,7 +196,9 @@
                             <div style="position: relative;">
                                 <input type="password" name="pin" id="pin" maxlength="4" pattern="[0-9]{4}"
                                     placeholder="••••" required style="padding-right: 40px;">
-                                <button type="button" id="togglePin" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #667eea;" title="Afficher/Masquer">
+                                <button type="button" id="togglePin"
+                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #667eea;"
+                                    title="Afficher/Masquer">
                                     👁️
                                 </button>
                             </div>
