@@ -1,0 +1,45 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: hospital_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hospital_admin
+      POSTGRES_PASSWORD: namosash
+      POSTGRES_DB: hospital_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U hospital_admin -d hospital_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin - Interface Web pour PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hospital_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@hospital.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+# Volumes persistants
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local

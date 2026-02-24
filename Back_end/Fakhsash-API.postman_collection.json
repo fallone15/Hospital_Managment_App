@@ -1,0 +1,307 @@
+{
+  "info": {
+    "name": "Fakhsash API",
+    "description": "Collection complète pour tester l'API Fakhsash",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Alaoui\",\n  \"prenom\": \"Mohammed\",\n  \"date_naissance\": \"1990-05-15\",\n  \"age\": 34,\n  \"cin\": \"AB123456\",\n  \"sexe\": \"homme\",\n  \"adresse\": \"123 Rue Mohamed V, Rabat\",\n  \"email\": \"mohammed.alaoui@gmail.com\",\n  \"telephone\": \"+212612345678\",\n  \"code_pin\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register/patient",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register", "patient"]
+            }
+          }
+        },
+        {
+          "name": "Login Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"mohammed.alaoui@gmail.com\",\n  \"code_pin\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login/patient",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login", "patient"]
+            }
+          }
+        },
+        {
+          "name": "Login Medecin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"dr.alami@fakhsash.ma\",\n  \"code_pin\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login/medecin",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login", "medecin"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rendez-vous",
+      "item": [
+        {
+          "name": "Get Medecins",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rendezvous/medecins",
+              "host": ["{{baseUrl}}"],
+              "path": ["rendezvous", "medecins"]
+            }
+          }
+        },
+        {
+          "name": "Get Disponibilites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rendezvous/medecins/1/disponibilites?date=2024-03-20",
+              "host": ["{{baseUrl}}"],
+              "path": ["rendezvous", "medecins", "1", "disponibilites"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-03-20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Rendez-vous",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medecin_id\": 1,\n  \"date_rdv\": \"2024-03-20\",\n  \"heure_rdv\": \"14:00\",\n  \"motif\": \"Consultation de routine pour contrôle cardiaque annuel\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rendezvous",
+              "host": ["{{baseUrl}}"],
+              "path": ["rendezvous"]
+            }
+          }
+        },
+        {
+          "name": "Get My Rendez-vous",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rendezvous/patient",
+              "host": ["{{baseUrl}}"],
+              "path": ["rendezvous", "patient"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Rendez-vous",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rendezvous/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["rendezvous", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dossiers Médicaux",
+      "item": [
+        {
+          "name": "Get Dossier Medical",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dossiers/patient/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["dossiers", "patient", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Consultations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dossiers/consultations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["dossiers", "consultations", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paiements",
+      "item": [
+        {
+          "name": "Get Tarifs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/paiements/tarifs",
+              "host": ["{{baseUrl}}"],
+              "path": ["paiements", "tarifs"]
+            }
+          }
+        },
+        {
+          "name": "Create Paiement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"montant\": 200,\n  \"methode_paiement\": \"carte\",\n  \"rendez_vous_id\": 1,\n  \"description\": \"Consultation cardiologie\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/paiements",
+              "host": ["{{baseUrl}}"],
+              "path": ["paiements"]
+            }
+          }
+        },
+        {
+          "name": "Get Historique Paiements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/paiements/historique",
+              "host": ["{{baseUrl}}"],
+              "path": ["paiements", "historique"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

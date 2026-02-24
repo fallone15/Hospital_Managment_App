@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - CareTrack</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d8abc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, #0a6f96 0%, #0a6f80 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 16px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+
+        .welcome-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-card h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .welcome-message {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.rfid {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .stat-icon.health {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+            color: white;
+        }
+
+        .stat-icon.docs {
+            background: linear-gradient(135deg, #6BCB77 0%, #4D96FF 100%);
+            color: white;
+        }
+
+        .stat-content h4 {
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-content p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Info Section */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .info-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row:hover {
+            background: #fafafa;
+            padding-left: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .carte-rfid-badge {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Action Cards */
+        .action-section {
+            margin-top: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-card:hover::before {
+            left: 100%;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover .action-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .action-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .action-card p {
+            color: #999;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 2rem;
+            }
+
+            .welcome-card h1 {
+                font-size: 1.5rem;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .navbar-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 2px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <i class="fas fa-hospital"></i>
+                CareTrack
+            </div>
+            <div class="navbar-actions">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h1>🏥 Tableau de Bord Patient</h1>
+            <p class="welcome-message" id="welcomeMessage">
+                <span class="loading"></span>
+                <span class="loading"></span>
+                <span class="loading"></span>
+            </p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-icon rfid">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Carte RFID</h4>
+                    <p id="rfidNumber">---</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon health">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Groupe Sanguin</h4>
+                    <p id="bloodType">---</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon docs">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Dossiers</h4>
+                    <p id="docsCount">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <!-- Personal Info -->
+            <div class="info-card">
+                <h3>👤 Informations Personnelles</h3>
+                <div id="personalInfo">
+                    <p style="text-align: center; color: #999;">Chargement...</p>
+                </div>
+            </div>
+
+            <!-- Medical Info -->
+            <div class="info-card">
+                <h3>🏥 Informations Médicales</h3>
+                <div id="medicalInfo">
+                    <p style="text-align: center; color: #999;">Chargement...</p>
+                </div>
+            </div>
+
+            <!-- Répertoire familial -->
+            <div class="info-card">
+                <h3>👨‍👩‍👧‍👦 Répertoire familial</h3>
+                <button id="addFamilyBtn" style="margin-bottom: 1rem; background: #667eea; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Ajouter un membre</button>
+                <div id="familyList">
+                    <p style="text-align: center; color: #999;">Chargement...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="action-section">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                Actions Disponibles
+            </h2>
+            <div class="action-buttons">
+                <div class="action-card" onclick="handleAction('consultation', event)">
+                    <div class="action-icon" style="color: #667eea;">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h3>Nouvelle Consultation</h3>
+                    <p>Prendre rendez-vous</p>
+                </div>
+
+                <div class="action-card" onclick="handleAction('dossier', event)">
+                    <div class="action-icon" style="color: #FF6B9D;">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3>Mon Dossier Médical</h3>
+                    <p>Consulter mon historique</p>
+                </div>
+
+                <div class="action-card" onclick="handleAction('rendezvous', event)">
+                    <div class="action-icon" style="color: #6BCB77;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Mes Consultations</h3>
+                    <p>Voir mes rendez-vous</p>
+                </div>
+
+                <div class="action-card" onclick="handleAction('paiements', event)">
+                    <div class="action-icon" style="color: #FFD93D;">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <h3>Mes Paiements</h3>
+                    <p>Historique des paiements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+                // -------- Répertoire familial --------
+                async function loadFamilyMembers() {
+                    const token = checkAuth();
+                    if (!token) return;
+                    const familyList = document.getElementById('familyList');
+                    familyList.innerHTML = '<p style="text-align:center;color:#999;">Chargement...</p>';
+                    try {
+                        const res = await fetch(`${API_URL}/family`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const result = await res.json();
+                        if (result.success && result.members.length > 0) {
+                            familyList.innerHTML = result.members.map(m => `
+                                <div class="info-row">
+                                    <span class="info-label">${m.prenom} ${m.nom} (${m.lien || 'Enfant'})</span>
+                                    <span class="info-value">${new Date(m.date_naissance).toLocaleDateString('fr-FR')} | ${m.sexe} <button onclick="deleteFamilyMember(${m.id_member})" style="margin-left:10px;color:#e74c3c;background:none;border:none;cursor:pointer;">Supprimer</button></span>
+                                </div>
+                            `).join('');
+                        } else {
+                            familyList.innerHTML = '<p style="text-align:center;color:#999;">Aucun membre rattaché.</p>';
+                        }
+                    } catch (e) {
+                        familyList.innerHTML = '<p style="color:#e74c3c;">Erreur lors du chargement.</p>';
+                    }
+                }
+
+                async function deleteFamilyMember(id) {
+                    if (!confirm('Supprimer ce membre ?')) return;
+                    const token = checkAuth();
+                    await fetch(`${API_URL}/family/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    loadFamilyMembers();
+                }
+
+                // Modale d'ajout
+                function showFamilyModal() {
+                    if (document.getElementById('familyModal')) return;
+                    const modal = document.createElement('div');
+                    modal.id = 'familyModal';
+                    modal.style = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:9999;';
+                    modal.innerHTML = `
+                        <div style="background:white;padding:2rem 2.5rem;border-radius:12px;min-width:320px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+                            <button onclick="document.getElementById('familyModal').remove()" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                            <h2 style="margin-bottom:1rem;">Ajouter un membre</h2>
+                            <form id="familyForm">
+                                <input name="nom" placeholder="Nom" required style="width:100%;margin-bottom:10px;padding:8px;">
+                                <input name="prenom" placeholder="Prénom" required style="width:100%;margin-bottom:10px;padding:8px;">
+                                <input name="date_naissance" type="date" required style="width:100%;margin-bottom:10px;padding:8px;">
+                                <select name="sexe" required style="width:100%;margin-bottom:10px;padding:8px;">
+                                    <option value="">Sexe</option>
+                                    <option value="homme">Homme</option>
+                                    <option value="femme">Femme</option>
+                                    <option value="autre">Autre</option>
+                                </select>
+                                <input name="lien" placeholder="Lien (ex: fils, fille)" style="width:100%;margin-bottom:10px;padding:8px;">
+                                <input name="groupe_sanguin" placeholder="Groupe sanguin" style="width:100%;margin-bottom:10px;padding:8px;">
+                                <input name="allergies" placeholder="Allergies (séparées par virgule)" style="width:100%;margin-bottom:10px;padding:8px;">
+                                <button type="submit" style="background:#667eea;color:white;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;width:100%;">Ajouter</button>
+                            </form>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    document.getElementById('familyForm').onsubmit = async function(e) {
+                        e.preventDefault();
+                        const form = e.target;
+                        const data = Object.fromEntries(new FormData(form));
+                        data.allergies = data.allergies ? data.allergies.split(',').map(a=>a.trim()).filter(Boolean) : [];
+                        const today = new Date();
+                        const birthDate = new Date(data.date_naissance);
+                        let age = today.getFullYear() - birthDate.getFullYear();
+                        const monthDiff = today.getMonth() - birthDate.getMonth();
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+                        if (age >= 16) {
+                            alert('Seuls les membres de moins de 16 ans peuvent être ajoutés.');
+                            return;
+                        }
+                        const token = checkAuth();
+                        const res = await fetch(`${API_URL}/family`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify(data)
+                        });
+                        if (res.ok) {
+                            document.getElementById('familyModal').remove();
+                            loadFamilyMembers();
+                        } else {
+                            alert('Erreur lors de l\'ajout du membre.');
+                        }
+                    };
+                }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    loadUserInfo();
+                    loadFamilyMembers();
+                    document.getElementById('addFamilyBtn').onclick = showFamilyModal;
+                });
+        const API_URL = 'http://localhost:5000/api';
+
+        // Vérifier l'authentification
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return token;
+        }
+
+        // Charger les informations de l'utilisateur
+        async function loadUserInfo() {
+            const token = checkAuth();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.data;
+                    
+                    // Message de bienvenue
+                    document.getElementById('welcomeMessage').innerHTML = 
+                        `Bienvenue <strong>${user.prenom} ${user.nom}</strong> 👋`;
+
+                    // RFID Number
+                    document.getElementById('rfidNumber').textContent = user.carte_rfid;
+
+                    // Blood Type
+                    document.getElementById('bloodType').textContent = user.groupe_sanguin || '---';
+
+                    // Infos Personnelles
+                    const personalHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Nom complet</span>
+                            <span class="info-value">${user.nom} ${user.prenom}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Date de naissance</span>
+                            <span class="info-value">${new Date(user.date_naissance).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">${user.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Téléphone</span>
+                            <span class="info-value">${user.telephone}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Adresse</span>
+                            <span class="info-value">${user.adresse}, ${user.code_postal} ${user.ville}</span>
+                        </div>
+                    `;
+                    document.getElementById('personalInfo').innerHTML = personalHTML;
+
+                    // Infos Médicales
+                    const medicalHTML = `
+                        ${user.groupe_sanguin ? `
+                        <div class="info-row">
+                            <span class="info-label">Groupe sanguin</span>
+                            <span class="info-value"><span class="badge">${user.groupe_sanguin}</span></span>
+                        </div>
+                        ` : ''}
+                        ${user.allergies && Array.isArray(user.allergies) && user.allergies.length > 0 ? `
+                        <div class="info-row">
+                            <span class="info-label">Allergies</span>
+                            <span class="info-value">${user.allergies.join(', ')}</span>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <span class="info-label">Mutuelle</span>
+                            <span class="info-value">${user.mutuelle || 'Non renseignée'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">N° Sécu</span>
+                            <span class="info-value">${user.numero_secu || 'Non renseigné'}</span>
+                        </div>
+                    `;
+                    document.getElementById('medicalInfo').innerHTML = medicalHTML;
+
+                } else {
+                    console.error('Erreur:', result.message);
+                    logout();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Gestion des actions
+        function handleAction(action, event) {
+            event.preventDefault();
+            const messages = {
+                'consultation': 'Prise de rendez-vous en cours de développement 🔄',
+                'dossier': 'Consultation du dossier médical en cours de développement 🔄',
+                'rendezvous': 'Gestion des rendez-vous en cours de développement 🔄',
+                'paiements': 'Historique des paiements en cours de développement 🔄'
+            };
+            
+            alert(messages[action] || 'Fonctionnalité en développement');
+        }
+
+        // Déconnexion
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('carte_rfid');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Charger au démarrage
+        window.addEventListener('DOMContentLoaded', loadUserInfo);
+    </script>
+
+</body>
+</html>

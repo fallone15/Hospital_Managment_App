@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription – CareTrack</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- CSS intl-tel-input -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
+    <style>
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Créer un compte patient</h2>
+                <p>Remplissez les informations en 4 étapes simples</p>
+            </div>
+
+            <!-- Stepper (indicateur de progression) -->
+            <div class="form-stepper">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Informations<br>personnelles</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Coordonnées</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Informations<br>médicales</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Sécurité</div>
+                </div>
+            </div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-steps-container">
+
+                    <!-- ÉTAPE 1 : Informations personnelles -->
+                    <div class="form-step active" data-step="1">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom *</label>
+                                <input type="text" name="nom" id="nom" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Prénom *</label>
+                                <input type="text" name="prenom" id="prenom" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date de naissance *</label>
+                            <input type="date" name="dateNaissance" id="dateNaissance" required>
+                        </div>
+
+                        <!-- Affichage de l'âge calculé -->
+                        <div class="form-group" style="background: #f0f4ff; padding: 15px; border-radius: 5px; display: none;" id="ageDisplay">
+                            <p style="margin: 0; color: #667eea; font-weight: 600;">
+                                Âge: <span id="ageValue">-</span> ans
+                            </p>
+                        </div>
+
+                        <!-- CIN - obligatoire seulement pour les 16+ ans -->
+                        <div class="form-group" id="cinSection">
+                            <label>N° de CIN ou N° de passeport <span id="cinRequired">*</span></label>
+                            <input type="text" name="cin" id="cin" required>
+                            <small id="cinHelp" style="color: #999; display: none;">
+                                Non obligatoire pour les mineurs
+                            </small>
+                        </div>
+
+                        <!-- Champ tuteur - visible seulement pour les moins de 16 ans -->
+                        <div class="form-group" style="display: none;" id="guardianSection">
+                            <label>Information du tuteur *</label>
+                            <input type="text" name="tuteur" id="tuteur" placeholder="Nom complet du tuteur">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sexe *</label>
+                            <select name="sexe" id="sexe" required>
+                                <option value="">Sélectionner</option>
+                                <option value="homme">Homme</option>
+                                <option value="femme">Femme</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-primary btn-next">
+                                Suivant <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ÉTAPE 2 : Coordonnées -->
+                    <div class="form-step" data-step="2">
+                        <div class="form-group">
+                            <label>Adresse *</label>
+                            <input type="text" name="adresse" id="adresse" placeholder="123 Rue de la Paix" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Code Postal *</label>
+                                <input type="text" name="codePostal" id="codePostal" placeholder="75001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ville *</label>
+                                <input type="text" name="ville" id="ville" placeholder="Paris" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" id="email" placeholder="exemple@gmail.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Téléphone *</label>
+                            <input type="tel" name="phone" id="phone" required>
+                            <span class="error-message" id="phoneError">Numéro de téléphone invalide</span>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-prev">
+                                <i class="fas fa-arrow-left"></i> Précédent
+                            </button>
+                            <button type="button" class="btn btn-primary btn-next">
+                                Suivant <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ÉTAPE 3 : Informations médicales -->
+                    <div class="form-step" data-step="3">
+                        <div class="form-group">
+                            <label>Numéro de Sécurité Sociale </label>
+                            <input type="text" name="numeroSecu" id="numeroSecu"
+                                placeholder="2 85 03 75 123 456 78 (optionnel)">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mutuelle </label>
+                            <input type="text" name="mutuelle" id="mutuelle"
+                                placeholder="MGEN, Harmonie Mutuelle...(optionnel)">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Groupe Sanguin</label>
+                            <select name="groupeSanguin" id="groupeSanguin">
+                                <option value="">Sélectionner (optionnel)</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Allergies (séparer par des virgules)</label>
+                            <input type="text" name="allergies" id="allergies"
+                                placeholder="Pénicilline, Aspirine... (optionnel)">
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-prev">
+                                <i class="fas fa-arrow-left"></i> Précédent
+                            </button>
+                            <button type="button" class="btn btn-primary btn-next">
+                                Suivant <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ÉTAPE 4 : Sécurité et Récapitulatif -->
+                    <div class="form-step" data-step="4">
+                        <div class="form-group">
+                            <label>Code PIN (4 chiffres) *</label>
+                            <div style="position: relative;">
+                                <input type="password" name="pin" id="pin" maxlength="4" pattern="[0-9]{4}"
+                                    placeholder="••••" required style="padding-right: 40px;">
+                                <button type="button" id="togglePin" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #667eea;" title="Afficher/Masquer">
+                                    👁️
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="summary-section">
+                            <h4><i class="fas fa-clipboard-check"></i> Récapitulatif de vos informations</h4>
+                            <div id="summaryContent"></div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-prev">
+                                <i class="fas fa-arrow-left"></i> Précédent
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                <i class="fas fa-check"></i> Créer mon compte
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="auth-switch">
+                    Déjà inscrit ? <a href="login.html">Se connecter</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message succès -->
+    <div id="successMessage" class="success-box hidden">
+        <h2>✅ Compte créé avec succès</h2>
+        <p>
+            Votre compte patient a été enregistré dans le système <strong>CareTrack</strong>.
+        </p>
+        <div class="card-number">
+            Numéro de carte RFID : <span id="cardNumber"></span>
+        </div>
+        <p>
+            Veuillez vous présenter à l'hôpital afin de retirer votre
+            <strong>carte RFID</strong>. Elle sera requise pour toute opération médicale ou administrative.
+        </p>
+        <p class="redirect-text">
+            Redirection vers la page de connexion...
+        </p>
+    </div>
+
+    <!-- JS intl-tel-input -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/intlTelInput.min.js"></script>
+    <script src="register.js"></script>
+</body>
+
+</html>
