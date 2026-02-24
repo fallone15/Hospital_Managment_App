@@ -3,17 +3,28 @@ const { query } = require('../config/database');
 // Récupérer tous les médecins filtrés par service
 const getMedecins = async (req, res) => {
   try {
-    const { serviceId, specialite } = req.query;
+    const { serviceId, specialite, date } = req.query;
 
     let sqlQuery = `
-      SELECT m.id_medecin as id, m.nom, m.prenom, m.specialite, 
+      SELECT DISTINCT m.id_medecin as id, m.nom, m.prenom, m.specialite, 
              m.email, m.telephone
       FROM medecins m
-      WHERE m.actif = TRUE
     `;
 
     const params = [];
     let idx = 1;
+
+    // Si une date est fournie, filtrer par disponibilité hebdomadaire
+    if (date) {
+      // Évite les décalages de fuseau horaire en parsant manuellement YYYY-MM-DD
+      const [y, m, d] = date.split('-').map(Number);
+      const dayOfWeek = new Date(y, m - 1, d).getDay();
+      sqlQuery += ` JOIN disponibilites d ON m.id_medecin = d.medecin_id AND d.jour_semaine = $${idx}`;
+      params.push(dayOfWeek);
+      idx++;
+    }
+
+    sqlQuery += ` WHERE m.actif = TRUE`;
 
     if (serviceId) {
       sqlQuery += ` AND m.id_service = $${idx}`;
@@ -50,7 +61,8 @@ const getDisponibilites = async (req, res) => {
     const { date } = req.query;
 
     if (date) {
-      const jour_semaine = new Date(date).getDay();
+      const [y, m, d] = date.split('-').map(Number);
+      const jour_semaine = new Date(y, m - 1, d).getDay();
 
       const dispoResult = await query(
         `SELECT heure_debut, heure_fin 

@@ -39,7 +39,8 @@ const patientsRoutes = require('./routes/patients');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/consultations', consultationRoutes);
-app.use('/api/rendezvous', rendezvousRoutes);
+app.use('/api/rdv', rendezvousRoutes); // Changé de /api/rendezvous pour correspondre au frontend
+app.use('/api/rendezvous', rendezvousRoutes); // Alias pour compatibilité
 app.use('/api/dossiers', dossiersRoutes);
 app.use('/api/paiements', paiementsRoutes);
 app.use('/api/patients', patientsRoutes);

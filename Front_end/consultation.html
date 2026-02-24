@@ -120,7 +120,6 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* Stepper */
         .section-label {
             font-size: 0.78rem;
             font-weight: 700;
@@ -144,7 +143,6 @@
             background: #e8eeff;
         }
 
-        /* Person select */
         .person-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -202,10 +200,9 @@
             color: #222;
         }
 
-        /* Fields */
         .form-cols {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 10fr 10fr;
             gap: 1.2rem;
         }
 
@@ -242,6 +239,57 @@
             border-color: #667eea;
             background: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Doctor cards */
+        .doctor-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.2rem;
+            border: 2px solid #e8eeff;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafbff;
+        }
+
+        .doctor-card:hover {
+            border-color: #c5d2ff;
+            transform: translateY(-2px);
+        }
+
+        .doctor-card.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .doc-avatar {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .doc-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1a1a2e;
+        }
+
+        .doc-spec {
+            font-size: 0.75rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.1rem;
         }
 
         /* Slots */
@@ -283,7 +331,6 @@
             background: #eee;
         }
 
-        /* Payment Notice */
         .payment-notice {
             background: #fff8e1;
             border: 1px solid #ffecb3;
@@ -314,7 +361,6 @@
             line-height: 1.5;
         }
 
-        /* Submit */
         .submit-btn {
             width: 100%;
             padding: 1.1rem;
@@ -340,10 +386,9 @@
 
         .submit-btn:disabled {
             opacity: 0.6;
-            cursor: wait;
+            cursor: not-allowed;
         }
 
-        /* Confirm view */
         .confirm-view {
             display: none;
             text-align: center;
@@ -410,6 +455,10 @@
         .hidden {
             display: none;
         }
+
+        .active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -437,68 +486,74 @@
                     </div>
                 </div>
 
-                <!-- 2. Service & Médecin -->
-                <div class="section-label"><i class="fas fa-user-md"></i> Spécialité & Praticien</div>
+                <!-- 2. Recherche -->
+                <div class="section-label"><i class="fas fa-search"></i> Planification</div>
                 <div class="form-cols">
                     <div class="form-group">
+                        <label>Date souhaitée</label>
+                        <input type="date" id="dateInput" onchange="onFilterChange()">
+                    </div>
+                    <div class="form-group">
                         <label>Service / Spécialité</label>
-                        <select id="serviceSelect" onchange="loadDoctors()">
+                        <select id="serviceSelect" onchange="onFilterChange()">
                             <option value="">Choisir un service</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Médecin</label>
-                        <select id="doctorSelect" onchange="resetSlots()" disabled>
-                            <option value="">Sélectionner un service d'abord</option>
-                        </select>
+                </div>
+
+                <!-- 3. Résultats Médecins -->
+                <div id="doctorSection" class="hidden">
+                    <div class="section-label"><i class="fas fa-user-md"></i> Médecins disponibles</div>
+                    <div id="doctorLoading" class="hidden" style="text-align: center; padding: 1rem; color: #888;">
+                        <i class="fas fa-spinner fa-spin"></i> Recherche des praticiens...
+                    </div>
+                    <div id="doctorList" class="person-grid"></div>
+                    <div id="noDoctorMsg" class="hidden"
+                        style="color: #e65100; font-size: 0.85rem; padding: 1rem; background: #fff3e0; border-radius: 10px; margin-top: 1rem;">
+                        <i class="fas fa-info-circle"></i> Aucun médecin de ce service n'est disponible à cette date.
                     </div>
                 </div>
 
-                <!-- 3. Date & Heure -->
-                <div id="dateTimeSection" class="hidden">
-                    <div class="section-label"><i class="fas fa-clock"></i> Date & Horaire</div>
+                <!-- 4. Créneaux -->
+                <div id="slotsSection" class="hidden">
+                    <div class="section-label"><i class="fas fa-clock"></i> Horaire disponible</div>
+                    <div id="slotsLoading" class="hidden" style="text-align: center; padding: 1rem; color: #888;">
+                        <i class="fas fa-spinner fa-spin"></i> Chargement des créneaux...
+                    </div>
+                    <div class="slots-grid" id="slotsGrid"></div>
+                    <div id="noSlotsMsg" class="hidden" style="color: #e65100; font-size: 0.85rem; margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Désolé, plus de créneaux disponibles pour ce médecin à cette
+                        date.
+                    </div>
+                </div>
+
+                <!-- 5. Motif -->
+                <div id="motifSection" class="hidden">
+                    <div class="section-label"><i class="fas fa-comment-medical"></i> Motif de consultation</div>
                     <div class="form-group">
-                        <label>Date du rendez-vous</label>
-                        <input type="date" id="dateInput" onchange="loadSlots()">
+                        <textarea id="motifInput"
+                            placeholder="Précisez brièvement l'objet de votre visite..."></textarea>
                     </div>
 
-                    <div id="slotsSection" class="form-group hidden">
-                        <label>Créneaux disponibles</label>
-                        <div class="slots-grid" id="slotsGrid"></div>
-                        <div id="noSlotsMsg" class="hidden"
-                            style="color: #e65100; font-size: 0.85rem; margin-top: 0.5rem;">
-                            <i class="fas fa-info-circle"></i> Aucun créneau disponible pour cette date.
+                    <div class="payment-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="text">
+                            <h4>Paiement à l'accueil</h4>
+                            <p>Le règlement s'effectue directement à l'accueil de l'hôpital le jour du rendez-vous.</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- 4. Motif -->
-                <div class="section-label"><i class="fas fa-comment-medical"></i> Motif de consultation</div>
-                <div class="form-group">
-                    <textarea id="motifInput" placeholder="Précisez brièvement l'objet de votre visite..."></textarea>
+                    <button class="submit-btn" id="submitBtn" onclick="submitBooking()" disabled>
+                        <i class="fas fa-check-circle"></i> Confirmer la réservation
+                    </button>
                 </div>
-
-                <!-- Payment Notice -->
-                <div class="payment-notice">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="text">
-                        <h4>Paiement à l'accueil</h4>
-                        <p>Pour confirmer votre rendez-vous, vous devrez régler les frais de consultation directement à
-                            l'accueil de l'hôpital lors de votre passage.</p>
-                    </div>
-                </div>
-
-                <button class="submit-btn" id="submitBtn" onclick="submitBooking()" disabled>
-                    <i class="fas fa-check-circle"></i> Confirmer la réservation
-                </button>
             </div>
 
-            <!-- Confirm view -->
+            <!-- Success Message -->
             <div class="confirm-view" id="confirmView">
                 <div class="success-icon"><i class="fas fa-check"></i></div>
-                <h2>Rendez-vous réservé !</h2>
-                <p>Votre réservation a été enregistrée avec succès.</p>
-
+                <h2>Félicitations !</h2>
+                <p>Votre rendez-vous a été enregistré.</p>
                 <div class="confirm-card">
                     <div class="confirm-row"><span class="label">Patient</span><span class="val"
                             id="resPatient">—</span></div>
@@ -509,14 +564,8 @@
                     <div class="confirm-row"><span class="label">Heure</span><span class="val" id="resTime">—</span>
                     </div>
                 </div>
-
-                <p style="font-size: 0.85rem; color: #888; margin-bottom: 2rem;">
-                    Un rappel vous sera envoyé par notification. N'oubliez pas de vous présenter à l'accueil 15 minutes
-                    avant.
-                </p>
-
                 <a href="dashboard.html" class="back-btn"
-                    style="background:#667eea; color:white; width: 100%; justify-content: center; padding: 1rem;">
+                    style="background:#667eea; color:white; width: 100%; justify-content: center; padding: 1rem; margin-top: 1rem;">
                     Retour au tableau de bord
                 </a>
             </div>
@@ -525,21 +574,21 @@
 
     <script>
         const API_URL = 'http://localhost:5000/api';
-        let selectedPersonId = null; // null = self
-        let selectedSlot = null;
-        let doctorsData = [];
-
-        // Auth check
         const token = localStorage.getItem('token');
+
+        let selectedPersonId = null;
+        let selectedDoctorId = null;
+        let selectedSlot = null;
+
         if (!token) window.location.href = 'login.html';
 
         async function init() {
-            await loadPersons();
-            await loadServices();
-
             // Min date = today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('dateInput').setAttribute('min', today);
+
+            await loadPersons();
+            await loadServices();
         }
 
         async function loadPersons() {
@@ -552,23 +601,19 @@
                 const profile = await profileRes.json();
                 const family = await familyRes.json();
 
-                let html = `
-                <label class="person-option selected" onclick="selectPerson(null, this)">
-                    <input type="radio" name="person" checked>
-                    <div class="person-avatar">${profile.data.prenom[0]}${profile.data.nom[0]}</div>
-                    <div class="person-name">Moi (${profile.data.prenom})</div>
-                </label>
-            `;
+                let html = `<label class="person-option selected" onclick="selectPerson(null, this)">
+                <input type="radio" name="person" checked>
+                <div class="person-avatar">${profile.data.prenom[0]}${profile.data.nom[0]}</div>
+                <div class="person-name">Moi (${profile.data.prenom})</div>
+            </label>`;
 
                 if (family.success) {
                     family.members.forEach(m => {
-                        html += `
-                        <label class="person-option" onclick="selectPerson(${m.id_member}, this)">
-                            <input type="radio" name="person">
-                            <div class="person-avatar child">${m.prenom[0]}</div>
-                            <div class="person-name">${m.prenom} ${m.nom}</div>
-                        </label>
-                    `;
+                        html += `<label class="person-option" onclick="selectPerson(${m.id_member}, this)">
+                        <input type="radio" name="person">
+                        <div class="person-avatar child">${m.prenom[0]}</div>
+                        <div class="person-name">${m.prenom} ${m.nom}</div>
+                    </label>`;
                     });
                 }
                 grid.innerHTML = html;
@@ -595,81 +640,119 @@
             } catch (e) { console.error(e); }
         }
 
-        async function loadDoctors() {
+        function onFilterChange() {
+            const date = document.getElementById('dateInput').value;
             const serviceId = document.getElementById('serviceSelect').value;
-            const docSelect = document.getElementById('doctorSelect');
-            const dtSec = document.getElementById('dateTimeSection');
 
-            if (!serviceId) {
-                docSelect.disabled = true;
-                docSelect.innerHTML = '<option value="">Sélectionner un service d\'abord</option>';
-                dtSec.classList.add('hidden');
-                return;
+            // Reset following steps
+            document.getElementById('doctorSection').classList.add('hidden');
+            document.getElementById('slotsSection').classList.add('hidden');
+            document.getElementById('motifSection').classList.add('hidden');
+            selectedDoctorId = null;
+            selectedSlot = null;
+
+            if (date && serviceId) {
+                loadDoctors(date, serviceId);
             }
-
-            try {
-                const res = await fetch(`${API_URL}/rdv/medecins?serviceId=${serviceId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const result = await res.json();
-                doctorsData = result.data;
-
-                docSelect.disabled = false;
-                docSelect.innerHTML = '<option value="">Choisir un praticien</option>';
-                doctorsData.forEach(d => {
-                    const opt = document.createElement('option');
-                    opt.value = d.id;
-                    opt.textContent = `Dr. ${d.prenom} ${d.nom}`;
-                    docSelect.appendChild(opt);
-                });
-                dtSec.classList.remove('hidden');
-            } catch (e) { console.error(e); }
         }
 
-        function resetSlots() {
-            document.getElementById('dateInput').value = '';
-            document.getElementById('slotsSection').classList.add('hidden');
-            document.getElementById('submitBtn').disabled = true;
-            selectedSlot = null;
+        async function loadDoctors(date, serviceId) {
+            const section = document.getElementById('doctorSection');
+            const list = document.getElementById('doctorList');
+            const loading = document.getElementById('doctorLoading');
+            const noDoc = document.getElementById('noDoctorMsg');
+
+            section.classList.remove('hidden');
+            list.innerHTML = '';
+            loading.classList.remove('hidden');
+            noDoc.classList.add('hidden');
+
+            try {
+                const res = await fetch(`${API_URL}/rdv/medecins?serviceId=${serviceId}&date=${date}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                loading.classList.add('hidden');
+
+                if (result.success && result.data.length > 0) {
+                    result.data.forEach(d => {
+                        const card = document.createElement('div');
+                        card.className = 'doctor-card';
+                        card.onclick = () => selectDoctor(d.id, card);
+                        card.innerHTML = `
+                        <div class="doc-avatar">${d.prenom[0]}${d.nom[0]}</div>
+                        <div class="doc-name">Dr. ${d.prenom} ${d.nom}</div>
+                        <div class="doc-spec">${d.specialite || 'Généraliste'}</div>
+                    `;
+                        list.appendChild(card);
+                    });
+                } else {
+                    noDoc.classList.remove('hidden');
+                }
+            } catch (e) {
+                loading.classList.add('hidden');
+                console.error(e);
+            }
+        }
+
+        function selectDoctor(id, el) {
+            selectedDoctorId = id;
+            document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+
+            document.getElementById('slotsSection').classList.remove('hidden');
+            document.getElementById('motifSection').classList.add('hidden');
+            loadSlots();
         }
 
         async function loadSlots() {
-            const docId = document.getElementById('doctorSelect').value;
             const date = document.getElementById('dateInput').value;
             const grid = document.getElementById('slotsGrid');
-            const section = document.getElementById('slotsSection');
-            const msg = document.getElementById('noSlotsMsg');
+            const loading = document.getElementById('slotsLoading');
+            const noSlots = document.getElementById('noSlotsMsg');
 
-            if (!docId || !date) return;
-
-            section.classList.remove('hidden');
-            grid.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rechercher les créneaux...';
-            msg.classList.add('hidden');
+            grid.innerHTML = '';
+            loading.classList.remove('hidden');
+            noSlots.classList.add('hidden');
+            selectedSlot = null;
 
             try {
-                const res = await fetch(`${API_URL}/rdv/medecins/${docId}/disponibilites?date=${date}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const res = await fetch(`${API_URL}/rdv/medecins/${selectedDoctorId}/disponibilites?date=${date}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const result = await res.json();
+                loading.classList.add('hidden');
 
                 if (result.success && result.data.disponible && result.data.creneaux.length > 0) {
-                    grid.innerHTML = result.data.creneaux.map(s => `
-                    <button class="slot-btn" onclick="selectSlot('${s}', this)">${s}</button>
-                `).join('');
+                    result.data.creneaux.forEach(s => {
+                        const btn = document.createElement('button');
+                        btn.className = 'slot-btn';
+                        btn.textContent = s;
+                        btn.onclick = () => selectSlot(s, btn);
+                        grid.appendChild(btn);
+                    });
                 } else {
-                    grid.innerHTML = '';
-                    msg.classList.remove('hidden');
+                    noSlots.classList.remove('hidden');
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                loading.classList.add('hidden');
+                console.error(e);
+            }
         }
 
         function selectSlot(time, el) {
             selectedSlot = time;
             document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
+
+            document.getElementById('motifSection').classList.remove('hidden');
             document.getElementById('submitBtn').disabled = false;
         }
 
         async function submitBooking() {
             const btn = document.getElementById('submitBtn');
             const body = {
-                medecin_id: document.getElementById('doctorSelect').value,
+                medecin_id: selectedDoctorId,
                 date_rdv: document.getElementById('dateInput').value,
                 heure_rdv: selectedSlot,
                 motif: document.getElementById('motifInput').value,
@@ -677,7 +760,7 @@
             };
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Réservation en cours...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Confirmation...';
 
             try {
                 const res = await fetch(`${API_URL}/rdv`, {
@@ -686,28 +769,22 @@
                     body: JSON.stringify(body)
                 });
                 const result = await res.json();
-
                 if (result.success) {
                     showSuccess(body);
                 } else {
-                    alert(result.message || 'Erreur lors de la réservation');
+                    alert(result.message);
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirmer la réservation';
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirmer';
                 }
-            } catch (e) {
-                alert('Erreur réseau');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirmer la réservation';
-            }
+            } catch (e) { alert('Erreur réseau'); btn.disabled = false; }
         }
 
         function showSuccess(data) {
             document.getElementById('bookingForm').classList.add('hidden');
-            const view = document.getElementById('confirmView');
-            view.style.display = 'block';
+            document.getElementById('confirmView').style.display = 'block';
 
             const personName = document.querySelector('.person-option.selected .person-name').textContent;
-            const docName = document.getElementById('doctorSelect').options[document.getElementById('doctorSelect').selectedIndex].text;
+            const docName = document.querySelector('.doctor-card.selected .doc-name').textContent;
 
             document.getElementById('resPatient').textContent = personName;
             document.getElementById('resDoctor').textContent = docName;
