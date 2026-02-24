@@ -12,6 +12,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <script>
+        // Si déjà connecté, rediriger vers le dashboard
+        if (localStorage.getItem('token')) {
+            window.location.href = 'dashboard.html';
+        }
+
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -259,8 +264,7 @@
                 </div>
                 <div class="lg:w-1/2 relative">
                     <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
-                        <img alt="Médecin utilisant une tablette" class="w-full h-auto"
-                            src="Medecin-stethoscope.jpg" />
+                        <img alt="Médecin utilisant une tablette" class="w-full h-auto" src="Medecin-stethoscope.jpg" />
                     </div>
                     <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse">
                     </div>

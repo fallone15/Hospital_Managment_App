@@ -574,15 +574,24 @@
 
     <script>
         const API_URL = 'http://localhost:5000/api';
-        const token = localStorage.getItem('token');
+
+        function checkAuth() {
+            const t = localStorage.getItem('token');
+            if (!t) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return t;
+        }
+
+        const token = checkAuth();
 
         let selectedPersonId = null;
         let selectedDoctorId = null;
         let selectedSlot = null;
 
-        if (!token) window.location.href = 'login.html';
-
         async function init() {
+            if (!token) return;
             // Min date = today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('dateInput').setAttribute('min', today);
@@ -592,12 +601,18 @@
         }
 
         async function loadPersons() {
+            if (!token) return;
             const grid = document.getElementById('personGrid');
             try {
                 const [profileRes, familyRes] = await Promise.all([
                     fetch(`${API_URL}/auth/profile`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${API_URL}/family`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
+
+                if (profileRes.status === 401 || profileRes.status === 403 || familyRes.status === 401) {
+                    return handleAuthError();
+                }
+
                 const profile = await profileRes.json();
                 const family = await familyRes.json();
 
@@ -790,6 +805,12 @@
             document.getElementById('resDoctor').textContent = docName;
             document.getElementById('resDate').textContent = new Date(data.date_rdv).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
             document.getElementById('resTime').textContent = data.heure_rdv;
+        }
+
+        function handleAuthError() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
         }
 
         window.onload = init;
