@@ -5,22 +5,26 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Connexion – CareTrack</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        primary: "#0EA5E9",
-                        "background-light": "#F8FAFC",
+                        primary: "#3B82F6",
+                        "background-light": "#F1F5F9",
                         "background-dark": "#0F172A",
                     },
                     fontFamily: {
-                        display: ["Inter", "sans-serif"],
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
                     },
                     borderRadius: {
                         DEFAULT: "12px",
@@ -31,20 +35,40 @@
     </script>
     <style>
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .dark .glass {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .medical-gradient {
-            background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 40%),
-                radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 40%);
+        .mesh-gradient {
+            background-color: #F1F5F9;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.05) 0px, transparent 50%);
+            animation: mesh 12s ease infinite alternate;
+            background-size: 200% 200%;
+        }
+
+        @keyframes mesh {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+
+        .text-glow {
+            text-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
         }
     </style>
 </head>
@@ -53,29 +77,41 @@
     class="font-display bg-background-light dark:bg-background-dark min-h-screen selection:bg-primary/30 text-slate-800 dark:text-slate-100 transition-colors duration-300">
     <div class="relative min-h-screen w-full flex flex-col overflow-hidden medical-gradient">
 
-        <!-- NAVIGATION (Aligned with index.html) -->
-        <nav class="fixed top-0 w-full z-50 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-3 rounded-full shadow-lg">
-                <div class="flex items-center gap-2">
-                    <span class="material-icons-round text-primary text-3xl">health_and_safety</span>
+        <nav class="fixed top-0 w-full z-50 px-6 py-6 transition-all duration-300" id="mainNav">
+            <div
+                class="max-w-7xl mx-auto flex items-center justify-between glass px-8 py-4 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-white/40">
+                <a class="flex items-center gap-3 group" href="index.html">
+                    <div
+                        class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
+                        <span class="material-icons-round text-primary text-2xl">health_and_safety</span>
+                    </div>
                     <span
-                        class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">CareTrack</span>
-                </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="index.html">Accueil</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors"
+                        class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white font-display">Care<span
+                            class="text-primary">Track</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-10">
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#accueil">Accueil</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
                         href="index.html#services">Services</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors"
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#fonctionnement">Fonctionnement</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#avantages">Avantages</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
                         href="index.html#contact">Contact</a>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                <div class="flex items-center gap-4">
+                    <button
+                        class="w-10 h-10 rounded-xl glass hover:bg-white/50 transition-colors flex items-center justify-center border-white/20"
                         onclick="document.documentElement.classList.toggle('dark')">
-                        <span class="material-icons-round dark:hidden">dark_mode</span>
-                        <span class="material-icons-round hidden dark:block">light_mode</span>
+                        <span class="material-icons-round dark:hidden text-slate-700">dark_mode</span>
+                        <span class="material-icons-round hidden dark:block text-white">light_mode</span>
                     </button>
-                    <a class="text-sm font-semibold bg-primary text-white px-5 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
-                        href="register.html">Inscription</a>
+                    <div class="hidden sm:flex items-center gap-3">
+                        <a class="text-sm font-bold bg-primary text-white px-8 py-3 rounded-xl shadow-[0_10px_20px_rgba(59,130,246,0.2)] hover:shadow-[0_15px_30px_rgba(59,130,246,0.3)] hover:scale-105 transition-all font-display"
+                            href="register.html">Inscription</a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -168,11 +204,12 @@
         </main>
 
         <footer
-            class="w-full px-12 py-6 flex justify-between items-center text-xs text-slate-400 z-10 transition-colors">
-            <p>© 2026 CareTrack Systems. Tous droits réservés.</p>
-            <div class="flex gap-4">
-                <a class="hover:text-primary transition-colors" href="#">Confidentialité</a>
-                <a class="hover:text-primary transition-colors" href="#">CGU</a>
+            class="w-full px-12 py-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-400 z-10 font-bold uppercase tracking-widest bg-white/10 glass border-t border-white/20">
+            <p>© 2026 CareTrack Systems. Excellence Médicale Digitale.</p>
+            <div class="flex gap-8 mt-4 md:mt-0">
+                <a class="hover:text-primary transition-colors" href="#">Vie Privée</a>
+                <a class="hover:text-primary transition-colors" href="#">Conditions</a>
+                <a class="hover:text-primary transition-colors" href="#">Support</a>
             </div>
         </footer>
 

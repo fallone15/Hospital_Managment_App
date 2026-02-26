@@ -5,10 +5,13 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Inscription – CareTrack</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
     <script id="tailwind-config">
         tailwind.config = {
@@ -16,12 +19,13 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#0EA5E9",
-                        "background-light": "#F8FAFC",
+                        primary: "#3B82F6",
+                        "background-light": "#F1F5F9",
                         "background-dark": "#0F172A",
                     },
                     fontFamily: {
-                        display: ["Inter", "sans-serif"],
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
                     },
                     borderRadius: {
                         DEFAULT: "12px",
@@ -32,20 +36,36 @@
     </script>
     <style>
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .dark .glass {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .medical-gradient {
-            background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 40%),
-                radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 40%);
+        .mesh-gradient {
+            background-color: #F1F5F9;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.05) 0px, transparent 50%);
+            animation: mesh 12s ease infinite alternate;
+            background-size: 200% 200%;
+        }
+
+        @keyframes mesh {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 100% 100%;
+            }
         }
 
         .form-step {
@@ -74,9 +94,9 @@
         }
 
         .step.active .step-circle {
-            background-color: #0EA5E9;
+            background-color: #3B82F6;
             color: #fff;
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
         }
 
         .step.completed .step-circle {
@@ -85,20 +105,23 @@
         }
 
         .step-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #E2E8F0;
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background-color: rgba(255, 255, 255, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 900;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-family: 'Outfit', sans-serif;
         }
 
         .dark .step-circle {
-            background-color: #1E293B;
+            background-color: rgba(30, 41, 59, 0.5);
         }
 
         /* Hack for centering helper text */
@@ -114,73 +137,88 @@
 
 <body
     class="font-display bg-background-light dark:bg-background-dark min-h-screen selection:bg-primary/30 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-    <div class="relative min-h-screen w-full flex flex-col overflow-hidden medical-gradient">
+    <div class="relative min-h-screen w-full flex flex-col overflow-hidden">
+        <div class="absolute inset-0 mesh-gradient opacity-40"></div>
 
-        <!-- NAVIGATION -->
-        <nav class="fixed top-0 w-full z-50 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-3 rounded-full shadow-lg">
-                <div class="flex items-center gap-2">
-                    <span class="material-icons-round text-primary text-3xl">health_and_safety</span>
+        <nav class="fixed top-0 w-full z-50 px-6 py-6 transition-all duration-300" id="mainNav">
+            <div
+                class="max-w-7xl mx-auto flex items-center justify-between glass px-8 py-4 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-white/40">
+                <a class="flex items-center gap-3 group" href="index.html">
+                    <div
+                        class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
+                        <span class="material-icons-round text-primary text-2xl">health_and_safety</span>
+                    </div>
                     <span
-                        class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">CareTrack</span>
-                </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="index.html">Accueil</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors"
+                        class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white font-display">Care<span
+                            class="text-primary">Track</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-10">
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#accueil">Accueil</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
                         href="index.html#services">Services</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors"
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#fonctionnement">Fonctionnement</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
+                        href="index.html#avantages">Avantages</a>
+                    <a class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors tracking-wide uppercase text-[11px]"
                         href="index.html#contact">Contact</a>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                <div class="flex items-center gap-4">
+                    <button
+                        class="w-10 h-10 rounded-xl glass hover:bg-white/50 transition-colors flex items-center justify-center border-white/20"
                         onclick="document.documentElement.classList.toggle('dark')">
-                        <span class="material-icons-round dark:hidden">dark_mode</span>
-                        <span class="material-icons-round hidden dark:block">light_mode</span>
+                        <span class="material-icons-round dark:hidden text-slate-700">dark_mode</span>
+                        <span class="material-icons-round hidden dark:block text-white">light_mode</span>
                     </button>
-                    <a class="text-sm font-semibold border border-primary text-primary px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-300"
-                        href="login.html">Connexion</a>
+                    <div class="hidden sm:flex items-center gap-3">
+                        <a class="text-sm font-bold text-slate-700 dark:text-white px-6 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-display"
+                            href="login.html">Connexion</a>
+                    </div>
                 </div>
             </div>
         </nav>
 
         <main class="flex-1 flex flex-col items-center justify-center p-6 pt-32 pb-12 relative z-10">
-            <div class="w-full max-w-[600px]">
+            <div class="w-full max-w-[680px]">
                 <div
-                    class="glass dark:bg-slate-900/40 p-8 md:p-10 rounded-3xl shadow-2xl shadow-primary/10 transition-all duration-300 auth-card">
+                    class="glass dark:bg-slate-900/40 p-10 md:p-14 rounded-[3.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.1)] border-white/40 transition-all duration-500 auth-card">
 
-                    <div class="text-center mb-12">
-                        <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-extrabold tracking-tight mb-2">
+                    <div class="text-center mb-16">
+                        <h1
+                            class="text-slate-900 dark:text-slate-100 text-[2.75rem] font-black tracking-tight mb-4 font-display leading-tight">
                             Inscription Patient</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Rejoignez le premier système
-                            hospitalier intelligent.</p>
+                        <p
+                            class="text-slate-500 dark:text-slate-400 text-lg font-medium font-body max-w-md mx-auto leading-relaxed">
+                            Rejoignez l'excellence hospitalière connectée en quelques minutes.</p>
                     </div>
 
                     <!-- STEPPER -->
-                    <div class="flex items-center justify-between mb-12 relative px-4">
+                    <div class="flex items-center justify-between mb-16 relative px-8">
                         <!-- Progress line -->
                         <div
-                            class="absolute top-[16px] left-[40px] right-[40px] h-[2px] bg-slate-200 dark:bg-slate-700 z-0">
+                            class="absolute top-[20px] left-[60px] right-[60px] h-[3px] bg-slate-200 dark:bg-white/10 z-0 rounded-full">
                         </div>
 
                         <div class="step active relative z-10 flex flex-col items-center" data-step="1">
-                            <div class="step-circle">1</div>
+                            <div class="step-circle shadow-inner">1</div>
                             <span
-                                class="hidden sm:block text-[10px] font-bold uppercase tracking-tighter mt-2 text-slate-400">Infos</span>
+                                class="hidden sm:block text-[11px] font-black uppercase tracking-[0.2em] mt-4 text-slate-400 font-display">Infos</span>
                         </div>
                         <div class="step relative z-10 flex flex-col items-center" data-step="2">
-                            <div class="step-circle">2</div>
+                            <div class="step-circle shadow-inner">2</div>
                             <span
-                                class="hidden sm:block text-[10px] font-bold uppercase tracking-tighter mt-2 text-slate-400">Contact</span>
+                                class="hidden sm:block text-[11px] font-black uppercase tracking-[0.2em] mt-4 text-slate-400 font-display">Contact</span>
                         </div>
                         <div class="step relative z-10 flex flex-col items-center" data-step="3">
-                            <div class="step-circle">3</div>
+                            <div class="step-circle shadow-inner">3</div>
                             <span
-                                class="hidden sm:block text-[10px] font-bold uppercase tracking-tighter mt-2 text-slate-400">Médical</span>
+                                class="hidden sm:block text-[11px] font-black uppercase tracking-[0.2em] mt-4 text-slate-400 font-display">Médical</span>
                         </div>
                         <div class="step relative z-10 flex flex-col items-center" data-step="4">
-                            <div class="step-circle">4</div>
+                            <div class="step-circle shadow-inner">4</div>
                             <span
-                                class="hidden sm:block text-[10px] font-bold uppercase tracking-tighter mt-2 text-slate-400">Sécurité</span>
+                                class="hidden sm:block text-[11px] font-black uppercase tracking-[0.2em] mt-4 text-slate-400 font-display">Sécurité</span>
                         </div>
                     </div>
 
@@ -390,7 +428,7 @@
                                     </div>
                                     <input id="pin" name="pin"
                                         class="w-full pl-11 pr-12 py-4 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base tracking-[0.5em]"
-                                         type="password" maxlength="4" pattern="[0-9]{4}" required />
+                                        type="password" maxlength="4" pattern="[0-9]{4}" required />
                                     <button type="button" id="togglePin"
                                         class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors">
                                         <span class="material-icons-round">visibility</span>
@@ -435,8 +473,14 @@
             </div>
         </main>
 
-        <footer class="w-full px-12 py-6 flex justify-between items-center text-xs text-slate-400 z-10">
-            <p>© 2026 CareTrack Systems. Tous droits réservés.</p>
+        <footer
+            class="w-full px-12 py-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-400 z-10 font-bold uppercase tracking-widest bg-white/10 glass border-t border-white/20">
+            <p>© 2026 CareTrack Systems. Excellence Médicale Digitale.</p>
+            <div class="flex gap-8 mt-4 md:mt-0">
+                <a class="hover:text-primary transition-colors" href="#">Vie Privée</a>
+                <a class="hover:text-primary transition-colors" href="#">Conditions</a>
+                <a class="hover:text-primary transition-colors" href="#">Support</a>
+            </div>
         </footer>
 
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
