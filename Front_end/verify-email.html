@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d8abc 0%, #0a6f96 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -35,13 +36,13 @@
             width: 100px;
             height: 100px;
             margin: 0 auto 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d8abc 0%, #0a6f96 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 50px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(13, 138, 188, 0.3);
         }
 
         h1 {
@@ -68,7 +69,7 @@
 
         .spinner {
             border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
+            border-top: 5px solid #0d8abc;
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -77,8 +78,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes slideIn {
@@ -86,6 +92,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -111,7 +118,7 @@
 
         .info-box {
             background: #f0f4ff;
-            border-left: 5px solid #667eea;
+            border-left: 5px solid #0d8abc;
             padding: 20px;
             margin: 30px 0;
             border-radius: 8px;
@@ -151,13 +158,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d8abc 0%, #0a6f96 100%);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(13, 138, 188, 0.4);
         }
 
         .btn-secondary {
@@ -177,7 +184,7 @@
         }
 
         .timer {
-            color: #667eea;
+            color: #0d8abc;
             font-weight: bold;
             font-size: 18px;
         }
@@ -236,6 +243,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="verification-container">
         <!-- LOADING STATE -->
@@ -254,16 +262,18 @@
             <div class="subtitle">✓ Succès</div>
             <h1>Email confirmé!</h1>
             <p class="message">Votre adresse email a été vérifiée avec succès.</p>
-            
+
             <div class="info-box" id="rfidBox" style="display: none;">
                 <strong>🎫 Votre numéro de carte RFID :</strong><br>
                 <p style="color: #4CAF50; font-size: 22px; font-weight: bold; margin: 15px 0;" id="rfidDisplay">--</p>
-                <p style="color: #999; font-size: 12px; margin: 0;">Conservez ce numéro en lieu sûr. Vous l'utiliserez pour vous connecter.</p>
+                <p style="color: #999; font-size: 12px; margin: 0;">Conservez ce numéro en lieu sûr. Vous l'utiliserez
+                    pour vous connecter.</p>
             </div>
 
             <div class="info-box">
                 <strong>🎉 Bienvenue sur CareTrack!</strong><br>
-                Vous pouvez maintenant vous connecter à votre compte en utilisant votre numéro de carte RFID et votre code PIN.
+                Vous pouvez maintenant vous connecter à votre compte en utilisant votre numéro de carte RFID et votre
+                code PIN.
             </div>
 
             <div class="countdown">
@@ -284,7 +294,8 @@
 
             <div class="info-box error-box">
                 <strong>Que faire?</strong><br>
-                Le lien de vérification expire après 24 heures. Si le lien a expiré, vous devrez vous réinscrire avec votre adresse email.
+                Le lien de vérification expire après 24 heures. Si le lien a expiré, vous devrez vous réinscrire avec
+                votre adresse email.
             </div>
 
             <div class="button-group">
@@ -333,7 +344,7 @@
         function showSuccess(carteRfid) {
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('successStatus').style.display = 'block';
-            
+
             // Afficher le numéro de carte RFID
             if (carteRfid) {
                 document.getElementById('rfidBox').style.display = 'block';
@@ -362,4 +373,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -390,10 +390,113 @@ const getProfile = async (req, res) => {
   }
 };
 
+// Demander la réinitialisation du PIN
+const requestResetPin = async (req, res) => {
+  try {
+    const { identifier } = req.body;
+
+    // Chercher le patient par email ou carte RFID
+    const result = await query(
+      'SELECT id_patient, email, nom, prenom FROM patients WHERE (email = $1 OR carte_rfid = $1) AND actif = TRUE',
+      [identifier]
+    );
+
+    if (result.rows.length === 0) {
+      // Pour des raisons de sécurité, on ne dit pas si l'email existe ou non
+      return res.json({
+        success: true,
+        message: 'Si un compte correspond à cet identifiant, un email de réinitialisation a été envoyé.'
+      });
+    }
+
+    const patient = result.rows[0];
+
+    if (!patient.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Aucun email associé à ce compte pour la récupération.'
+      });
+    }
+
+    // Générer un token de réinitialisation
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 1); // Expire dans 1 heure
+
+    // Enregistrer le token dans la table patients
+    await query(
+      'UPDATE patients SET verification_token = $1, verification_token_expires = $2 WHERE id_patient = $3',
+      [resetToken, expires, patient.id_patient]
+    );
+
+    // Envoyer l'email
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5500'}/Front_end/reset-pin.html?token=${resetToken}&email=${encodeURIComponent(patient.email)}`;
+
+    try {
+      const { sendResetPinEmail } = require('../utils/mailer');
+      await sendResetPinEmail(patient.email, patient.nom, patient.prenom, resetUrl);
+    } catch (emailError) {
+      console.error('❌ Erreur envoi email reset:', emailError);
+    }
+
+    res.json({
+      success: true,
+      message: 'Si un compte correspond à cet identifiant, un email de réinitialisation a été envoyé.'
+    });
+
+  } catch (error) {
+    console.error('Erreur requestResetPin:', error);
+    res.status(500).json({ success: false, message: 'Erreur lors de la demande de réinitialisation' });
+  }
+};
+
+// Réinitialiser le PIN
+const resetPin = async (req, res) => {
+  try {
+    const { token, email, code_pin } = req.body;
+
+    if (!token || !email || !code_pin) {
+      return res.status(400).json({ success: false, message: 'Tous les champs sont obligatoires' });
+    }
+
+    // Vérifier le token
+    const result = await query(
+      'SELECT id_patient FROM patients WHERE email = $1 AND verification_token = $2 AND verification_token_expires > NOW()',
+      [email, token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'Token invalide ou expiré' });
+    }
+
+    const id_patient = result.rows[0].id_patient;
+
+    // Hasher le nouveau PIN
+    const hashedPin = await bcrypt.hash(code_pin, 10);
+
+    // Mettre à jour le PIN et supprimer le token
+    await query(
+      'UPDATE patients SET code_pin = $1, verification_token = NULL, verification_token_expires = NULL WHERE id_patient = $2',
+      [hashedPin, id_patient]
+    );
+
+    res.json({
+      success: true,
+      message: 'Votre code PIN a été réinitialisé avec succès.'
+    });
+
+  } catch (error) {
+    console.error('Erreur resetPin:', error);
+    res.status(500).json({ success: false, message: 'Erreur lors de la réinitialisation du code PIN' });
+  }
+};
+
 module.exports = {
   registerPatient,
   verifyEmail,
   loginPatient,
   loginMedecin,
-  getProfile
+  getProfile,
+  requestResetPin,
+  resetPin
 };

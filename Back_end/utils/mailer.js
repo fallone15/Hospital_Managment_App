@@ -146,8 +146,74 @@ const sendWelcomeEmail = async (email, nom, prenom, carteRfid) => {
   }
 };
 
+/**
+ * Envoyer un email de réinitialisation du code PIN
+ * @param {string} email - Email du destinataire
+ * @param {string} nom - Nom du patient
+ * @param {string} prenom - Prénom du patient
+ * @param {string} resetUrl - URL de réinitialisation complet
+ * @returns {Promise<boolean>}
+ */
+const sendResetPinEmail = async (email, nom, prenom, resetUrl) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'noreply@hospital.com',
+      to: email,
+      subject: 'Réinitialisation de votre code PIN - CareTrack',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+            <h2 style="color: #333; text-align: center;">Réinitialisation de votre code PIN</h2>
+            
+            <p style="color: #666; font-size: 16px;">
+              Bonjour <strong>${prenom} ${nom}</strong>,
+            </p>
+            
+            <p style="color: #666; font-size: 16px;">
+              Vous avez demandé la réinitialisation de votre code PIN CareTrack. 
+              Cliquez sur le bouton ci-dessous pour définir un nouveau code PIN.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" 
+                 style="background-color: #0EA5E9; color: white; padding: 12px 30px; 
+                        text-decoration: none; border-radius: 5px; font-weight: bold; 
+                        display: inline-block;">
+                Réinitialiser mon code PIN
+              </a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">
+              <strong>Important :</strong> Ce lien expire dans 1 heure.
+            </p>
+            
+            <p style="color: #666; font-size: 14px;">
+              Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email en toute sécurité. 
+              Votre code PIN actuel restera inchangé.
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © 2026 Système Hospitalier CareTrack - Tous droits réservés
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de réinitialisation envoyé à:', email);
+    return true;
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'envoi de l\'email de réinitialisation:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   sendWelcomeEmail,
+  sendResetPinEmail,
   transporter
 };

@@ -3,26 +3,33 @@ const { query } = require('../config/database');
 // Récupérer le dossier médical d'un patient
 const getDossierMedical = async (req, res) => {
   try {
-    const { patient_id } = req.params;
-    
-    // Vérifier que l'utilisateur a le droit d'accéder à ce dossier
-    if (req.user.type === 'patient' && req.user.id !== parseInt(patient_id)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Accès non autorisé'
-      });
+    const patient_id = req.user.id; // Le titulaire authentifié
+    const { patient_id: target_id } = req.params;
+    const { type, id_member } = req.query;
+
+    let sqlQuery = `
+      SELECT c.*, 
+             m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
+             (SELECT json_agg(o.*) FROM ordonnances o WHERE o.id_consultation = c.id_consultation) as ordonnances,
+             (SELECT json_agg(r.*) FROM resultats_examens r WHERE r.id_consultation = c.id_consultation) as examens,
+             (SELECT json_agg(cv.*) FROM constantes_vitales cv WHERE cv.id_consultation = c.id_consultation) as constantes
+      FROM consultations c
+      LEFT JOIN medecins m ON c.id_medecin = m.id_medecin
+      WHERE c.id_patient = $1 AND c.statut = 'terminee'
+    `;
+    const params = [patient_id];
+
+    if (type === 'member' || id_member) {
+      const memberId = id_member || target_id;
+      sqlQuery += ' AND c.id_member = $2';
+      params.push(memberId);
+    } else {
+      sqlQuery += ' AND c.id_member IS NULL';
     }
 
-    const result = await query(
-      `SELECT d.*, 
-              m.nom as medecin_nom, m.prenom as medecin_prenom, 
-              m.specialite
-       FROM dossiers_medicaux d
-       LEFT JOIN medecins m ON d.medecin_id = m.id
-       WHERE d.patient_id = $1
-       ORDER BY d.date_consultation DESC`,
-      [patient_id]
-    );
+    sqlQuery += ' ORDER BY c.heure_fin DESC';
+
+    const result = await query(sqlQuery, params);
 
     res.json({
       success: true,
@@ -43,38 +50,38 @@ const addDossierEntry = async (req, res) => {
     const medecin_id = req.user.id;
     const {
       patient_id,
-      date_consultation,
+      id_consultation,
       diagnostic,
-      prescription,
+      observations,
       notes,
       fichiers
     } = req.body;
 
-    const result = await query(
-      `INSERT INTO dossiers_medicaux 
-       (patient_id, medecin_id, date_consultation, diagnostic, prescription, notes, fichiers) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7) 
-       RETURNING *`,
-      [patient_id, medecin_id, date_consultation, diagnostic, prescription, notes, JSON.stringify(fichiers)]
-    );
+    // Si on a un id_consultation, on met à jour cette consultation
+    if (id_consultation) {
+      const result = await query(
+        `UPDATE consultations 
+         SET diagnostic = $1, observations = $2, notes = $3, fichiers = $4, 
+             statut = 'terminee', heure_fin = CURRENT_TIMESTAMP
+         WHERE id_consultation = $5 AND id_medecin = $6
+         RETURNING *`,
+        [diagnostic, observations, notes, JSON.stringify(fichiers), id_consultation, medecin_id]
+      );
 
-    // Créer une notification pour le patient
-    await query(
-      `INSERT INTO notifications (patient_id, titre, message, type) 
-       VALUES ($1, $2, $3, $4)`,
-      [
-        patient_id,
-        'Nouveau diagnostic',
-        'Un nouveau diagnostic a été ajouté à votre dossier médical',
-        'dossier_medical'
-      ]
-    );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Consultation non trouvée ou non autorisée' });
+      }
 
-    res.status(201).json({
-      success: true,
-      message: 'Entrée ajoutée avec succès',
-      data: result.rows[0]
-    });
+      return res.status(200).json({
+        success: true,
+        message: 'Dossier mis à jour avec succès',
+        data: result.rows[0]
+      });
+    }
+
+    // Sinon, on devrait peut-être en créer une nouvelle, mais le workflow habituel
+    // est de partir d'une consultation existante (file d'attente ou RDV).
+    res.status(400).json({ success: false, message: 'ID de consultation requis' });
   } catch (error) {
     console.error('Erreur lors de l\'ajout de l\'entrée:', error);
     res.status(500).json({
@@ -91,31 +98,24 @@ const updateDossierEntry = async (req, res) => {
     const medecin_id = req.user.id;
     const {
       diagnostic,
-      prescription,
+      observations,
       notes,
       fichiers
     } = req.body;
 
-    // Vérifier que l'entrée appartient au médecin
-    const checkResult = await query(
-      'SELECT * FROM dossiers_medicaux WHERE id = $1 AND medecin_id = $2',
-      [id, medecin_id]
+    const result = await query(
+      `UPDATE consultations 
+       SET diagnostic = $1, observations = $2, notes = $3, fichiers = $4
+       WHERE id_consultation = $5 AND id_medecin = $6 RETURNING *`,
+      [diagnostic, observations, notes, JSON.stringify(fichiers), id, medecin_id]
     );
 
-    if (checkResult.rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Entrée non trouvée ou accès non autorisé'
       });
     }
-
-    const result = await query(
-      `UPDATE dossiers_medicaux 
-       SET diagnostic = $1, prescription = $2, notes = $3, fichiers = $4, 
-           updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $5 RETURNING *`,
-      [diagnostic, prescription, notes, JSON.stringify(fichiers), id]
-    );
 
     res.json({
       success: true,
@@ -137,14 +137,16 @@ const getDossierEntry = async (req, res) => {
     const { id } = req.params;
 
     const result = await query(
-      `SELECT d.*, 
-              m.nom as medecin_nom, m.prenom as medecin_prenom, 
-              m.specialite,
-              p.nom as patient_nom, p.prenom as patient_prenom
-       FROM dossiers_medicaux d
-       LEFT JOIN medecins m ON d.medecin_id = m.id
-       LEFT JOIN patients p ON d.patient_id = p.id
-       WHERE d.id = $1`,
+      `SELECT c.*, 
+              m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
+              p.nom as patient_nom, p.prenom as patient_prenom,
+              (SELECT json_agg(o.*) FROM ordonnances o WHERE o.id_consultation = c.id_consultation) as ordonnances,
+              (SELECT json_agg(r.*) FROM resultats_examens r WHERE r.id_consultation = c.id_consultation) as examens,
+              (SELECT json_agg(cv.*) FROM constantes_vitales cv WHERE cv.id_consultation = c.id_consultation) as constantes
+       FROM consultations c
+       LEFT JOIN medecins m ON c.id_medecin = m.id_medecin
+       LEFT JOIN patients p ON c.id_patient = p.id_patient
+       WHERE c.id_consultation = $1`,
       [id]
     );
 
@@ -155,9 +157,9 @@ const getDossierEntry = async (req, res) => {
       });
     }
 
-    // Vérifier les droits d'accès
     const entry = result.rows[0];
-    if (req.user.type === 'patient' && req.user.id !== entry.patient_id) {
+    // Vérifier les droits d'accès
+    if (req.user.type === 'patient' && req.user.id !== entry.id_patient) {
       return res.status(403).json({
         success: false,
         message: 'Accès non autorisé'
@@ -195,9 +197,9 @@ const getConsultations = async (req, res) => {
               m.nom as medecin_nom, m.prenom as medecin_prenom, 
               m.specialite
        FROM consultations c
-       LEFT JOIN medecins m ON c.medecin_id = m.id
-       WHERE c.patient_id = $1
-       ORDER BY c.date_consultation DESC`,
+       LEFT JOIN medecins m ON c.id_medecin = m.id_medecin
+       WHERE c.id_patient = $1
+       ORDER BY c.heure_arrivee DESC`,
       [patient_id]
     );
 
@@ -221,45 +223,40 @@ const addConsultation = async (req, res) => {
     const {
       rendez_vous_id,
       patient_id,
-      symptomes,
+      motif,
+      observations,
       diagnostic,
-      traitement,
-      examens_demandes,
       notes
     } = req.body;
 
-    const result = await query(
-      `INSERT INTO consultations 
-       (rendez_vous_id, patient_id, medecin_id, symptomes, diagnostic, traitement, examens_demandes, notes) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-       RETURNING *`,
-      [rendez_vous_id, patient_id, medecin_id, symptomes, diagnostic, traitement, examens_demandes, notes]
-    );
+    // Note: Pour une nouvelle consultation via id_medecin, on devrait générer un numero_file
+    // ou simplement utiliser le rendez_vous_id pour lier.
+    // Ici on suppose qu'elle existe déjà ou qu'on la crée.
+    // Étant donné que consultations est aussi la file d'attente, 
+    // lier à un RDV est la meilleure option.
 
-    // Mettre à jour le statut du rendez-vous
+    let result;
     if (rendez_vous_id) {
-      await query(
-        'UPDATE rendez_vous SET statut = $1 WHERE id = $2',
-        ['termine', rendez_vous_id]
-      );
+      // On cherche si une consultation existe déjà pour ce RDV
+      const existing = await query('SELECT id_consultation FROM consultations WHERE id_patient = $1 AND id_medecin = $2 AND statut != \'terminee\'', [patient_id, medecin_id]);
+      if (existing.rows.length > 0) {
+        result = await query(
+          `UPDATE consultations 
+              SET diagnostic = $1, observations = $2, notes = $3, statut = 'terminee', heure_fin = CURRENT_TIMESTAMP
+              WHERE id_consultation = $4 RETURNING *`,
+          [diagnostic, observations, notes, existing.rows[0].id_consultation]
+        );
+      } else {
+        // On en crée une liée au RDV (mais attention aux colonnes obligatoires comme numero_file)
+        // Pour simplifier, on renvoie une erreur car le workflow normal passe par la file d'attente
+        return res.status(400).json({ success: false, message: 'Veuillez démarrer la consultation via la file d\'attente' });
+      }
     }
-
-    // Créer une notification
-    await query(
-      `INSERT INTO notifications (patient_id, titre, message, type) 
-       VALUES ($1, $2, $3, $4)`,
-      [
-        patient_id,
-        'Consultation terminée',
-        'Votre consultation a été enregistrée. Vous pouvez consulter les détails dans votre dossier médical.',
-        'consultation'
-      ]
-    );
 
     res.status(201).json({
       success: true,
       message: 'Consultation enregistrée avec succès',
-      data: result.rows[0]
+      data: result ? result.rows[0] : null
     });
   } catch (error) {
     console.error('Erreur lors de l\'enregistrement de la consultation:', error);

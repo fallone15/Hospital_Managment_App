@@ -6,10 +6,12 @@ require('dotenv').config();
 const app = express();
 
 // Middlewares globaux
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5500',
+app.use(
+  cors({
+  origin: "*",//process.env.FRONTEND_URL || 'http://localhost:5500',
   credentials: true
-}));
+})
+);
 
 // Parser JSON sauf pour le webhook Stripe
 app.use((req, res, next) => {

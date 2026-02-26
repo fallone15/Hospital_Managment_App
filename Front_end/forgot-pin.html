@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Connexion – CareTrack</title>
+    <title>Récupération PIN – CareTrack</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
@@ -53,7 +53,7 @@
     class="font-display bg-background-light dark:bg-background-dark min-h-screen selection:bg-primary/30 text-slate-800 dark:text-slate-100 transition-colors duration-300">
     <div class="relative min-h-screen w-full flex flex-col overflow-hidden medical-gradient">
 
-        <!-- NAVIGATION (Aligned with index.html) -->
+        <!-- NAVIGATION -->
         <nav class="fixed top-0 w-full z-50 px-6 py-4">
             <div class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-3 rounded-full shadow-lg">
                 <div class="flex items-center gap-2">
@@ -74,8 +74,8 @@
                         <span class="material-icons-round dark:hidden">dark_mode</span>
                         <span class="material-icons-round hidden dark:block">light_mode</span>
                     </button>
-                    <a class="text-sm font-semibold bg-primary text-white px-5 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
-                        href="register.html">Inscription</a>
+                    <a class="text-sm font-semibold border border-primary text-primary px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-300"
+                        href="login.html">Connexion</a>
                 </div>
             </div>
         </nav>
@@ -86,16 +86,16 @@
                     class="glass dark:bg-slate-900/40 p-8 md:p-10 rounded-3xl shadow-2xl shadow-primary/10 transition-all duration-300">
                     <div class="text-center mb-10">
                         <div
-                            class="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6 transform rotate-3">
-                            <span class="material-icons-round text-primary text-5xl">fingerprint</span>
+                            class="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6 transform -rotate-3">
+                            <span class="material-icons-round text-primary text-5xl">lock_reset</span>
                         </div>
-                        <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-extrabold tracking-tight mb-2">
-                            Connexion</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Accédez à votre espace patient
-                            sécurisé</p>
+                        <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-extrabold tracking-tight mb-2">Code
+                            PIN oublié ?</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Entrez votre email ou
+                            identifiant RFID pour recevoir un lien de réinitialisation.</p>
                     </div>
 
-                    <form id="loginForm" class="space-y-6">
+                    <form id="forgotForm" class="space-y-6">
                         <div class="space-y-2">
                             <label
                                 class="text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-wider ml-1">Email
@@ -111,75 +111,34 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center px-1">
-                                <label
-                                    class="text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Code
-                                    PIN</label>
-                                <a class="text-primary text-xs font-semibold hover:underline"
-                                    href="forgot-pin.html">Oublié ?</a>
-                            </div>
-                            <div class="relative group">
-                                <div
-                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-icons-round text-xl">lock</span>
-                                </div>
-                                <input id="pin" name="pin"
-                                    class="w-full pl-11 pr-4 py-4 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base tracking-[0.5em]"
-                                    placeholder="••••" type="password" maxlength="4" pattern="[0-9]{4}" required />
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2 px-1">
-                            <input
-                                class="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent"
-                                id="remember" type="checkbox" />
-                            <label class="text-sm text-slate-600 dark:text-slate-400 font-medium cursor-pointer"
-                                for="remember">Se souvenir de moi</label>
-                        </div>
-
                         <button type="submit"
                             class="w-full py-4 bg-primary text-white rounded-xl font-bold text-base shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
-                            <span>Se connecter</span>
-                            <span class="material-icons-round text-xl">login</span>
+                            <span>Envoyer le lien</span>
+                            <span class="material-icons-round text-xl">send</span>
                         </button>
                     </form>
 
+                    <div id="messageBox" class="hidden mt-6 p-4 rounded-xl text-sm font-medium text-center"></div>
+
                     <div class="mt-10 pt-8 border-t border-slate-200/50 dark:border-slate-700/50 text-center">
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                            Pas de compte ?
-                            <a class="text-primary font-bold hover:underline ml-1" href="register.html">Créer un
-                                compte</a>
+                            Vous vous en souvenez ?
+                            <a class="text-primary font-bold hover:underline ml-1" href="login.html">Retour à la
+                                connexion</a>
                         </p>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex justify-center gap-6">
-                    <div class="flex items-center gap-2 text-slate-400">
-                        <span class="material-icons-round text-sm">verified_user</span>
-                        <span class="text-xs font-medium">HDS Certifié</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-400">
-                        <span class="material-icons-round text-sm">enhanced_encryption</span>
-                        <span class="text-xs font-medium">AES-256</span>
                     </div>
                 </div>
             </div>
         </main>
 
-        <footer
-            class="w-full px-12 py-6 flex justify-between items-center text-xs text-slate-400 z-10 transition-colors">
+        <footer class="w-full px-12 py-6 flex justify-between items-center text-xs text-slate-400 z-10">
             <p>© 2026 CareTrack Systems. Tous droits réservés.</p>
-            <div class="flex gap-4">
-                <a class="hover:text-primary transition-colors" href="#">Confidentialité</a>
-                <a class="hover:text-primary transition-colors" href="#">CGU</a>
-            </div>
         </footer>
 
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/5 rounded-full blur-[120px]"></div>
     </div>
-    <script src="login.js"></script>
+    <script src="forgot-pin.js"></script>
 </body>
 
 </html>

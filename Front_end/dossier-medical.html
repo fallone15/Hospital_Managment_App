@@ -47,7 +47,7 @@
             align-items: center;
             gap: 0.5rem;
             background: #f0f4ff;
-            color: #667eea;
+            color: #0d8abc;
             border: none;
             padding: 0.6rem 1.2rem;
             border-radius: 8px;
@@ -148,9 +148,9 @@
         }
 
         .chip.active {
-            border-color: #667eea;
+            border-color: #0d8abc;
             background: #f0f3ff;
-            color: #667eea;
+            color: #0d8abc;
         }
 
         .chip-avatar {
@@ -273,7 +273,7 @@
         }
 
         .timeline-dot.diagnostic {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d8abc, #0a6f96);
         }
 
         .timeline-dot.consultation {
@@ -314,7 +314,7 @@
 
         .timeline-card .doctor {
             font-size: 0.82rem;
-            color: #667eea;
+            color: #0d8abc;
             font-weight: 600;
             margin-top: 0.1rem;
         }
@@ -349,7 +349,7 @@
         .toggle-btn {
             background: none;
             border: none;
-            color: #667eea;
+            color: #0d8abc;
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
@@ -543,14 +543,16 @@
                 const rd = await rr.json();
                 rdv = rd.success ? rd.data : [];
 
-                // 3. Dossiers médicaux (seulement pour titulaire pour le moment)
-                if (type === 'self') {
-                    const dr = await fetch(`${API_URL}/dossier/${selfUser.id_patient}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const dd = await dr.json();
-                    dossiers = dd.success ? dd.data : [];
-                }
+                // 3. Dossiers médicaux
+                const dossierUrl = type === 'self'
+                    ? `${API_URL}/dossiers/patient/${selfUser.id_patient}`
+                    : `${API_URL}/dossiers/patient/${patient.id_member}?type=member`;
+
+                const dr = await fetch(dossierUrl, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const dd = await dr.json();
+                dossiers = dd.success ? dd.data : [];
 
                 document.getElementById('statNbConsult').textContent = consultations.length + rdv.length;
                 document.getElementById('statNbDossiers').textContent = dossiers.length;
@@ -572,12 +574,12 @@
                 en_cours: '#3b82f6', terminee: '#10b981', annulee: '#ef4444'
             };
 
-            // Fusion et tri par date décroissante
-            const entries = [
-                ...dossiers.map(d => ({ ...d, _type: 'dossier', _date: new Date(d.date_consultation) })),
-                ...consultations.map(c => ({ ...c, _type: 'consultation', _date: new Date(c.heure_arrivee) })),
-                ...rdv.map(r => ({ ...r, _type: 'rdv', _date: new Date(r.date_rdv + ' ' + r.heure_rdv) }))
-            ].sort((a, b) => b._date - a._date);
+            // On ne garde que les dossiers médicaux (consultations terminées avec détails)
+            const entries = dossiers.map(d => ({
+                ...d,
+                _type: 'dossier',
+                _date: new Date(d.heure_fin || d.heure_arrivee || d.date_consultation)
+            })).sort((a, b) => b._date - a._date);
 
             if (!entries.length) {
                 timeline.innerHTML = `<div class="empty-state">
@@ -598,14 +600,75 @@
                     <div class="timeline-card entry-collapsed" id="entry-${i}">
                         <div class="timeline-header">
                             <div>
-                                <h3><i class="fas fa-file-medical" style="color:#667eea;margin-right:0.4rem"></i>Dossier médical</h3>
+                                <h3><i class="fas fa-file-medical" style="color:#0d8abc;margin-right:0.4rem"></i>Dossier médical</h3>
                                 <div class="doctor">Dr. ${e.medecin_prenom || ''} ${e.medecin_nom || ''} ${e.specialite ? '· ' + e.specialite : ''}</div>
                             </div>
                             <div class="timeline-date">${dateStr}</div>
                         </div>
+                        
+                        ${e.motif ? `<div class="entry-section"><div class="entry-section-title">Motif de consultation</div><div class="entry-text">${e.motif}</div></div>` : ''}
+                        
+                        ${e.observations ? `<div class="entry-section"><div class="entry-section-title">Observations</div><div class="entry-text">${e.observations}</div></div>` : ''}
+
                         ${e.diagnostic ? `<div class="entry-section"><div class="entry-section-title">Diagnostic</div><div class="entry-text">${e.diagnostic}</div></div>` : ''}
-                        ${e.prescription ? `<div class="entry-section"><div class="entry-section-title">Prescription</div><div class="entry-text">${e.prescription}</div></div>` : ''}
-                        ${e.notes ? `<div class="entry-section"><div class="entry-section-title">Notes</div><div class="entry-text">${e.notes}</div></div>` : ''}
+                        
+                        ${e.ordonnances && e.ordonnances.length > 0 ? `
+                            <div class="entry-section">
+                                <div class="entry-section-title">Prescription(s)</div>
+                                <div class="entry-text">
+                                    <ul style="padding-left:1.2rem;margin:0.5rem 0">
+                                        ${e.ordonnances.map(o => `<li>${o.posologie || 'Ordonnance'} (${new Date(o.date_prescription).toLocaleDateString()})</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${e.examens && e.examens.length > 0 ? `
+                            <div class="entry-section">
+                                <div class="entry-section-title">Examen(s)</div>
+                                <div class="entry-text">
+                                    <ul style="padding-left:1.2rem;margin:0.5rem 0">
+                                        ${e.examens.map(ex => `<li>${ex.type_examen} : ${ex.conclusion || 'Résultat en attente'}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${e.constantes && e.constantes.length > 0 ? `
+                            <div class="entry-section">
+                                <div class="entry-section-title">Constantes Vitales</div>
+                                <div class="entry-text" style="display:flex;gap:1rem;flex-wrap:wrap;font-size:0.85rem">
+                                    ${e.constantes.map(c => `
+                                        <span title="${new Date(c.timestamp).toLocaleString()}">
+                                            ${c.temperature ? `🌡️ ${c.temperature}°C` : ''} 
+                                            ${c.frequence_cardiaque ? `❤️ ${c.frequence_cardiaque} bpm` : ''}
+                                            ${c.spo2 ? `💨 ${c.spo2}% SpO2` : ''}
+                                            ${c.tension_systolique ? `💉 ${c.tension_systolique}/${c.tension_diastolique} mmHg` : ''}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${e.notes ? `<div class="entry-section"><div class="entry-section-title">Notes complémentaires</div><div class="entry-text">${e.notes}</div></div>` : ''}
+
+                        ${e.montant_paye ? `
+                            <div class="entry-section">
+                                <div class="entry-section-title">Paiement</div>
+                                <div class="entry-text" style="font-size:0.85rem; color:#666">
+                                    Montant : <strong>${e.montant_paye} €</strong> via ${e.mode_paiement || 'N/A'}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="entry-section" style="border-top:1px solid #eee; padding-top:0.5rem; margin-top:0.5rem">
+                            <div class="entry-text" style="font-size:0.75rem; color:#999; display:flex; gap:1.5rem">
+                                <span><i class="far fa-clock"></i> Arrivée : ${e.heure_arrivee ? new Date(e.heure_arrivee).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}</span>
+                                ${e.heure_debut ? `<span><i class="fas fa-play"></i> Début : ${new Date(e.heure_debut).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+                                <span><i class="fas fa-check-circle"></i> Fin : ${e.heure_fin ? new Date(e.heure_fin).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '--:--'}</span>
+                            </div>
+                        </div>
+
                         <button class="toggle-btn" onclick="toggleEntry('entry-${i}', this)"><i class="fas fa-chevron-down"></i> Voir plus</button>
                     </div>
                 </div>`;
@@ -616,7 +679,7 @@
                     const title = isRDV ? `Rendez-vous : ${e.service_nom || 'Consultation'}` : (e.service_nom || 'Consultation');
 
                     return `<div class="timeline-entry">
-                    <div class="timeline-dot ${isRDV ? 'consultation' : 'consultation'}" style="${isRDV ? 'background:linear-gradient(135deg,#667eea,#45a049)' : ''}">
+                    <div class="timeline-dot ${isRDV ? 'consultation' : 'consultation'}" style="${isRDV ? 'background:linear-gradient(135deg,#0d8abc,#45a049)' : ''}">
                         <i class="fas ${icon}"></i>
                     </div>
                     <div class="timeline-card">

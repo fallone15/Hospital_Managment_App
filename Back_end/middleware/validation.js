@@ -7,6 +7,7 @@ const handleValidationErrors = (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
+      message: 'Erreur de validation des données',
       errors: errors.array()
     });
   }
@@ -141,7 +142,7 @@ const validateRendezVous = [
   body('motif')
     .trim()
     .notEmpty().withMessage('Le motif est requis')
-    .isLength({ min: 10, max: 500 }).withMessage('Le motif doit contenir entre 10 et 500 caractères'),
+    .isLength({ min: 3, max: 500 }).withMessage('Le motif doit contenir entre 3 et 500 caractères'),
 
   handleValidationErrors
 ];

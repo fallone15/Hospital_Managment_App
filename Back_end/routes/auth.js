@@ -5,7 +5,9 @@ const {
   verifyEmail,
   loginPatient,
   loginMedecin,
-  getProfile
+  getProfile,
+  requestResetPin,
+  resetPin
 } = require('../controllers/authController');
 const {
   validatePatientRegistration,
@@ -18,6 +20,8 @@ router.post('/register/patient', validatePatientRegistration, registerPatient);
 router.post('/verify-email', verifyEmail);
 router.post('/login/patient', validateLogin, loginPatient);
 router.post('/login/medecin', validateLogin, loginMedecin);
+router.post('/request-reset-pin', requestResetPin);
+router.post('/reset-pin', resetPin);
 
 // Routes protégées
 router.get('/profile', authenticateToken, getProfile);
