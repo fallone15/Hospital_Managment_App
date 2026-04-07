@@ -1,15 +1,16 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
 console.log('🔍 Test de connexion PostgreSQL...\n');
 
 // Test 1: Avec l'utilisateur postgres par défaut
 console.log('Test 1: Connexion avec utilisateur "postgres"');
 const pool1 = new Pool({
-    host: 'localhost',
-    port: 5432,
-    user: 'postgres',
-    password: 'postgres', // Mot de passe par défaut courant
-    database: 'postgres'
+    host: process.env.DB_HOST || '192.168.1.147',
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER || 'hospital_owner',
+    password: process.env.DB_PASSWORD || 'namosash',
+    database: process.env.DB_NAME || 'hospital_db'
 });
 
 pool1.query('SELECT current_database(), current_user', (err, res) => {
@@ -49,11 +50,11 @@ pool1.query('SELECT current_database(), current_user', (err, res) => {
 function testHospitalAdmin() {
     console.log('\nTest 2: Connexion avec utilisateur "hospital_admin"');
     const pool2 = new Pool({
-        host: 'localhost',
-        port: 5432,
-        user: 'hospital_admin',
-        password: 'namosash',
-        database: 'hospital_db'
+        host: process.env.DB_HOST || '192.168.1.147',
+        port: process.env.DB_PORT || 5432,
+        user: process.env.DB_USER || 'hospital_owner',
+        password: process.env.DB_PASSWORD || 'namosash',
+        database: process.env.DB_NAME || 'hospital_db'
     });
 
     pool2.query('SELECT current_database(), current_user', (err, res) => {

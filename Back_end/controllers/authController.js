@@ -121,7 +121,7 @@ const registerPatient = async (req, res) => {
 
     // Envoyer l'email de vérification
     try {
-      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5500'}/Front_end/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5502'}/Front_end/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
       await sendVerificationEmail(email, nom, prenom, verificationUrl);
     } catch (emailError) {
       console.error('❌ Erreur lors de l\'envoi de l\'email:', emailError);
@@ -430,7 +430,7 @@ const requestResetPin = async (req, res) => {
     );
 
     // Envoyer l'email
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5500'}/Front_end/reset-pin.html?token=${resetToken}&email=${encodeURIComponent(patient.email)}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5502'}/Front_end/reset-pin.html?token=${resetToken}&email=${encodeURIComponent(patient.email)}`;
 
     try {
       const { sendResetPinEmail } = require('../utils/mailer');

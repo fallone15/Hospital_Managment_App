@@ -6,24 +6,6 @@ const createTables = async () => {
   try {
     await client.query('BEGIN');
 
-    // Table membres familiaux (enfants mineurs rattachés à un patient titulaire)
-    await client.query(`
-        CREATE TABLE IF NOT EXISTS family_members (
-          id_member SERIAL PRIMARY KEY,
-          id_titulaire INTEGER NOT NULL REFERENCES patients(id_patient) ON DELETE CASCADE,
-          nom VARCHAR(100) NOT NULL,
-          prenom VARCHAR(100) NOT NULL,
-          date_naissance DATE NOT NULL,
-          sexe VARCHAR(10) CHECK (sexe IN ('homme', 'femme', 'autre')),
-          lien VARCHAR(50), -- ex: fils, fille, frère, soeur, etc.
-          tuteur VARCHAR(100), -- Nom complet du titulaire qui a ajouté le membre
-          allergies TEXT[],
-          groupe_sanguin VARCHAR(5),
-          actif BOOLEAN DEFAULT TRUE,
-          date_ajout TIMESTAMP DEFAULT NOW()
-        );
-      `);
-
     // Table pour les inscriptions en attente de vérification email
     await client.query(`
       CREATE TABLE IF NOT EXISTS pending_registrations (
@@ -64,6 +46,24 @@ const createTables = async () => {
         actif BOOLEAN DEFAULT TRUE
       );
     `);
+
+    // Table membres familiaux (enfants mineurs rattachés à un patient titulaire)
+    await client.query(`
+        CREATE TABLE IF NOT EXISTS family_members (
+          id_member SERIAL PRIMARY KEY,
+          id_titulaire INTEGER NOT NULL REFERENCES patients(id_patient) ON DELETE CASCADE,
+          nom VARCHAR(100) NOT NULL,
+          prenom VARCHAR(100) NOT NULL,
+          date_naissance DATE NOT NULL,
+          sexe VARCHAR(10) CHECK (sexe IN ('homme', 'femme', 'autre')),
+          lien VARCHAR(50), -- ex: fils, fille, frère, soeur, etc.
+          tuteur VARCHAR(100), -- Nom complet du titulaire qui a ajouté le membre
+          allergies TEXT[],
+          groupe_sanguin VARCHAR(5),
+          actif BOOLEAN DEFAULT TRUE,
+          date_ajout TIMESTAMP DEFAULT NOW()
+        );
+      `);
 
 
     // Table services
