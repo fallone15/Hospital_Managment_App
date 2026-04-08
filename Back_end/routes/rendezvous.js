@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+  getSpecialites,
   getMedecins,
   getDisponibilites,
   createRendezVous,
@@ -16,6 +17,7 @@ const {
 } = require('../middleware/auth');
 
 // Routes pour tous les utilisateurs authentifiés
+router.get('/specialites', authenticateToken, getSpecialites);
 router.get('/medecins', authenticateToken, getMedecins);
 router.get('/medecins/:medecin_id/disponibilites', authenticateToken, getDisponibilites);
 

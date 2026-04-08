@@ -147,7 +147,8 @@ const createTables = async () => {
         date_rdv DATE NOT NULL,
         heure_rdv TIME NOT NULL,
         motif TEXT,
-        statut VARCHAR(20) DEFAULT 'en_attente' CHECK (statut IN ('en_attente', 'confirme', 'annule', 'termine')),
+        statut VARCHAR(25) DEFAULT 'en_attente' CHECK (statut IN ('en_attente', 'en_attente_paiement', 'confirme', 'annule', 'termine')),
+        montant_total DECIMAL(10,2),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
@@ -224,6 +225,34 @@ const createTables = async () => {
         duree_traitement INT,
         instructions TEXT,
         envoyee_electronique BOOLEAN DEFAULT FALSE
+      );
+    `);
+
+    // Table paiements
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS paiements (
+        id SERIAL PRIMARY KEY,
+        patient_id INT REFERENCES patients(id_patient) NOT NULL,
+        rendez_vous_id INT REFERENCES rendez_vous(id),
+        montant DECIMAL(10,2) NOT NULL,
+        methode_paiement VARCHAR(50) NOT NULL,
+        statut VARCHAR(20) DEFAULT 'en_attente',
+        stripe_payment_id VARCHAR(255),
+        description TEXT,
+        date_paiement TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // Table notifications
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        patient_id INT REFERENCES patients(id_patient) NOT NULL,
+        titre VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50),
+        lu BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW()
       );
     `);
 

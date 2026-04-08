@@ -3,7 +3,7 @@
 // ============================================
 // Ajoutez ce code dans un fichier api.js dans votre projet frontend
 
-const API_URL = 'http://localhost:5500/api';
+const API_URL = 'http://localhost:5502/api';
 
 // ============================================
 // GESTION DU TOKEN

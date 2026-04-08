@@ -73,45 +73,80 @@ const createPaiement = async (req, res) => {
   }
 };
 
-// Confirmer un paiement Stripe
+// Confirmer un paiement Stripe et activer le rendez-vous
 const confirmPaiement = async (req, res) => {
   try {
+    const patient_id = req.user.id;
     const { payment_intent_id } = req.body;
 
     // Récupérer le PaymentIntent depuis Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
 
     if (paymentIntent.status === 'succeeded') {
-      // Mettre à jour le statut du paiement en base de données
-      const result = await query(
-        `UPDATE paiements 
-         SET statut = 'confirme', date_paiement = CURRENT_TIMESTAMP 
-         WHERE stripe_payment_id = $1 
-         RETURNING *`,
-        [payment_intent_id]
+      // Récupérer le paiement et le rendez-vous
+      const paiementResult = await query(
+        `SELECT * FROM paiements 
+         WHERE stripe_payment_id = $1 AND patient_id = $2`,
+        [payment_intent_id, patient_id]
       );
 
-      if (result.rows.length > 0) {
-        const paiement = result.rows[0];
-
-        // Créer une notification
-        await query(
-          `INSERT INTO notifications (patient_id, titre, message, type) 
-           VALUES ($1, $2, $3, $4)`,
-          [
-            paiement.patient_id,
-            'Paiement confirmé',
-            `Votre paiement de ${paiement.montant} MAD a été confirmé`,
-            'paiement'
-          ]
-        );
-
-        return res.json({
-          success: true,
-          message: 'Paiement confirmé avec succès',
-          data: paiement
+      if (paiementResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Paiement non trouvé'
         });
       }
+
+      const paiement = paiementResult.rows[0];
+      const rendez_vous_id = paiement.rendez_vous_id;
+
+      // Mettre à jour le statut du paiement
+      await query(
+        `UPDATE paiements 
+         SET statut = 'confirme', date_paiement = CURRENT_TIMESTAMP 
+         WHERE id = $1`,
+        [paiement.id]
+      );
+
+      // Mettre à jour le statut du rendez-vous de 'en_attente_paiement' à 'confirme'
+      await query(
+        `UPDATE rendez_vous 
+         SET statut = 'confirme', updated_at = CURRENT_TIMESTAMP 
+         WHERE id = $1 AND patient_id = $2`,
+        [rendez_vous_id, patient_id]
+      );
+
+      // Créer une notification
+      await query(
+        `INSERT INTO notifications (patient_id, titre, message, type) 
+         VALUES ($1, $2, $3, $4)`,
+        [
+          patient_id,
+          'Paiement confirmé',
+          `Votre paiement de ${paiement.montant} MAD a été confirmé. Votre rendez-vous est maintenant actif.`,
+          'paiement'
+        ]
+      );
+
+      // Récupérer les détails du rendez-vous pour la réponse
+      const rdvResult = await query(
+        `SELECT r.*, m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
+                s.nom as service_nom
+         FROM rendez_vous r
+         JOIN medecins m ON r.medecin_id = m.id_medecin
+         JOIN services s ON m.id_service = s.id_service
+         WHERE r.id = $1`,
+        [rendez_vous_id]
+      );
+
+      return res.json({
+        success: true,
+        message: 'Paiement confirmé et rendez-vous activé',
+        data: {
+          paiement: paiement,
+          rendez_vous: rdvResult.rows[0]
+        }
+      });
     }
 
     res.status(400).json({

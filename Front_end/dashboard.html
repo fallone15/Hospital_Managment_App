@@ -678,13 +678,22 @@
     <!-- Main Container -->
     <div class="dashboard-container">
         <!-- Welcome Card -->
-        <div class="welcome-card">
-            <h1>🏥 Tableau de Bord Patient</h1>
-            <p class="welcome-message" id="welcomeMessage">
-                <span class="loading"></span>
-                <span class="loading"></span>
-                <span class="loading"></span>
-            </p>
+        <div class="welcome-card" style="display: flex; align-items: center; gap: 3rem; flex-wrap: wrap;">
+            <div class="profile-photo-container" style="position: relative; width: 180px; height: 180px; flex-shrink: 0;">
+                <img id="profilePhoto" src="https://via.placeholder.com/180" alt="Photo de profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 6px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.15); background-color: #f0f0f0; image-orientation: from-image;">
+                <label for="photoUpload" title="Changer la photo" style="position: absolute; bottom: 5px; right: 5px; background: #fff; color: #0a6f96; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: all 0.3s ease; font-size: 1.2rem;">
+                    <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" id="photoUpload" accept="image/png, image/jpeg" style="display: none;" onchange="uploadPhoto(event)">
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.8rem;">🏥 Tableau de Bord Patient</h1>
+                <p class="welcome-message" id="welcomeMessage" style="font-size: 1.3rem;">
+                    <span class="loading"></span>
+                    <span class="loading"></span>
+                    <span class="loading"></span>
+                </p>
+            </div>
         </div>
 
         <!-- Quick Stats -->
@@ -981,6 +990,22 @@
                     // Message de bienvenue
                     document.getElementById('welcomeMessage').innerHTML =
                         `Bienvenue <strong>${user.prenom} ${user.nom}</strong> 👋`;
+                    
+                    // Photo de Profil
+                    const photoImg = document.getElementById('profilePhoto');
+                    if (user.photo_url) {
+                        try {
+                            const photoRes = await fetch(`${API_URL}/patients/profile-photo/${user.photo_url}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            if (photoRes.ok) {
+                                const blob = await photoRes.blob();
+                                photoImg.src = URL.createObjectURL(blob);
+                            }
+                        } catch (err) {
+                            console.error("Erreur chargement photo:", err);
+                        }
+                    }
 
                     // RFID Number
                     document.getElementById('rfidNumber').textContent = user.carte_rfid;
@@ -1051,7 +1076,7 @@
         function handleAction(action, event) {
             event.preventDefault();
             if (action === 'consultation') {
-                window.location.href = 'consultation.html';
+                window.location.href = 'book-appointment.html';
             } else if (action === 'dossier') {
                 window.location.href = 'dossier-medical.html';
             } else if (action === 'rendezvous') {
@@ -1069,6 +1094,44 @@
             localStorage.removeItem('carte_rfid');
             localStorage.removeItem('user');
             window.location.href = 'index.html';
+        }
+
+        async function uploadPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const token = checkAuth();
+            if (!token) return;
+
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            const label = document.querySelector('label[for="photoUpload"]');
+            const originalHTML = label.innerHTML;
+            label.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            label.style.pointerEvents = 'none';
+
+            try {
+                const res = await fetch(`${API_URL}/patients/upload-photo`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    // Mettre à jour l'image directement ou recharger les informations
+                    loadUserInfo();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            } catch (error) {
+                console.error("Erreur d'upload :", error);
+                alert("Une erreur est survenue lors de l'upload de la photo.");
+            } finally {
+                label.innerHTML = originalHTML;
+                label.style.pointerEvents = 'auto';
+            }
         }
 
         // Charger au démarrage

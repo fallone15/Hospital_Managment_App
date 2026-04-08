@@ -361,7 +361,7 @@ const getProfile = async (req, res) => {
       result = await query(
         `SELECT id_patient, carte_rfid, nom, prenom, date_naissance, sexe, 
                 adresse, code_postal, ville, email, telephone, numero_secu, 
-                mutuelle, allergies, groupe_sanguin, medecin_traitant, date_inscription 
+                mutuelle, allergies, groupe_sanguin, medecin_traitant, date_inscription, photo_url 
          FROM patients WHERE id_patient = $1`,
         [id]
       );

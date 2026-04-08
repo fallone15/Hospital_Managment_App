@@ -1,3 +1,7 @@
 {
-  "liveServer.settings.port": 5502
+"liveServer.settings.port": 5502,
+"liveServer.settings.onsave": true,
+"liveServer.settings.donotShowInfoMsg": false,
+"liveServer.settings.useWebExt": false,
+"liveServer.settings.fullReload": true
 }

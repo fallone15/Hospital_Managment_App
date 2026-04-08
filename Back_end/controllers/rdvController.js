@@ -1,39 +1,41 @@
 const { query } = require('../config/database');
 
-// Récupérer tous les médecins filtrés par service
+// Récupérer les spécialités avec leurs tarifs
+const getSpecialites = async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT s.nom as specialite, s.tarif 
+       FROM services s
+       WHERE s.actif = TRUE
+       ORDER BY s.nom`
+    );
+
+    res.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Erreur spécialités:', error);
+    res.status(500).json({ success: false, message: 'Erreur' });
+  }
+};
+
+// Récupérer tous les médecins avec tarifs
 const getMedecins = async (req, res) => {
   try {
-    const { serviceId, specialite, date } = req.query;
+    const { specialite } = req.query;
 
     let sqlQuery = `
-      SELECT DISTINCT m.id_medecin as id, m.nom, m.prenom, m.specialite, 
-             m.email, m.telephone
+      SELECT m.id_medecin as id, m.nom, m.prenom, m.specialite, 
+             m.email, m.telephone, s.tarif
       FROM medecins m
+      LEFT JOIN services s ON m.id_service = s.id_service
+      WHERE m.actif = TRUE
     `;
 
     const params = [];
-    let idx = 1;
-
-    // Si une date est fournie, filtrer par disponibilité hebdomadaire
-    if (date) {
-      // Évite les décalages de fuseau horaire en parsant manuellement YYYY-MM-DD
-      const [y, m, d] = date.split('-').map(Number);
-      const dayOfWeek = new Date(y, m - 1, d).getDay();
-      sqlQuery += ` JOIN disponibilites d ON m.id_medecin = d.medecin_id AND d.jour_semaine = $${idx}`;
-      params.push(dayOfWeek);
-      idx++;
-    }
-
-    sqlQuery += ` WHERE m.actif = TRUE`;
-
-    if (serviceId) {
-      sqlQuery += ` AND m.id_service = $${idx}`;
-      params.push(serviceId);
-      idx++;
-    }
-
     if (specialite) {
-      sqlQuery += ` AND m.specialite = $${idx}`;
+      sqlQuery += ` AND m.specialite = $1`;
       params.push(specialite);
     }
 
@@ -46,11 +48,8 @@ const getMedecins = async (req, res) => {
       data: result.rows
     });
   } catch (error) {
-    console.error('Erreur lors de la récupération des médecins:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la récupération des médecins'
-    });
+    console.error('Erreur médecins:', error);
+    res.status(500).json({ success: false, message: 'Erreur' });
   }
 };
 
@@ -65,9 +64,11 @@ const getDisponibilites = async (req, res) => {
       const jour_semaine = new Date(y, m - 1, d).getDay();
 
       const dispoResult = await query(
-        `SELECT heure_debut, heure_fin 
-         FROM disponibilites 
-         WHERE medecin_id = $1 AND jour_semaine = $2`,
+        `SELECT d.heure_debut, d.heure_fin, s.duree_moyenne 
+         FROM disponibilites d
+         JOIN medecins m ON d.medecin_id = m.id_medecin
+         JOIN services s ON m.id_service = s.id_service
+         WHERE d.medecin_id = $1 AND d.jour_semaine = $2`,
         [medecin_id, jour_semaine]
       );
 
@@ -87,8 +88,9 @@ const getDisponibilites = async (req, res) => {
 
       const rdvPris = rdvResult.rows.map(r => r.heure_rdv.toString().substring(0, 5));
 
-      const { heure_debut, heure_fin } = dispoResult.rows[0];
-      const creneaux = generateCreneaux(heure_debut, heure_fin, rdvPris);
+      const { heure_debut, heure_fin, duree_moyenne } = dispoResult.rows[0];
+      const duration = parseInt(duree_moyenne) || 30;
+      const creneaux = generateCreneaux(heure_debut, heure_fin, rdvPris, duration);
 
       return res.json({
         success: true,
@@ -110,7 +112,7 @@ const getDisponibilites = async (req, res) => {
 };
 
 // Fonction helper pour générer les créneaux horaires
-const generateCreneaux = (debut, fin, rdvPris) => {
+const generateCreneaux = (debut, fin, rdvPris, duration = 30) => {
   const creneaux = [];
   const [hDebut, mDebut] = debut.split(':').map(Number);
   const [hFin, mFin] = fin.split(':').map(Number);
@@ -123,13 +125,16 @@ const generateCreneaux = (debut, fin, rdvPris) => {
     if (!rdvPris.includes(slot)) {
       creneaux.push(slot);
     }
-    m += 30;
-    if (m >= 60) { h += 1; m = 0; }
+    m += duration;
+    if (m >= 60) { 
+      h += Math.floor(m / 60); 
+      m = m % 60; 
+    }
   }
   return creneaux;
 };
 
-// Créer un rendez-vous
+// Créer un rendez-vous (avec paiement obligatoire)
 const createRendezVous = async (req, res) => {
   try {
     const patient_id = req.user.id;
@@ -145,9 +150,10 @@ const createRendezVous = async (req, res) => {
       }
     }
 
+    // Vérifier la disponibilité du créneau
     const checkResult = await query(
       `SELECT id FROM rendez_vous 
-       WHERE medecin_id = $1 AND date_rdv = $2 AND heure_rdv = $3 AND statut != 'annule'`,
+       WHERE medecin_id = $1 AND date_rdv = $2 AND heure_rdv = $3 AND statut != 'annule' AND statut != 'en_attente_paiement'`,
       [medecin_id, date_rdv, heure_rdv]
     );
 
@@ -155,22 +161,70 @@ const createRendezVous = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Ce créneau n\'est plus disponible' });
     }
 
-    const result = await query(
-      `INSERT INTO rendez_vous (patient_id, id_member, medecin_id, date_rdv, heure_rdv, motif, statut) 
-       VALUES ($1, $2, $3, $4, $5, $6, 'en_attente') 
-       RETURNING *`,
-      [patient_id, id_member || null, medecin_id, date_rdv, heure_rdv, motif]
+    // Récupérer les informations du médecin et du service
+    const medecinInfo = await query(
+      `SELECT m.nom, m.prenom, m.specialite, s.nom as service_nom, s.id_service, s.tarif
+       FROM medecins m
+       LEFT JOIN services s ON m.id_service = s.id_service
+       WHERE m.id_medecin = $1`,
+      [medecin_id]
     );
+
+    if (medecinInfo.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Médecin non trouvé' });
+    }
+
+    const medecin = medecinInfo.rows[0];
+
+    // Récupérer les infos du patient
+    const patientInfo = await query(
+      `SELECT nom, prenom, email FROM patients WHERE id_patient = $1`,
+      [patient_id]
+    );
+
+    const patient = patientInfo.rows[0];
+
+    // Déterminer le montant en fonction de la spécialité (depuis la DB + 15 MAD de frais)
+    const baseMontant = parseFloat(medecin.tarif || 250);
+    const montantTotal = baseMontant + 15;
+
+    // Créer le rendez-vous avec le statut 'en_attente_paiement' et le montant total
+    const result = await query(
+      `INSERT INTO rendez_vous (patient_id, id_member, medecin_id, date_rdv, heure_rdv, motif, statut, montant_total) 
+       VALUES ($1, $2, $3, $4, $5, $6, 'en_attente_paiement', $7) 
+       RETURNING *`,
+      [patient_id, id_member || null, medecin_id, date_rdv, heure_rdv, motif, montantTotal]
+    );
+
+    const appointment = result.rows[0];
 
     res.status(201).json({
       success: true,
-      message: 'Rendez-vous créé avec succès',
-      data: result.rows[0]
+      message: 'Rendez-vous créé. Veuillez procéder au paiement pour confirmer.',
+      data: {
+        rendez_vous: appointment,
+        paiement_requis: {
+          montant: montantTotal,
+          devise: 'MAD',
+          description: `Consultation avec Dr. ${medecin.prenom} ${medecin.nom} (${medecin.specialite})`,
+          medecin: medecin,
+          patient: {
+            nom: patient.nom,
+            prenom: patient.prenom,
+            email: patient.email
+          }
+        }
+      }
     });
   } catch (error) {
     console.error('Erreur lors de la création du rendez-vous:', error);
     res.status(500).json({ success: false, message: 'Erreur lors de la création du rendez-vous' });
   }
+};
+
+// Supprimé au profit des tarifs de la DB
+const getMontantConsultation = (specialite) => {
+  return 250;
 };
 
 // Récupérer les rendez-vous d'un patient
@@ -287,6 +341,7 @@ const cancelRendezVous = async (req, res) => {
 };
 
 module.exports = {
+  getSpecialites,
   getMedecins,
   getDisponibilites,
   createRendezVous,

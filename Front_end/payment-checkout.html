@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - Rendez-vous Médical</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .payment-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .appointment-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .price-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #ffc107;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .price-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #ffc107;
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .payment-methods {
+            margin-bottom: 25px;
+        }
+
+        .payment-methods h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .method-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .method-option input[type="radio"] {
+            margin-right: 15px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+
+        .method-option input[type="radio"]:checked + .method-info {
+            color: #667eea;
+        }
+
+        .method-info {
+            flex: 1;
+        }
+
+        .method-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .method-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        #stripe-card {
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .stripe-card-wrapper {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .stripe-card-wrapper.show {
+            display: block;
+        }
+
+        #card-errors {
+            color: #ff4757;
+            margin-bottom: 10px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .form-group.show {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pay {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-pay:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-pay:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
+            background: #ccc;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #ccc;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .stripe-test-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .test-cards {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .test-cards h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .test-card-item {
+            font-size: 12px;
+            color: #1b5e20;
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 600px) {
+            .payment-container {
+                padding: 25px;
+            }
+
+            .payment-header h1 {
+                font-size: 24px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>Paiement Sécurisé</h1>
+            <p>Confirmez votre rendez-vous médical</p>
+        </div>
+
+        <div class="stripe-test-badge">SIMULATION - Mode TEST | Aucun argent réel débité | Utilisez les cartes fictives ci-dessous</div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Détails du rendez-vous -->
+        <div class="appointment-details">
+            <div class="detail-item">
+                <span class="detail-label">Médecin:</span>
+                <span class="detail-value" id="medecin-name">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value" id="rdv-date">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Heure:</span>
+                <span class="detail-value" id="rdv-time">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Service:</span>
+                <span class="detail-value" id="service-name">-</span>
+            </div>
+        </div>
+
+        <!-- Section Tarif -->
+        <div class="price-section">
+            <div class="price-row">
+                <span>Consultation médicale</span>
+                <span id="price-consultation">200 MAD</span>
+            </div>
+            <div class="price-row">
+                <span>Frais administratifs</span>
+                <span id="price-admin">15 MAD</span>
+            </div>
+            <div class="price-row">
+                <span>Total à payer</span>
+                <span id="total-price">215 MAD</span>
+            </div>
+        </div>
+
+        <!-- Cartes de test Stripe -->
+
+        <!-- Méthodes de paiement -->
+        <div class="payment-methods">
+            <h3>Méthode de paiement</h3>
+            
+            <label class="method-option">
+                <input type="radio" name="payment-method" value="stripe" checked>
+                <div class="method-info">
+                    <div class="method-title">Carte Bancaire</div>
+                    <div class="method-desc">Visa, Mastercard</div>
+                </div>
+            </label>
+
+        </div>
+
+        <!-- Formulaire Stripe (Combiné: Numéro, Date, CVC) -->
+        <div class="stripe-card-wrapper show">
+            <label>Informations de carte (Numéro, Date, CVC réunis) :</label>
+            <div id="stripe-card"></div>
+            <div id="card-errors"></div>
+        </div>
+
+        <!-- Formulaire virement -->
+
+
+        <!-- Boutons d'action -->
+        <div class="btn-container">
+            <button class="btn btn-secondary" onclick="window.history.back()">Annuler</button>
+            <button class="btn btn-pay" id="pay-button" data-loading="false">
+                <span id="btn-text">Payer maintenant</span>
+            </button>
+        </div>
+
+        <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
+            SIMULATION Stripe Test Mode 
+        </p>
+    </div>
+
+    <!-- Scripts Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Variables globales
+        let stripe;
+        let elements;
+        let cardElement;
+        let appointmentData = {};
+
+        // Initialiser Stripe
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Récupérer la clé publique depuis le backend
+            const response = await fetch('http://localhost:5000/api/paiements/tarifs');
+            
+            // Initialiser Stripe
+            const publishableKey = localStorage.getItem('stripePublishableKey') || 'pk_test_YOUR_PUBLISHABLE_KEY';
+            stripe = Stripe(publishableKey);
+            elements = stripe.elements();
+            cardElement = elements.create('card', {
+                hidePostalCode: true,
+                style: {
+                    base: {
+                        fontSize: '14px',
+                        color: '#333',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI"'
+                    },
+                    invalid: {
+                        color: '#ff4757'
+                    }
+                }
+            });
+
+            // Charger les données du RDV depuis localStorage
+            loadAppointmentData();
+            
+            // Gérer le changement de méthode de paiement
+            document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'stripe') {
+                        document.querySelector('.stripe-card-wrapper').classList.add('show');
+                        document.getElementById('transfer-form').classList.remove('show');
+                        if (!cardElement.parentNode) {
+                            cardElement.mount('#stripe-card');
+                        }
+                    } else {
+                        document.querySelector('.stripe-card-wrapper').classList.remove('show');
+                        document.getElementById('transfer-form').classList.add('show');
+                    }
+                });
+            });
+
+            // Monter le formulaire Stripe
+            cardElement.mount('#stripe-card');
+
+            // Gérer les erreurs de carte
+            cardElement.addEventListener('change', (event) => {
+                const errorDisplay = document.getElementById('card-errors');
+                if (event.error) {
+                    errorDisplay.textContent = event.error.message;
+                } else {
+                    errorDisplay.textContent = '';
+                }
+            });
+
+            // Gérer le bouton de paiement
+            document.getElementById('pay-button').addEventListener('click', handlePayment);
+
+            // Charger les clés Stripe (pour développement)
+            initializeStripeKeys();
+        });
+
+        // Charger les données du rendez-vous
+        function loadAppointmentData() {
+            // Récupérer depuis sessionStorage ou localStorage
+            const data = JSON.parse(sessionStorage.getItem('appointmentData') || localStorage.getItem('appointmentData') || '{}');
+            
+            if (Object.keys(data).length === 0) {
+                // Valeurs par défaut pour test
+                data.medecin_nom = 'Dr. Ahmed Al-Mansouri';
+                data.medecin_prenom = 'Ahmed';
+                data.date_rdv = '2024-04-15';
+                data.heure_rdv = '10:30';
+                data.service_nom = 'Cardiologie';
+                data.montant = 250;
+            }
+
+            appointmentData = data;
+
+            // Afficher les informations
+            document.getElementById('medecin-name').textContent = 
+                `Dr. ${data.medecin_prenom} ${data.medecin_nom}`;
+            document.getElementById('rdv-date').textContent = 
+                new Date(data.date_rdv).toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            document.getElementById('rdv-time').textContent = data.heure_rdv || '-';
+            document.getElementById('service-name').textContent = data.service_nom || '-';
+            
+            // Calculer la répartition (Total - 15 pour la consultation, 15 fixe pour frais dossier)
+            const total = parseFloat(data.montant || 265);
+            const adminFees = 15;
+            const consultationFees = total - adminFees;
+
+            document.getElementById('price-consultation').textContent = `${consultationFees} MAD`;
+            document.getElementById('price-admin').textContent = `${adminFees} MAD`;
+            document.getElementById('total-price').textContent = `${total} MAD`;
+        }
+
+        // Initialiser les clés Stripe (développement uniquement)
+        function initializeStripeKeys() {
+            // 🧪 MODE TEST - Clés configurées depuis le backend
+            const testPublishableKey = 'pk_test_51TJcrfFLNDdgKlq0Jx7X9JC3yJdYBB1fDzf0yUb048vGMGSZzJqXCVriVRWobvTd8WCzy0sKyxUkstl18ahZ8RQ200tnKDWmNz';
+            localStorage.setItem('stripePublishableKey', testPublishableKey);
+        }
+
+        // Gérer le paiement
+        async function handlePayment() {
+            const method = document.querySelector('input[name="payment-method"]:checked').value;
+            const payBtn = document.getElementById('pay-button');
+
+            if (payBtn.dataset.loading === 'true') return;
+
+            if (method === 'transfer') {
+                handleTransferPayment();
+                return;
+            }
+
+            // Paiement par Stripe
+            payBtn.dataset.loading = 'true';
+            payBtn.disabled = true;
+            showAlert('Traitement en cours...', 'info');
+            payBtn.innerHTML = '<span class="loading-spinner"></span>Traitement...';
+
+            try {
+                // Créer un payment intent
+                const paymentResponse = await fetch('http://localhost:5000/api/paiements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        montant: appointmentData.montant || 250,
+                        methode_paiement: 'stripe',
+                        rendez_vous_id: appointmentData.id,
+                        description: `Rendez-vous avec Dr. ${appointmentData.medecin_prenom} ${appointmentData.medecin_nom}`
+                    })
+                });
+
+                const paymentData = await paymentResponse.json();
+
+                if (!paymentData.success) {
+                    throw new Error(paymentData.message);
+                }
+
+                const clientSecret = paymentData.data.clientSecret;
+
+                // Confirmer le paiement avec Stripe
+                const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: appointmentData.patient_nom || 'Patient',
+                            email: appointmentData.patient_email || ''
+                        }
+                    }
+                });
+
+                if (stripeError) {
+                    throw new Error(stripeError.message);
+                }
+
+                if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    // Confirmer le paiement au backend
+                    const confirmResponse = await fetch('http://localhost:5000/api/paiements/confirm', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            payment_intent_id: paymentIntent.id
+                        })
+                    });
+
+                    const confirmData = await confirmResponse.json();
+
+                    if (confirmData.success) {
+                        showAlert('✅ Paiement réussi! Votre rendez-vous est confirmé.', 'success');
+                        payBtn.innerHTML = '✅ Paiement confirmé';
+                        
+                        // Rediriger après 2 secondes
+                        setTimeout(() => {
+                            window.location.href = 'mes-consultations.html';
+                        }, 2000);
+                    } else {
+                        throw new Error('Erreur lors de la confirmation du paiement');
+                    }
+                } else {
+                    throw new Error('Le paiement a échoué');
+                }
+            } catch (error) {
+                console.error('Erreur paiement:', error);
+                showAlert(`❌ Erreur: ${error.message}`, 'error');
+                payBtn.dataset.loading = 'false';
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<span id="btn-text">Payer maintenant</span>';
+            }
+        }
+
+        // Gérer le paiement par virement
+        function handleTransferPayment() {
+            const payBtn = document.getElementById('pay-button');
+            payBtn.disabled = true;
+
+            fetch('http://localhost:5000/api/paiements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    montant: appointmentData.montant || 250,
+                    methode_paiement: 'transfer',
+                    rendez_vous_id: appointmentData.id,
+                    description: `Paiement par virement - RDV ${appointmentData.date_rdv}`
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('✅ Demande de virement enregistrée. Vous recevrez les détails par email.', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'mes-consultations.html';
+                    }, 2000);
+                } else {
+                    showAlert(`❌ Erreur: ${data.message}`, 'error');
+                    payBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                showAlert(`❌ Erreur: ${error.message}`, 'error');
+                payBtn.disabled = false;
+            });
+        }
+
+        // Afficher les alertes
+        function showAlert(message, type) {
+            const alertEl = document.getElementById('alert');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert-${type} show`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertEl.classList.remove('show');
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
