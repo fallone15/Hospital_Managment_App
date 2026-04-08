@@ -18,6 +18,28 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --primary-color: #0d8abc;
+            --primary-light: #0d8abc;
+            --primary-dark: #0a6f96;
+            --primary-gradient: linear-gradient(135deg, #0a6f96 0%, #0a6f80 100%);
+            --accent-color: rgba(13, 138, 188, 0.1);
+        }
+
+        /* Couleurs spécifiques au sexe */
+        body.gender-male {
+            --primary-color: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --accent-color: rgba(37, 99, 235, 0.1);
+        }
+
+        body.gender-female {
+            --primary-color: #ec4899;
+            --primary-light: #f472b6;
+            --primary-dark: #be185d;
+            --primary-gradient: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            --accent-color: rgba(236, 72, 153, 0.1);
         }
 
         /* Navbar */
@@ -43,7 +65,7 @@
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #0d8abc;
+            color: var(--primary-color, #0d8abc);
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -94,7 +116,7 @@
 
         /* Welcome Card */
         .welcome-card {
-            background: linear-gradient(135deg, #0a6f96 0%, #0a6f80 100%);
+            background: var(--primary-gradient, linear-gradient(135deg, #0a6f96 0%, #0a6f80 100%));
             color: white;
             padding: 3rem;
             border-radius: 16px;
@@ -270,8 +292,8 @@
 
         .badge {
             display: inline-block;
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: var(--accent-color, #e8f5e9);
+            color: var(--primary-color, #2e7d32);
             padding: 0.4rem 1rem;
             border-radius: 20px;
             font-weight: 600;
@@ -309,6 +331,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            border: 2px solid transparent;
         }
 
         .action-card::before {
@@ -329,12 +352,22 @@
         .action-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-color, rgba(13, 138, 188, 0.2));
+        }
+
+        .action-card:first-child {
+            border-color: var(--primary-color, #0d8abc);
+            background: linear-gradient(135deg, white 0%, var(--accent-color, rgba(13, 138, 188, 0.05)) 100%);
         }
 
         .action-icon {
             font-size: 3rem;
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
+        }
+
+        .action-card:first-child .action-icon {
+            color: var(--primary-color, #0d8abc);
         }
 
         .action-card:hover .action-icon {
@@ -509,7 +542,7 @@
             width: 100%;
             margin-top: 1.2rem;
             padding: 0.85rem;
-            background: linear-gradient(135deg, #0d8abc, #0a6f96);
+            background: var(--primary-gradient, linear-gradient(135deg, #0d8abc, #0a6f96));
             color: white;
             border: none;
             border-radius: 10px;
@@ -517,12 +550,14 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(13, 138, 188, 0.35);
+            box-shadow: 0 4px 15px var(--primary-color, #0d8abc);
+            opacity: 0.9;
         }
 
         .family-submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45);
+            box-shadow: 0 8px 25px var(--primary-color, #0d8abc);
+            opacity: 1;
         }
 
         /* Carte membre famille */
@@ -591,8 +626,8 @@
         }
 
         .family-lien-badge {
-            background: #eef2ff;
-            color: #0d8abc;
+            background: var(--accent-color, #eef2ff);
+            color: var(--primary-color, #0d8abc);
             padding: 0.2rem 0.7rem;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -634,11 +669,11 @@
             color: #dde;
         }
 
-        #addFamilyBtn {
+#addFamilyBtn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: linear-gradient(135deg, #0d8abc, #0a6f96);
+            background: var(--primary-gradient, linear-gradient(135deg, #0d8abc, #0a6f96));
             color: white;
             border: none;
             padding: 0.65rem 1.4rem;
@@ -647,13 +682,15 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(13, 138, 188, 0.3);
+            box-shadow: 0 4px 15px var(--primary-color, #0d8abc);
             margin-bottom: 1rem;
+            opacity: 0.9;
         }
 
         #addFamilyBtn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px var(--primary-color, #0d8abc);
+            opacity: 1;
         }
     </style>
 </head>
@@ -805,6 +842,9 @@
     </div>
 
     <script>
+
+        // Stocker le sexe de l'utilisateur
+        let userGender = null;
 
         // -------- Répertoire familial --------
         function avatarClass(sexe) {
@@ -986,6 +1026,15 @@
 
                 if (result.success) {
                     const user = result.data;
+                    
+                    // Stocker et appliquer le sexe de l'utilisateur
+                    userGender = user.sexe;
+                    document.body.classList.remove('gender-male', 'gender-female');
+                    if (user.sexe === 'homme') {
+                        document.body.classList.add('gender-male');
+                    } else if (user.sexe === 'femme') {
+                        document.body.classList.add('gender-female');
+                    }
 
                     // Message de bienvenue
                     document.getElementById('welcomeMessage').innerHTML =
