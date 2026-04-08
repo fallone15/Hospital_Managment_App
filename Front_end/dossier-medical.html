@@ -363,6 +363,35 @@
             background: #f0f3ff;
         }
 
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, #0d8abc, #0a6f96);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 138, 188, 0.3);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-btn:hover {
+            background: #f0f3ff;
+        }
         .empty-state {
             text-align: center;
             padding: 4rem 1rem;
@@ -617,7 +646,12 @@
                                 <div class="entry-section-title">Prescription(s)</div>
                                 <div class="entry-text">
                                     <ul style="padding-left:1.2rem;margin:0.5rem 0">
-                                        ${e.ordonnances.map(o => `<li>${o.posologie || 'Ordonnance'} (${new Date(o.date_prescription).toLocaleDateString()})</li>`).join('')}
+                                        ${e.ordonnances.map(o => `<li style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                                            <span>${o.posologie || 'Ordonnance'} (${new Date(o.date_prescription).toLocaleDateString()})</span>
+                                            <button class="download-btn" onclick="downloadOrdonnance(${o.id_ordonnance})" title="Télécharger cette ordonnance">
+                                                <i class="fas fa-download"></i> PDF
+                                            </button>
+                                        </li>`).join('')}
                                     </ul>
                                 </div>
                             </div>
@@ -710,6 +744,39 @@
             } else {
                 card.classList.add('entry-collapsed');
                 btn.innerHTML = '<i class="fas fa-chevron-down"></i> Voir les détails';
+            }
+        }
+
+        async function downloadOrdonnance(ordonnanceId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Vous devez être connecté pour télécharger une ordonnance');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/ordonnances/${ordonnanceId}/download`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Erreur: ${errorData.message || 'Impossible de télécharger l\'ordonnance'}`);
+                    return;
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ordonnance_${ordonnanceId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Erreur lors du téléchargement:', error);
+                alert('Erreur lors du téléchargement de l\'ordonnance');
             }
         }
 

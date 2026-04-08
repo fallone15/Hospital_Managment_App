@@ -431,7 +431,15 @@
         <!-- Formulaire virement -->
 
 
-        <!-- Boutons d'action -->
+        <!-- Paiements précédents -->
+        <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
+            <h3 style="color: #333; margin-bottom: 20px; font-size: 16px;">Historique de mes paiements</h3>
+            <div id="payments-history" style="max-height: 400px; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px; color: #999;">
+                    <i class="fas fa-spinner fa-spin"></i> Chargement...
+                </div>
+            </div>
+        </div>
         <div class="btn-container">
             <button class="btn btn-secondary" onclick="window.history.back()">Annuler</button>
             <button class="btn btn-pay" id="pay-button" data-loading="false">
@@ -553,6 +561,9 @@
             document.getElementById('price-consultation').textContent = `${consultationFees} MAD`;
             document.getElementById('price-admin').textContent = `${adminFees} MAD`;
             document.getElementById('total-price').textContent = `${total} MAD`;
+
+            // Charger l'historique des paiements
+            loadPaymentsHistory();
         }
 
         // Initialiser les clés Stripe (développement uniquement)
@@ -703,6 +714,56 @@
                 setTimeout(() => {
                     alertEl.classList.remove('show');
                 }, 5000);
+            }
+        }
+
+        // Charger l'historique des paiements
+        async function loadPaymentsHistory() {
+            const historyEl = document.getElementById('payments-history');
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                historyEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Connectez-vous pour voir vos paiements.</div>';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/paiements/historique', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    const html = result.data.slice(0, 5).map(p => {
+                        const date = new Date(p.date_paiement || p.created_at);
+                        const formattedDate = date.toLocaleDateString('fr-FR');
+                        const isConfirmed = p.statut === 'confirme';
+                        const statusColor = isConfirmed ? '#4caf50' : '#ff9800';
+                        const statusText = isConfirmed ? ' Confirmé' : ' En attente';
+
+                        return `
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${statusColor};">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #333;">${p.description || 'Paiement'}</div>
+                                    <div style="font-size: 12px; color: #999; margin-top: 4px;">${formattedDate}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700; color: #667eea; font-size: 16px;">${p.montant.toFixed(2)} MAD</div>
+                                    <div style="font-size: 12px; color: ${statusColor};">${statusText}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    historyEl.innerHTML = html;
+                } else {
+                    historyEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Aucun paiement trouvé.</div>';
+                }
+            } catch (e) {
+                console.error('Erreur lors du chargement des paiements:', e);
+                historyEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #e74c3c;">Erreur lors du chargement des paiements.</div>';
             }
         }
     </script>

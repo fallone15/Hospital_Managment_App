@@ -224,8 +224,20 @@ const createTables = async () => {
         posologie TEXT,
         duree_traitement INT,
         instructions TEXT,
-        envoyee_electronique BOOLEAN DEFAULT FALSE
+        envoyee_electronique BOOLEAN DEFAULT FALSE,
+        chemin_pdf TEXT DEFAULT NULL,
+        statut_pdf VARCHAR(20) DEFAULT 'non_genere' CHECK (statut_pdf IN ('non_genere', 'genere', 'erreur')),
+        date_generation TIMESTAMP DEFAULT NULL
       );
+    `);
+
+    // Créer les index pour ordonnances
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_ordonnances_consultation ON ordonnances(id_consultation);
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_ordonnances_statut ON ordonnances(statut_pdf);
     `);
 
     // Table paiements

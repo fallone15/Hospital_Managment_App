@@ -12,9 +12,7 @@ const createPaiement = async (req, res) => {
       description
     } = req.body;
 
-    let paiement;
-
-    // Si le paiement est par Stripe
+    // Paiement Stripe : retourner juste le clientSecret (pas d'insertion en DB)
     if (methode_paiement === 'stripe') {
       // Créer un PaymentIntent Stripe
       const paymentIntent = await stripe.paymentIntents.create({
@@ -23,32 +21,23 @@ const createPaiement = async (req, res) => {
         metadata: {
           patient_id,
           rendez_vous_id: rendez_vous_id || 'N/A',
-          description: description || 'Paiement Fakhsash'
+          description: description || 'Paiement Fakhsash',
+          montant,
+          methode_paiement
         }
       });
 
-      // Enregistrer le paiement en base de données
-      const result = await query(
-        `INSERT INTO paiements 
-         (patient_id, rendez_vous_id, montant, methode_paiement, statut, stripe_payment_id, description) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7) 
-         RETURNING *`,
-        [patient_id, rendez_vous_id, montant, methode_paiement, 'en_attente', paymentIntent.id, description]
-      );
-
-      paiement = result.rows[0];
-
       return res.status(201).json({
         success: true,
-        message: 'Paiement créé avec succès',
+        message: 'PaymentIntent créé',
         data: {
-          paiement,
-          clientSecret: paymentIntent.client_secret
+          clientSecret: paymentIntent.client_secret,
+          paymentIntentId: paymentIntent.id
         }
       });
     }
 
-    // Pour les autres méthodes de paiement (espèces, virement, etc.)
+    // Pour les autres méthodes de paiement (espèces, virement, etc.) : insérer avec statut 'en_attente'
     const result = await query(
       `INSERT INTO paiements 
        (patient_id, rendez_vous_id, montant, methode_paiement, statut, description) 
@@ -57,11 +46,11 @@ const createPaiement = async (req, res) => {
       [patient_id, rendez_vous_id, montant, methode_paiement, 'en_attente', description]
     );
 
-    paiement = result.rows[0];
+    const paiement = result.rows[0];
 
     res.status(201).json({
       success: true,
-      message: 'Paiement enregistré avec succès',
+      message: 'Paiement enregistré en attente',
       data: paiement
     });
   } catch (error) {
@@ -83,38 +72,36 @@ const confirmPaiement = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
 
     if (paymentIntent.status === 'succeeded') {
-      // Récupérer le paiement et le rendez-vous
+      const metadata = paymentIntent.metadata;
+      const rendez_vous_id = metadata.rendez_vous_id !== 'N/A' ? parseInt(metadata.rendez_vous_id) : null;
+
+      // INSÉRER le paiement dans la BD avec statut 'confirme' (pas de mise à jour)
       const paiementResult = await query(
-        `SELECT * FROM paiements 
-         WHERE stripe_payment_id = $1 AND patient_id = $2`,
-        [payment_intent_id, patient_id]
+        `INSERT INTO paiements 
+         (patient_id, rendez_vous_id, montant, methode_paiement, statut, stripe_payment_id, description, date_paiement) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) 
+         RETURNING *`,
+        [patient_id, rendez_vous_id, parseFloat(metadata.montant), metadata.methode_paiement, 'confirme', payment_intent_id, metadata.description]
       );
 
       if (paiementResult.rows.length === 0) {
-        return res.status(404).json({
+        return res.status(500).json({
           success: false,
-          message: 'Paiement non trouvé'
+          message: 'Erreur lors de l\'enregistrement du paiement'
         });
       }
 
       const paiement = paiementResult.rows[0];
-      const rendez_vous_id = paiement.rendez_vous_id;
 
-      // Mettre à jour le statut du paiement
-      await query(
-        `UPDATE paiements 
-         SET statut = 'confirme', date_paiement = CURRENT_TIMESTAMP 
-         WHERE id = $1`,
-        [paiement.id]
-      );
-
-      // Mettre à jour le statut du rendez-vous de 'en_attente_paiement' à 'confirme'
-      await query(
-        `UPDATE rendez_vous 
-         SET statut = 'confirme', updated_at = CURRENT_TIMESTAMP 
-         WHERE id = $1 AND patient_id = $2`,
-        [rendez_vous_id, patient_id]
-      );
+      // Si un rendez-vous est associé, mettre à jour son statut
+      if (rendez_vous_id) {
+        await query(
+          `UPDATE rendez_vous 
+           SET statut = 'confirme', updated_at = CURRENT_TIMESTAMP 
+           WHERE id = $1 AND patient_id = $2`,
+          [rendez_vous_id, patient_id]
+        );
+      }
 
       // Créer une notification
       await query(
@@ -126,32 +113,36 @@ const confirmPaiement = async (req, res) => {
           `Votre paiement de ${paiement.montant} MAD a été confirmé. Votre rendez-vous est maintenant actif.`,
           'paiement'
         ]
-      );
+      ).catch(() => {}); // Ignorer l'erreur si la table notifications n'existe pas
 
       // Récupérer les détails du rendez-vous pour la réponse
-      const rdvResult = await query(
-        `SELECT r.*, m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
-                s.nom as service_nom
-         FROM rendez_vous r
-         JOIN medecins m ON r.medecin_id = m.id_medecin
-         JOIN services s ON m.id_service = s.id_service
-         WHERE r.id = $1`,
-        [rendez_vous_id]
-      );
+      let rdvData = null;
+      if (rendez_vous_id) {
+        const rdvResult = await query(
+          `SELECT r.*, m.nom as medecin_nom, m.prenom as medecin_prenom, m.specialite,
+                  s.nom as service_nom
+           FROM rendez_vous r
+           LEFT JOIN medecins m ON r.medecin_id = m.id_medecin
+           LEFT JOIN services s ON m.id_service = s.id_service
+           WHERE r.id = $1`,
+          [rendez_vous_id]
+        );
+        rdvData = rdvResult.rows[0] || null;
+      }
 
       return res.json({
         success: true,
-        message: 'Paiement confirmé et rendez-vous activé',
+        message: 'Paiement confirmé avec succès',
         data: {
           paiement: paiement,
-          rendez_vous: rdvResult.rows[0]
+          rendez_vous: rdvData
         }
       });
     }
 
     res.status(400).json({
       success: false,
-      message: 'Le paiement n\'a pas été confirmé'
+      message: 'Le paiement n\'a pas été confirmé par Stripe'
     });
   } catch (error) {
     console.error('Erreur lors de la confirmation du paiement:', error);
@@ -163,6 +154,7 @@ const confirmPaiement = async (req, res) => {
 };
 
 // Récupérer l'historique des paiements d'un patient
+// Récupérer l'historique des paiements d'un patient
 const getHistoriquePaiements = async (req, res) => {
   try {
     const patient_id = req.user.id;
@@ -173,7 +165,7 @@ const getHistoriquePaiements = async (req, res) => {
               m.nom as medecin_nom, m.prenom as medecin_prenom
        FROM paiements p
        LEFT JOIN rendez_vous r ON p.rendez_vous_id = r.id
-       LEFT JOIN medecins m ON r.medecin_id = m.id
+       LEFT JOIN medecins m ON r.medecin_id = m.id_medecin
        WHERE p.patient_id = $1
        ORDER BY p.date_paiement DESC`,
       [patient_id]
@@ -204,7 +196,7 @@ const getPaiement = async (req, res) => {
               m.nom as medecin_nom, m.prenom as medecin_prenom
        FROM paiements p
        LEFT JOIN rendez_vous r ON p.rendez_vous_id = r.id
-       LEFT JOIN medecins m ON r.medecin_id = m.id
+       LEFT JOIN medecins m ON r.medecin_id = m.id_medecin
        WHERE p.id = $1 AND p.patient_id = $2`,
       [id, patient_id]
     );

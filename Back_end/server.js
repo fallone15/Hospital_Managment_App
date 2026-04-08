@@ -34,6 +34,7 @@ const consultationRoutes = require('./routes/consultations');
 const rendezvousRoutes = require('./routes/rendezvous');
 const dossiersRoutes = require('./routes/dossiers');
 const paiementsRoutes = require('./routes/paiements');
+const ordonnancesRoutes = require('./routes/ordonnances');
 
 const familyRoutes = require('./routes/family');
 const patientsRoutes = require('./routes/patients');
@@ -45,6 +46,7 @@ app.use('/api/rdv', rendezvousRoutes); // Changé de /api/rendezvous pour corres
 app.use('/api/rendezvous', rendezvousRoutes); // Alias pour compatibilité
 app.use('/api/dossiers', dossiersRoutes);
 app.use('/api/paiements', paiementsRoutes);
+app.use('/api/ordonnances', ordonnancesRoutes);
 app.use('/api/patients', patientsRoutes);
 app.use('/api/family', familyRoutes);
 

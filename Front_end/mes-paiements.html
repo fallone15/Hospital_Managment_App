@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Paiements — CareTrack</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            --primary-color: #0d8abc;
+        }
+
+        /* Gender-based colors */
+        body.gender-male {
+            --primary-color: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+        }
+
+        body.gender-female {
+            --primary-color: #ec4899;
+            --primary-light: #f472b6;
+            --primary-dark: #be185d;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(37, 99, 235, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .page-title p {
+            color: #888;
+            margin-top: 0.3rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .stat-meta {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            background: #f8faff;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .search-wrap {
+            position: relative;
+            min-width: 200px;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .search-wrap select {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1.5px solid #e0e7ff;
+            border-radius: 10px;
+            background: #fafbff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: #444;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Payments Grid */
+        .payments-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .payment-card {
+            background: white;
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            transition: all 0.2s;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .payment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .payment-method-stripe .payment-icon {
+            background: #f3f4f6;
+            color: #635bff;
+        }
+
+        .payment-method-cash .payment-icon {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .payment-method-transfer .payment-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .payment-method-insurance .payment-icon {
+            background: #e9d5ff;
+            color: #9333ea;
+        }
+
+        .payment-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .payment-description {
+            font-weight: 600;
+            color: #1a1a2e;
+            font-size: 1rem;
+        }
+
+        .payment-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .payment-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+
+        .payment-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            margin-left: 0.7rem;
+        }
+
+        .badge-confirme {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-succeed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-failed {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-echoue {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .payment-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-self: end;
+        }
+
+        .payment-amount {
+            text-align: right;
+        }
+
+        .amount-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .amount-currency {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .action-btn {
+            background: vars(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .receipt-btn {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .receipt-btn:hover {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #eee;
+        }
+
+        .empty-state h3 {
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .payment-card {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-actions {
+                justify-self: start;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .search-wrap {
+                min-width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a class="navbar-brand" href="dashboard.html"><i class="fas fa-hospital"></i> CareTrack</a>
+        <a class="back-btn" href="dashboard.html"><i class="fas fa-arrow-left"></i> Tableau de bord</a>
+    </nav>
+
+    <div class="main">
+        <div class="header-flex">
+            <div class="page-title">
+                <h1>Mes Paiements</h1>
+                <p>Historique et suivi des transactions</p>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total payé</div>
+                <div class="stat-value" id="totalPaid">0 DH</div>
+                <div class="stat-meta">Depuis le début</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Paiements effectués</div>
+                <div class="stat-value" id="totalSuccess">0</div>
+                <div class="stat-meta">Transactions réussies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">En attente</div>
+                <div class="stat-value" id="totalPending">0</div>
+                <div class="stat-meta">À confirmer</div>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar">
+            <div class="tabs" id="statusTabs">
+                <div class="tab active" onclick="filterStatus('', this)">Tous</div>
+                <div class="tab" onclick="filterStatus('confirme', this)">Réussis</div>
+                <div class="tab" onclick="filterStatus('en_attente', this)">En attente</div>
+                <div class="tab" onclick="filterStatus('echoue', this)">Échoués</div>
+            </div>
+            <div class="search-wrap">
+                <i class="fas fa-filter"></i>
+                <select id="methodFilter" onchange="loadPayments()">
+                    <option value="">Toutes les méthodes</option>
+                    <option value="stripe">Carte bancaire</option>
+                    <option value="cash">Espèces</option>
+                    <option value="transfer">Virement</option>
+                    <option value="insurance">Mutuelle</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Payments List -->
+        <div class="payments-grid" id="paymentsGrid">
+            <div style="text-align:center; padding:3rem; color:#aaa"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        let currentStatus = '';
+        let allPayments = [];
+        let userGender = null;
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        async function init() {
+            await loadUserGender();
+            await loadPayments();
+        }
+
+        async function loadUserGender() {
+            try {
+                const res = await fetch(`${API_URL}/auth/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (result.success) {
+                    userGender = result.data.sexe;
+                    document.body.classList.remove('gender-male', 'gender-female');
+                    if (userGender === 'homme') {
+                        document.body.classList.add('gender-male');
+                    } else if (userGender === 'femme') {
+                        document.body.classList.add('gender-female');
+                    }
+                }
+            } catch (e) {
+                console.error('Erreur profil:', e);
+            }
+        }
+
+        function filterStatus(status, el) {
+            currentStatus = status;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            loadPayments();
+        }
+
+        async function loadPayments() {
+            const grid = document.getElementById('paymentsGrid');
+            const method = document.getElementById('methodFilter').value;
+
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#aaa"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+            try {
+                const res = await fetch(`${API_URL}/paiements/historique`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    allPayments = result.data;
+
+                    // Filter
+                    let filtered = allPayments;
+                    if (currentStatus) {
+                        filtered = filtered.filter(p => p.statut === currentStatus);
+                    }
+                    if (method) {
+                        filtered = filtered.filter(p => p.methode_paiement === method);
+                    }
+
+                    if (filtered.length > 0) {
+                        grid.innerHTML = filtered.map(p => renderPaymentCard(p)).join('');
+                    } else {
+                        grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>Aucun paiement trouvé</h3>
+                            <p>Pas de paiement correspondant à ces critères.</p>
+                        </div>`;
+                    }
+
+                    updateStats(allPayments);
+                } else {
+                    grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <h3>Aucun paiement</h3>
+                        <p>Vous n'avez pas effectué de paiement pour le moment.</p>
+                    </div>`;
+                    updateStats([]);
+                }
+            } catch (e) {
+                console.error(e);
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#e74c3c">Erreur de chargement.</div>';
+            }
+        }
+
+        function updateStats(payments) {
+            const total = payments.reduce((sum, p) => sum + (parseFloat(p.montant) || 0), 0);
+            const succeeded = payments.filter(p => p.statut === 'confirme').length;
+            const pending = payments.filter(p => p.statut === 'en_attente').length;
+
+            document.getElementById('totalPaid').textContent = `${total.toFixed(2)} DH`;
+            document.getElementById('totalSuccess').textContent = succeeded;
+            document.getElementById('totalPending').textContent = pending;
+        }
+
+        function renderPaymentCard(p) {
+            const date = new Date(p.date_paiement || p.created_at);
+            const formattedDate = date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+            const formattedTime = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+            const methodIcons = {
+                'stripe': 'fa-credit-card',
+                'cash': 'fa-money-bill-wave',
+                'transfer': 'fa-bank',
+                'insurance': 'fa-shield-alt'
+            };
+            const methodLabels = {
+                'stripe': 'Stripe',
+                'cash': 'Espèces',
+                'transfer': 'Virement',
+                'insurance': 'Mutuelle'
+            };
+
+            const icon = methodIcons[p.methode_paiement] || 'fa-receipt';
+            const label = methodLabels[p.methode_paiement] || p.methode_paiement;
+
+            const statusBadge = getStatusBadge(p.statut);
+            const description = p.description || `Paiement via ${label}`;
+
+            const rdvInfo = p.date_rdv ? `<div class="payment-meta"><i class="fas fa-calendar-check"></i> RDV: ${new Date(p.date_rdv).toLocaleDateString('fr-FR')}</div>` : '';
+            const doctorInfo = p.medecin_nom ? `<div class="payment-meta"><i class="fas fa-user-md"></i> Dr. ${p.medecin_nom} ${p.medecin_prenom}</div>` : '';
+
+            return `
+            <div class="payment-card payment-method-${p.methode_paiement}">
+                <div class="payment-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="payment-info">
+                    <div class="payment-header">
+                        <div class="payment-description">${description}</div>
+                        <span class="payment-badge ${statusBadge}">${getStatusLabel(p.statut)}</span>
+                    </div>
+                    <div class="payment-meta">
+                        <strong>${label}</strong> • ${formattedDate} à ${formattedTime}
+                    </div>
+                    ${rdvInfo}
+                    ${doctorInfo}
+                </div>
+                <div class="payment-actions">
+                    <div class="payment-amount">
+                        <div class="amount-value">${parseFloat(p.montant || 0).toFixed(2)}</div>
+                        <div class="amount-currency">DH</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'confirme': 'Réussi',
+                'succeed': 'Réussi',
+                'en_attente': 'En attente',
+                'echue': 'Échoué',
+                'failed': 'Échoué'
+            };
+            return labels[status] || status;
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'confirme': 'badge-confirme',
+                'succeed': 'badge-succeed',
+                'en_attente': 'badge-pending',
+                'echue': 'badge-echoue',
+                'failed': 'badge-failed'
+            };
+            return badges[status] || 'badge-pending';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+
+</html>
