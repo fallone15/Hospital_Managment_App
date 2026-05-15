@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ordonnance Médicale — CARETRACK</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      padding: 14mm 16mm 14mm 16mm;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 10pt;
+      color: #111111;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── EN-TÊTE ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .col-fr {
+      flex: 0 0 145px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .col-logo {
+      flex: 0 0 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .col-ar {
+      flex: 0 0 145px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Amiri', 'Arial', sans-serif;
+    }
+
+    .col-fr .main-text,
+    .col-ar .main-text {
+      font-size: 9.5pt;
+      color: #111111;
+      font-weight: 400;
+    }
+
+    .col-fr .sub-text,
+    .col-ar .sub-text {
+      font-size: 7.5pt;
+      color: #444444;
+      font-weight: 400;
+    }
+
+    .col-fr .hospital-name,
+    .col-ar .hospital-name {
+      font-size: 9pt;
+      color: #111111;
+      margin-top: 7px;
+      font-weight: 400;
+    }
+
+    .col-fr .hospital-type,
+    .col-ar .hospital-type {
+      font-size: 7.5pt;
+      color: #444444;
+      font-weight: 400;
+    }
+
+    .logo-circle {
+      width: 65px;
+      height: 65px;
+      border: 1.5px solid #0d9488;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0fdf9;
+    }
+
+    .logo-label {
+      font-size: 6pt;
+      color: #0d9488;
+      letter-spacing: 1.2px;
+      font-family: Arial, sans-serif;
+      font-weight: 400;
+    }
+
+    /* ─── SÉPARATEURS ─── */
+    .sep-teal {
+      height: 1.5px;
+      background: #0d9488;
+      margin: 8px 0 2px;
+    }
+
+    .sep-light {
+      height: 0.5px;
+      background: #b2dfdb;
+      margin-bottom: 10px;
+    }
+
+    /* ─── TITRE ─── */
+    .titre-ordonnance {
+      text-align: center;
+      font-size: 13pt;
+      letter-spacing: 1.8px;
+      color: #111111;
+      font-weight: 400;
+      margin: 4px 0 6px;
+    }
+
+    .date-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: #888888;
+      margin-bottom: 12px;
+    }
+
+    /* ─── SECTION LABEL ─── */
+    .section-label {
+      font-size: 7pt;
+      letter-spacing: 1.2px;
+      color: #555555;
+      text-transform: uppercase;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* ─── PATIENT ─── */
+    .patient-name {
+      font-size: 11pt;
+      color: #111111;
+      margin: 2px 0;
+      font-weight: 400;
+    }
+
+    .patient-info {
+      font-size: 8.5pt;
+      color: #555555;
+      margin: 2px 0;
+    }
+
+    /* ─── SÉPARATEUR SECTION ─── */
+    .med-sep {
+      height: 0.5px;
+      background: #eeeeee;
+      margin: 10px 0;
+    }
+
+    /* ─── MÉDICAMENTS ─── */
+    .med-item {
+      margin-bottom: 9px;
+    }
+
+    .med-nom {
+      font-size: 10pt;
+      color: #111111;
+      font-weight: 400;
+    }
+
+    .med-detail {
+      font-size: 8pt;
+      color: #666666;
+      margin-left: 14px;
+      margin-top: 2px;
+    }
+
+    /* ─── CACHET ─── */
+    .footer-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 28px;
+      margin-bottom: 24px;
+    }
+
+    .cachet {
+      width: 148px;
+      border: 1.5px solid #0d9488;
+      padding: 8px 7px 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .sig-zone {
+      width: 115px;
+      height: 34px;
+      border-bottom: 1px solid #0d9488;
+      margin: 0 auto 6px;
+      opacity: 0.35;
+    }
+
+    /* Si une image de signature est fournie */
+    .sig-img {
+      width: 115px;
+      height: 34px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 6px;
+      opacity: 0.8;
+    }
+
+    .cachet-line {
+      font-size: 7.5pt;
+      color: #0d9488;
+      line-height: 1.65;
+      font-weight: 400;
+    }
+
+    /* ─── PIED DE PAGE ─── */
+    .page-footer {
+      margin-top: auto;
+      border-top: 0.5px solid #dddddd;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7pt;
+      color: #999999;
+      gap: 8px;
+    }
+
+    .page-footer .center {
+      text-align: center;
+      font-style: italic;
+      flex: 1;
+    }
+
+    /* ─── PRINT ─── */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .page {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- EN-TÊTE -->
+  <div class="header">
+
+    <!-- Colonne gauche : Français -->
+    <div class="col-fr">
+      <span class="main-text">Royaume du Maroc</span>
+      <span class="sub-text">Ministère de la Santé</span>
+      <span class="hospital-name">Hôpital CARETRACK</span>
+      <span class="hospital-type">Hôpital Universitaire</span>
+    </div>
+
+    <!-- Centre : Logo -->
+    <div class="col-logo">
+      <div class="logo-circle">
+        <!-- Remplacer le SVG par une balise <img src="logo.png"> si logo disponible -->
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="16" stroke="#0d9488" stroke-width="1.5" fill="none"/>
+          <rect x="16" y="7" width="4" height="22" rx="2" fill="#0d9488"/>
+          <rect x="7" y="16" width="22" height="4" rx="2" fill="#0d9488"/>
+        </svg>
+      </div>
+      <div class="logo-label">CARETRACK</div>
+    </div>
+
+    <!-- Colonne droite : Arabe -->
+    <div class="col-ar">
+      <span class="main-text">المملكة المغربية</span>
+      <span class="sub-text">وزارة الصحة</span>
+      <span class="hospital-name">مستشفى كيرتراك</span>
+      <span class="hospital-type">مستشفى جامعي</span>
+    </div>
+
+  </div>
+
+  <!-- DOUBLE SÉPARATEUR -->
+  <div class="sep-teal"></div>
+  <div class="sep-light"></div>
+
+  <!-- TITRE -->
+  <div class="titre-ordonnance">ORDONNANCE MÉDICALE</div>
+  <div class="date-row">
+    <span>Date : {{DATE}}</span>
+    <span>Heure : {{HEURE}}</span>
+  </div>
+
+  <!-- PATIENT -->
+  <div class="section-label">Patient</div>
+  <div class="patient-name">{{PATIENT_PRENOM}} {{PATIENT_NOM}}</div>
+  <div class="patient-info">Âge : {{PATIENT_AGE}} &nbsp;|&nbsp; Sexe : {{PATIENT_SEXE}}</div>
+  <div class="patient-info">Groupe Sanguin : {{PATIENT_GROUPE_SANGUIN}}</div>
+
+  <div class="med-sep"></div>
+
+  <!-- PRESCRIPTIONS -->
+  <div class="section-label">Prescriptions</div>
+
+  <!-- Bloc médicament — répéter pour chaque médicament -->
+  {{MEDICAMENTS}}
+  <!-- Exemple de structure pour chaque médicament :
+  <div class="med-item">
+    <div class="med-nom">1. Amoxicilline 1g</div>
+    <div class="med-detail">Posologie : 1 comprimé 3x/jour &nbsp;|&nbsp; Durée : 7 jour(s)</div>
+  </div>
+  -->
+
+  <!-- CACHET + SIGNATURE -->
+  <div class="footer-area">
+    <div class="cachet">
+      <!-- Signature : remplacer .sig-zone par <img class="sig-img" src="{{SIGNATURE_BASE64}}"> si disponible -->
+      <div class="sig-zone"></div>
+      <div class="cachet-line">CARETRACK</div>
+      <div class="cachet-line">Dr. {{MEDECIN_PRENOM}} {{MEDECIN_NOM}}</div>
+      <div class="cachet-line">{{MEDECIN_SPECIALITE}}</div>
+      <div class="cachet-line">Mat : {{MEDECIN_RFID}}</div>
+      <div class="cachet-line">{{DATE}}</div>
+    </div>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <div class="page-footer">
+    <span>CARETRACK — Système Médical Intelligent</span>
+    <span class="center">Document certifié conforme — Généré automatiquement</span>
+    <span>Page 1 / 1</span>
+  </div>
+
+</div>
+
+</body>
+</html>

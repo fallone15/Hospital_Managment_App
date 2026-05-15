@@ -370,14 +370,22 @@ const getServices = async (req, res) => {
 // Récupérer les salles disponibles
 const getSallesDisponibles = async (req, res) => {
   try {
-    const { id_service } = req.query;
+    const { id_service, id_medecin } = req.query;
 
     let sqlQuery = 'SELECT * FROM salles WHERE occupee = FALSE AND actif = TRUE';
     const params = [];
+    let paramIndex = 1;
 
     if (id_service) {
-      sqlQuery += ' AND id_service = $1';
+      sqlQuery += ` AND id_service = $${paramIndex}`;
       params.push(id_service);
+      paramIndex++;
+    }
+
+    if (id_medecin) {
+      sqlQuery += ` AND id_medecin = $${paramIndex}`;
+      params.push(id_medecin);
+      paramIndex++;
     }
 
     sqlQuery += ' ORDER BY batiment, etage, numero_salle';
