@@ -31,9 +31,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// ── Injecter Socket.io dans le service MQTT ────────────────────────────────
-const mqttService = require('./services/mqttService');
-mqttService.setIO(io);
+
 
 // ── Middlewares globaux ────────────────────────────────────────────────────
 app.use(
@@ -67,7 +65,6 @@ const paiementsRoutes    = require('./routes/paiements');
 const ordonnancesRoutes  = require('./routes/ordonnances');
 const familyRoutes       = require('./routes/family');
 const patientsRoutes     = require('./routes/patients');
-const sensorsRoutes      = require('./routes/sensors');     // ← Nouveaux capteurs MQTT
 
 app.use('/api/auth',          authRoutes);
 app.use('/api/consultations', consultationRoutes);
@@ -78,7 +75,6 @@ app.use('/api/paiements',     paiementsRoutes);
 app.use('/api/ordonnances',   ordonnancesRoutes);
 app.use('/api/patients',      patientsRoutes);
 app.use('/api/family',        familyRoutes);
-app.use('/api/sensors',       sensorsRoutes);     // ← Route capteurs
 
 // ── Route de test ──────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -91,7 +87,6 @@ app.get('/', (req, res) => {
       rendezvous:    '/api/rendezvous',
       dossiers:      '/api/dossiers',
       paiements:     '/api/paiements',
-      sensors:       '/api/sensors',      // ← Nouveau
     },
   });
 });
@@ -139,20 +134,17 @@ server.listen(PORT, () => {
   ╚═══════════════════════════════════════════════╝
   `);
 
-  // Démarrer le service MQTT après le serveur HTTP
-  mqttService.start();
+
 });
 
 // ── Gestion propre de l'arrêt ──────────────────────────────────────────────
 process.on('SIGINT', () => {
   console.log('\n🛑 Arrêt du serveur...');
-  mqttService.stop();
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   console.log('\n🛑 Arrêt du serveur...');
-  mqttService.stop();
   process.exit(0);
 });
 

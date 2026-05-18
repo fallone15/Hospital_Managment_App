@@ -115,7 +115,12 @@ const getDisponibilites = async (req, res) => {
 const generateCreneaux = (debut, fin, rdvPris, duration = 30) => {
   const creneaux = [];
   const [hDebut, mDebut] = debut.split(':').map(Number);
-  const [hFin, mFin] = fin.split(':').map(Number);
+  let [hFin, mFin] = fin.split(':').map(Number);
+
+  // Gérer les créneaux qui traversent minuit (hFin = 0 = 24:00)
+  if (hFin === 0 && mFin === 0) {
+    hFin = 24;
+  }
 
   let h = hDebut;
   let m = mDebut;
