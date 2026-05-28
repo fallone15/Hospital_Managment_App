@@ -1,146 +1,93 @@
+# 🏥 CareTrack — Portail Web Patient
 
 <p align="center">
-  <img src="Front_end/caretrack-logo.png" alt="CareTrack Logo" width="200"/>
+  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-15-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Stripe-Payments-635BFF?style=flat-square&logo=stripe&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Socket.io-Realtime-010101?style=flat-square&logo=socket.io&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=jsonwebtokens&logoColor=white"/>
 </p>
 
-<h1 align="center">CareTrack — Système Automatisé et Intelligent d'Accueil et Suivi des Patients</h1>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Socket.io-Realtime-010101?style=for-the-badge&logo=socket.io&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Stripe-Payments-635BFF?style=for-the-badge&logo=stripe&logoColor=white"/>
-  <img src="https://img.shields.io/badge/ESP32-IoT-E7352C?style=for-the-badge&logo=espressif&logoColor=white"/>
-</p>
-
-<p align="center">
-  Plateforme de gestion hospitalière full-stack intégrant un sous-système IoT pour la collecte des constantes vitales, une borne kiosque d'accueil, un tableau de bord médecin et un portail patient.
-</p>
+> Module principal du système CareTrack — Interface web complète permettant aux patients de gérer leurs rendez-vous, accéder à leur dossier médical et effectuer des paiements en ligne.
 
 ---
 
 ## 📋 Table des Matières
 
-- [Aperçu du Projet](#-aperçu-du-projet)
-- [Architecture](#-architecture)
-- [Stack Technologique](#-stack-technologique)
-- [Modules](#-modules)
+- [Fonctionnalités](#-fonctionnalités)
+- [Structure du Projet](#-structure-du-projet)
 - [Prérequis](#-prérequis)
 - [Installation](#-installation)
-- [Configuration](#-configuration)
+- [Configuration `.env`](#-configuration-env)
 - [Lancement](#-lancement)
+- [Pages Disponibles](#-pages-disponibles)
 - [API REST](#-api-rest)
-- [Sous-système IoT](#-sous-système-iot)
 - [Sécurité](#-sécurité)
-- [Équipe](#-équipe)
 
 ---
 
-## 🏥 Aperçu du Projet
-
-**CareTrack** est une plateforme intégrée de gestion hospitalière qui couvre l'ensemble du parcours patient :
+## ✨ Fonctionnalités
 
 | Fonctionnalité | Description |
 |---|---|
-| 🖥️ **Portail Patient** | Inscription, prise de RDV en ligne, paiement Stripe, dossier médical |
-| 🏪 **Borne Kiosque** | Accueil automatisé via carte à puce ACOS3, assistant vocal multilingue |
-| 👨‍⚕️ **Dashboard Médecin** | Gestion file d'attente, consultation, ordonnances PDF |
-| 🛠️ **Portail Admin** | Configuration médecins, plannings, paiements physiques, programmation cartes |
-| 🌡️ **IoT ESP32** | Collecte des constantes vitales (SpO2, FC, température) au check-in |
+| 📝 **Inscription** | Enregistrement patient avec vérification email par token |
+| 🔐 **Connexion** | Authentification email + code PIN 4 chiffres (hashé bcrypt) |
+| 📅 **Rendez-vous** | Prise de RDV en ligne avec créneaux disponibles en temps réel |
+| 💳 **Paiement Stripe** | Paiement sécurisé en ligne via PaymentIntent + Webhook |
+| 📂 **Dossier Médical** | Accès à l'historique complet des consultations et ordonnances |
+| 📄 **Ordonnances PDF** | Visualisation et téléchargement des ordonnances |
+| 👨‍👩‍👧 **Famille** | Gestion des membres de la famille sur un même compte |
+| 🔔 **Notifications** | Alertes en temps réel via WebSocket (Socket.io) |
+| 🔑 **Reset PIN** | Réinitialisation du code PIN par email |
 
 ---
 
-## 🏗️ Architecture
+## 📁 Structure du Projet
 
 ```
-CareTrack/
-├── Front_end/              # Portail Web Patient      → Port 5502
-├── Back_end/               # API principale           → Port 5000
+sys_hospital_website/
 │
-├── Tablette/
-│   ├── kiosk-frontend/     # Interface Borne Kiosque
-│   └── kiosk-backend/      # API Borne + PC/SC ACOS3  → Port 3001
+├── Front_end/                             # Interface utilisateur
+│   ├── index.html                        # Page d'accueil du portail
+│   ├── login.html / login.js             # Connexion patient
+│   ├── register.html / register.js       # Inscription patient
+│   ├── verify-email.html                 # Validation du compte par email
+│   ├── forgot-pin.html / forgot-pin.js   # Mot de passe oublié
+│   ├── reset-pin.html / reset-pin.js     # Réinitialisation PIN
+│   ├── dashboard.html                    # Tableau de bord patient
+│   ├── book-appointment.html             # Sélection du médecin et du créneau
+│   ├── appointment-booking-with-payment.html  # RDV + paiement Stripe
+│   ├── payment-checkout.html             # Page de finalisation paiement
+│   ├── dossier-medical.html              # Dossier médical électronique
+│   ├── consultation.html                 # Détails d'une consultation
+│   ├── mes-consultations.html            # Historique des consultations
+│   ├── mes-paiements.html                # Historique des paiements
+│   ├── ordonnance.html                   # Visualisation ordonnance PDF
+│   ├── sensors-dashboard.html            # Données IoT (constantes vitales)
+│   ├── script.js                         # Scripts communs
+│   └── style.css                         # Styles globaux
 │
-├── Admin/
-│   ├── Front/              # Interface Administration
-│   └── Back/               # API Administrative       → Port 3000
-│
-├── Medecin_dashboard/
-│   ├── front_end/          # Interface Médecin
-│   └── Back_end/           # API Prescriptions        → Port 8000
-│
-└── IoT/                    # Firmware ESP32 + Flask Gateway
+└── Back_end/                              # API et serveur principal (Port 5000)
+    ├── server.js                         # Point d'entrée Express + Socket.io
+    ├── routes/
+    │   ├── auth.js                       # Inscription, connexion, email
+    │   ├── rendezvous.js                 # Médecins, créneaux, réservations
+    │   ├── consultations.js              # Consultations et file d'attente
+    │   ├── paiements.js                  # Stripe PaymentIntent + Webhook
+    │   ├── dossiers.js                   # Dossier médical électronique
+    │   └── family.js                     # Gestion membres famille
+    ├── models/
+    │   ├── Patient.js
+    │   ├── Medecin.js
+    │   ├── RendezVous.js
+    │   └── DossierMedical.js
+    ├── middleware/                        # JWT, CORS, validation
+    ├── config/                            # Connexion PostgreSQL
+    ├── services/                          # Nodemailer, Stripe helpers
+    ├── migrations/                        # Scripts SQL
+    ├── .env.example                       # Template de configuration
+    └── package.json
 ```
-
-### Ports des services
-
-| Service | Port | Description |
-|---|---|---|
-| Backend Principal | `5000` | API REST principale |
-| Frontend Patient | `5502` | Interface Web patient |
-| Backend Médecin | `8000` | Gestion consultations & ordonnances |
-| Backend Borne | `3001` | Auth ACOS3, check-in, file d'attente |
-| WebSocket Borne | `3001/ws/card` | Lecture carte temps réel |
-| Backend Admin | `3000` | Gestion administrative |
-| PostgreSQL | `5432` | Base de données |
-
----
-
-## 🛠️ Stack Technologique
-
-### Backend
-| Composant | Technologie |
-|---|---|
-| Serveur HTTP | Node.js + Express |
-| Temps réel | Socket.io |
-| Base de données | PostgreSQL |
-| Authentification | JWT + bcryptjs |
-| Paiement | Stripe API |
-| Email | Nodemailer |
-| Upload fichiers | Multer |
-| Carte à puce | PC/SC (Gemalto) + ACOS3 |
-
-### Frontend
-- HTML5 + CSS3 + JavaScript vanilla
-- Design responsive, compatible borne tactile et navigateur
-
-### IoT
-| Composant | Rôle |
-|---|---|
-| ESP32 | Microcontrôleur principal |
-| MAX30105 | Capteur SpO2 & fréquence cardiaque (PPG) |
-| MLX90614 | Capteur de température infrarouge sans contact |
-| Flask | Passerelle IoT → Backend |
-
----
-
-## 📦 Modules
-
-### 1. Portail Patient (`Front_end/` + `Back_end/`)
-- Inscription avec vérification email
-- Connexion sécurisée (email + code PIN hashé bcrypt)
-- Prise de rendez-vous avec créneaux disponibles en temps réel
-- Paiement en ligne via Stripe (PaymentIntent + Webhook)
-- Accès au dossier médical électronique et ordonnances PDF
-
-### 2. Borne Kiosque (`Tablette/`)
-- Identification par carte ACOS3 via lecteur PC/SC Gemalto
-- Authentification PIN (3 tentatives max)
-- Assistant vocal multilingue (🇫🇷 🇬🇧 🇸🇦 🇲🇦)
-- Génération de ticket de file d'attente
-- Acquisition des constantes vitales (IoT)
-
-### 3. Dashboard Médecin (`Medecin_dashboard/`)
-- Visualisation de la file d'attente en temps réel
-- Saisie du diagnostic et des constantes vitales
-- Génération d'ordonnances au format PDF (PDFKit)
-- Accès au dossier médical complet du patient
-
-### 4. Portail Admin (`Admin/`)
-- Gestion des médecins et de leurs plannings
-- Gestion des paiements physiques à la caisse
-- Programmation des cartes ACOS3 patients et médecins
-- Affichage dynamique de l'écran d'appel (numéro + cabinet + alerte sonore)
 
 ---
 
@@ -148,177 +95,127 @@ CareTrack/
 
 - [Node.js](https://nodejs.org/) v18+
 - [PostgreSQL](https://www.postgresql.org/) v15+
-- [Python](https://www.python.org/) 3.9+ (pour l'IoT et la gestion PC/SC)
-- [npm](https://www.npmjs.com/) v9+
-- Lecteur de carte Gemalto PC/SC (pour la borne kiosque)
-- Compte [Stripe](https://stripe.com/) (mode test suffisant pour le développement)
+- Compte [Stripe](https://stripe.com/) (mode test pour le développement)
+- Compte Gmail avec mot de passe d'application (pour l'envoi d'emails)
+- Extension navigateur [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) (ou équivalent) pour le frontend
 
 ---
 
 ## 🚀 Installation
 
-### 1. Cloner le dépôt
-
 ```bash
+# 1. Cloner le dépôt
 git clone https://github.com/fallone15/Hospital_Managment_App.git
 cd Hospital_Managment_App
-```
 
-### 2. Installer les dépendances de chaque module
+# 2. Installer les dépendances du backend
+cd Back_end
+npm install
 
-```bash
-# Backend principal
-cd Back_end && npm install
-
-# Backend Borne Kiosque
-cd ../Tablette/kiosk-backend && npm install
-
-# Backend Administration
-cd ../../Admin/Back && npm install
-
-# Backend Médecin
-cd ../../Medecin_dashboard/Back_end && npm install
-```
-
-### 3. Initialiser la base de données
-
-```bash
-cd Admin/Back
-node db_init.js
+# 3. Copier le fichier d'environnement
+cp .env.example .env
+# Puis éditer .env avec vos valeurs
 ```
 
 ---
 
-## ⚙️ Configuration
-
-Chaque module possède son propre fichier `.env`. Copier l'exemple et remplir les valeurs :
-
-```bash
-cp Back_end/.env.example Back_end/.env
-```
-
-Variables principales à configurer :
+## ⚙️ Configuration `.env`
 
 ```env
-# Base de données
+# ── Base de données ────────────────────────────
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=hospital_owner
 DB_PASSWORD=your_password
 DB_NAME=hospital_db
 
-# JWT
-JWT_SECRET=your_jwt_secret_here
+# ── Serveur ────────────────────────────────────
+port=5000
+NODE_ENV=development
+
+# ── JWT ────────────────────────────────────────
+JWT_SECRET=your_super_secret_key
 JWT_EXPIRES_IN=6h
 
-# Stripe (clés de test disponibles sur dashboard.stripe.com)
+# ── Stripe ─────────────────────────────────────
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Email
+# ── Email ──────────────────────────────────────
 EMAIL_SERVICE=gmail
-EMAIL_USER=votre@email.com
+EMAIL_USER=votre@gmail.com
 EMAIL_PASSWORD=your_app_password
 
-# URLs
+# ── URLs ───────────────────────────────────────
 FRONTEND_URL=http://127.0.0.1:5502
 ```
 
-> ⚠️ Ne jamais committer les fichiers `.env` — ils sont dans le `.gitignore`.
+> ⚠️ Ne jamais committer le fichier `.env` — il est listé dans `.gitignore`.
 
 ---
 
 ## ▶️ Lancement
 
-Ouvrir un terminal par service :
+### Backend (API — Port 5000)
 
 ```bash
-# Terminal 1 — Backend Principal
-cd Back_end && node server.js
-
-# Terminal 2 — Backend Borne Kiosque
-cd Tablette/kiosk-backend && node server.js
-
-# Terminal 3 — Backend Administration
-cd Admin/Back && node server.js
-
-# Terminal 4 — Backend Médecin
-cd Medecin_dashboard/Back_end && node server.js
+cd Back_end
+node server.js
 ```
 
-Ouvrir les interfaces dans le navigateur :
-- **Patient** : `http://127.0.0.1:5502`
-- **Admin** : ouvrir `Admin/Front/index.html`
-- **Médecin** : ouvrir `Medecin_dashboard/front_end/index.html`
-- **Borne** : ouvrir `Tablette/kiosk-frontend/index.html`
+### Frontend (Interface Patient — Port 5502)
+
+Ouvrir `Front_end/index.html` avec **Live Server** sur VS Code, ou tout équivalent.
+L'interface sera accessible sur : `http://127.0.0.1:5502`
+
+---
+
+## 🌐 Pages Disponibles
+
+| Page | Fichier | Description |
+|---|---|---|
+| Accueil | `index.html` | Page principale du portail |
+| Connexion | `login.html` | Authentification patient |
+| Inscription | `register.html` | Création de compte |
+| Tableau de bord | `dashboard.html` | Résumé patient connecté |
+| Prendre RDV | `book-appointment.html` | Sélection médecin et créneau |
+| Payer un RDV | `appointment-booking-with-payment.html` | RDV + paiement Stripe |
+| Dossier médical | `dossier-medical.html` | Historique complet |
+| Constantes IoT | `sensors-dashboard.html` | Données biométriques en temps réel |
 
 ---
 
 ## 🔌 API REST
 
-| Méthode | Route | Description |
-|---|---|---|
-| `POST` | `/api/auth/register/patient` | Inscription patient |
-| `POST` | `/api/auth/login/patient` | Connexion patient (JWT) |
-| `POST` | `/api/auth/login/medecin` | Connexion médecin (JWT) |
-| `GET` | `/api/auth/profile` | Profil utilisateur |
-| `GET` | `/api/rendezvous/medecins` | Liste médecins disponibles |
-| `POST` | `/api/rdv` | Créer un rendez-vous |
-| `GET` | `/api/rdv/patient` | Mes rendez-vous |
-| `GET` | `/api/consultations` | File d'attente du jour |
-| `POST` | `/api/consultations` | Enregistrer une consultation |
-| `GET` | `/api/dossiers/patient/:id` | Dossier médical patient |
-| `POST` | `/api/paiements` | Créer un PaymentIntent Stripe |
-| `POST` | `/api/ordonnances` | Créer une ordonnance |
-| `GET` | `/health` | Santé du serveur |
+Le backend tourne sur **`http://localhost:5000`**
 
----
+| Méthode | Route | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register/patient` | ❌ | Inscription + envoi email |
+| `GET` | `/api/auth/verify-email?token=` | ❌ | Validation compte |
+| `POST` | `/api/auth/login/patient` | ❌ | Connexion → JWT |
+| `POST` | `/api/auth/forgot-pin` | ❌ | Email reset PIN |
+| `GET` | `/api/auth/profile` | ✅ JWT | Profil connecté |
+| `GET` | `/api/rendezvous/medecins` | ✅ JWT | Liste médecins actifs |
+| `GET` | `/api/rendezvous/disponibilites/:id/:date` | ✅ JWT | Créneaux disponibles |
+| `POST` | `/api/rdv` | ✅ JWT | Créer un rendez-vous |
+| `GET` | `/api/rdv/patient` | ✅ JWT | Mes rendez-vous |
+| `GET` | `/api/dossiers/patient/:id` | ✅ JWT | Dossier médical |
+| `POST` | `/api/paiements` | ✅ JWT | Créer PaymentIntent Stripe |
+| `POST` | `/api/webhook` | ❌ (signature) | Confirmation paiement Stripe |
+| `GET` | `/health` | ❌ | Santé du serveur |
 
-## 🌡️ Sous-système IoT
-
-### Matériel
-- **ESP32** — Microcontrôleur avec Wi-Fi intégré
-- **MAX30105** — Capteur de pouls et SpO2 (communication I2C, photopléthysmographie PPG)
-- **MLX90614** — Capteur de température infrarouge sans contact (I2C)
-
-### Filtres de sécurité sur l'ESP32
-- **Détection de présence** : signal infrarouge ≥ 50 000 (irMoy)
-- **Filtre physiologique** : 40 ≤ BPM ≤ 120
-
-### Flux de données
-```
-ESP32 → Flask Gateway → API Backend (port 5000) → PostgreSQL
-```
+> 📬 Une collection Postman est disponible : [`Fakhsash-API.postman_collection.json`](Back_end/Fakhsash-API.postman_collection.json)
 
 ---
 
 ## 🔒 Sécurité
 
-- **Hashage PIN** : bcryptjs avec salage
-- **Authentification** : JWT sans état (stateless), expiration 6h
-- **Limite de tentatives** : 3 essais PIN max par session
-- **Validation** : express-validator sur tous les endpoints
-- **Vérification email** : token temporaire avant activation du compte
-- **Stripe Webhook** : vérification de signature cryptographique
-- **CORS** : restriction d'origine configurée par environnement
-- **RGPD** : gestion des consentements et droits d'accès/suppression
-
----
-
-## 👥 Équipe
-
-| Nom | Rôle |
-|---|---|
-| BAAZIZ Sanae | Développement full-stack |
-| DAS Shawrov | Développement full-stack |
-| MOSSAMIH Khadija | Développement full-stack |
-| NACOULMA Baowendmanegda Doris Fallone | Développement full-stack |
-
-**Encadrants** : Pr. CHAMI Mouhcine · Pr. EL HADBI Assia · Pr. KHALLAAYOUNE Jamal
-
-**Institut** : INPT — Institut National des Postes et Télécommunications · Année 2025–2026
-
----
-
-<p align="center">Fait avec ❤️ à l'INPT · CareTrack © 2025–2026</p>
+- **PIN hashé** avec `bcryptjs` (salage automatique, irréversible)
+- **JWT** — tokens sans état, expiration configurable (défaut : 6h)
+- **3 tentatives max** de saisie PIN par session
+- **Validation des entrées** via `express-validator` sur chaque endpoint
+- **Vérification email** obligatoire avant activation du compte
+- **Webhook Stripe** sécurisé par vérification de signature cryptographique
+- **CORS** restreint à l'origine `FRONTEND_URL` définie dans `.env`
