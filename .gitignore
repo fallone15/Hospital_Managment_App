@@ -1,0 +1,59 @@
+# =====================
+# Docker
+# =====================
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+Dockerfile
+Dockerfile.*
+README_DOCKER.md
+DOCKER_GUIDE.md
+
+# =====================
+# Variables d'environnement
+# =====================
+.env
+*.env
+!*.env.example
+
+# =====================
+# Dépendances Node.js
+# =====================
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# =====================
+# Archives
+# =====================
+*.zip
+*.rar
+*.tar.gz
+
+# =====================
+# Logs
+# =====================
+logs/
+*.log
+
+# =====================
+# Fichiers système
+# =====================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =====================
+# IDE
+# =====================
+.idea/
+*.swp
+*.swo
+
+# =====================
+# Build / Dist
+# =====================
+dist/
+build/
+coverage/
+.nyc_output/
