@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html class="light" lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CareTrack — Portail de Présentation & Soutenance</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0EA5E9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        accent: {
+                            500: '#ec4899',
+                            600: '#db2777',
+                        },
+                        success: {
+                            500: '#10B981',
+                        },
+                        warning: {
+                            500: '#F59E0B',
+                        },
+                        danger: {
+                            500: '#EF4444',
+                        },
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0F172A",
+                    },
+                    fontFamily: {
+                        display: ["Outfit", "sans-serif"],
+                        body: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* Glassmorphism Classes */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .medical-gradient {
+            background-color: #F8FAFC;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+        }
+
+        .dark .medical-gradient {
+            background-color: #0F172A;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+        }
+
+        /* Screen Mockup CSS */
+        .mockup-screen {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+
+<body
+    class="font-body bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 medical-gradient">
+    <div class="relative min-h-screen w-full flex flex-col overflow-x-hidden">
+
+        <!-- HEADER / NAVIGATION -->
+        <nav class="fixed top-0 w-full z-50 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-3 rounded-full shadow-lg">
+                <a class="flex items-center gap-2 group cursor-pointer" onclick="switchSection('intro')">
+                    <span class="material-icons-round text-primary-500 text-3xl flex items-center"><i
+                            class="fas fa-hospital-user"></i></span>
+                    <span
+                        class="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-blue-600 font-display">CareTrack</span>
+                    <span
+                        class="text-[9px] font-bold uppercase tracking-widest text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full ml-2">Guide
+                        Pratique</span>
+                </a>
+                <div class="hidden lg:flex items-center gap-1">
+                    <button id="nav-intro"
+                        class="nav-btn px-4 py-2 rounded-full text-sm font-semibold text-primary-600 bg-primary-50 dark:bg-slate-800 dark:text-white transition-all"
+                        onclick="switchSection('intro')">
+                        <i class="fas fa-info-circle mr-2"></i>Vue d'ensemble
+                    </button>
+                    <button id="nav-patient"
+                        class="nav-btn px-4 py-2 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                        onclick="switchSection('patient')">
+                        <i class="fas fa-user-injured mr-2"></i>1. Guide Patient
+                    </button>
+                    <button id="nav-borne"
+                        class="nav-btn px-4 py-2 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                        onclick="switchSection('borne')">
+                        <i class="fas fa-server mr-2"></i>2. Guide Borne
+                    </button>
+                    <button id="nav-medecin"
+                        class="nav-btn px-4 py-2 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                        onclick="switchSection('medecin')">
+                        <i class="fas fa-user-md mr-2"></i>3. Guide Médecin
+                    </button>
+                    <button id="nav-admin"
+                        class="nav-btn px-4 py-2 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                        onclick="switchSection('admin')">
+                        <i class="fas fa-user-shield mr-2"></i>4. Guide Admin
+                    </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                        onclick="document.documentElement.classList.toggle('dark')" title="Basculer le thème">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col max-w-7xl mx-auto w-full px-6 pt-24 pb-16 relative z-10">
+
+            <!-- SECTION 0: INTRODUCTION -->
+            <section id="section-intro" class="section-content block py-6 animate-fade">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                    <!-- Intro Text -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-wider">
+                            <i class="fas fa-project-diagram"></i> Expérience Utilisateur Intégrée
+                        </div>
+                        <h1
+                            class="text-4xl md:text-5xl lg:text-6xl font-black font-display tracking-tight text-slate-900 dark:text-white leading-tight">
+                            Guide Pratique <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-600">CareTrack</span>
+                        </h1>
+                        <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed max-w-2xl">
+                            Bienvenue dans le guide officiel de l'écosystème CareTrack. Découvrez comment nos 4 modules
+                            communiquent pour offrir un parcours de soins fluide, de la prise de rendez-vous en ligne
+                            jusqu'à la consultation en cabinet.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div
+                                class="p-4 bg-white dark:bg-slate-900/40 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 text-primary-500 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-laptop-medical"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Portail Web Patient</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Inscription, prise de
+                                        RDV, paiement Stripe, suivi biométrique et accès aux ordonnances (Projet
+                                        `sys_hospital_website`).</p>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 bg-white dark:bg-slate-900/40 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-tablet-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Borne Tactile Hôpital</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Identification RFID,
+                                        assistant vocal, check-in visiteur, paiement sur place et émission de tickets
+                                        (Projet `Tablette`).</p>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 bg-white dark:bg-slate-900/40 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Dashboard Médecin</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Visualisation de la file
+                                        d'attente, appel des patients, consultations et création d'ordonnances (Projet
+                                        `Medecin_dashboard`).</p>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 bg-white dark:bg-slate-900/40 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">Portail Admin & Accueil</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Gestion caisse, TV
+                                        d'affichage salles d'attente, création des cartes RFID et disponibilités (Projet
+                                        `Admin`).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex flex-wrap gap-4">
+                            <button
+                                class="bg-primary-500 text-white hover:bg-primary-600 px-8 py-3 rounded-full font-bold shadow-lg shadow-primary-500/25 hover:scale-105 transition-all"
+                                onclick="switchSection('patient')">
+                                Découvrir le parcours Patient <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Diagram Card -->
+                    <div class="lg:col-span-5 flex justify-center">
+                        <div
+                            class="relative w-full max-w-[420px] aspect-[4/5] p-6 glass dark:bg-slate-900/50 rounded-3xl shadow-xl flex flex-col justify-between border-slate-200/50 dark:border-slate-800">
+                            <div class="text-center">
+                                <span
+                                    class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Résumé</span>
+                                <h3 class="text-xl font-bold text-slate-800 dark:text-white">Le Parcours Patient</h3>
+                            </div>
+
+                            <!-- Visual flowchart representation -->
+                            <div class="flex-1 flex flex-col justify-center gap-4 py-8">
+                                <div class="flex items-center gap-3 bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative cursor-pointer hover:border-primary-500"
+                                    onclick="switchSection('patient')">
+                                    <span
+                                        class="w-7 h-7 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                                    <div class="flex-1">
+                                        <h5 class="text-xs font-bold text-slate-900 dark:text-white">Étape 1 : Le
+                                            Patient (Web)</h5>
+                                        <p class="text-[10px] text-slate-500">Inscription, RDV et Paiement à domicile
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-globe text-primary-500 text-lg absolute right-4"></i>
+                                </div>
+
+                                <div class="flex justify-center text-slate-400 dark:text-slate-600"><i
+                                        class="fas fa-arrow-down"></i></div>
+
+                                <div class="flex items-center gap-3 bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative cursor-pointer hover:border-indigo-500"
+                                    onclick="switchSection('borne')">
+                                    <span
+                                        class="w-7 h-7 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                                    <div class="flex-1">
+                                        <h5 class="text-xs font-bold text-slate-900 dark:text-white">Étape 2 : L'Arrivée
+                                            (Borne)</h5>
+                                        <p class="text-[10px] text-slate-500">Check-in RFID, assistant vocal et Ticket
+                                        </p>
+                                    </div>
+                                    <i class="fas fa-tablet-alt text-indigo-500 text-lg absolute right-4"></i>
+                                </div>
+
+                                <div class="flex justify-center text-slate-400 dark:text-slate-600"><i
+                                        class="fas fa-arrow-down"></i></div>
+
+                                <div class="flex items-center gap-3 bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative cursor-pointer hover:border-emerald-500"
+                                    onclick="switchSection('medecin')">
+                                    <span
+                                        class="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                                    <div class="flex-1">
+                                        <h5 class="text-xs font-bold text-slate-900 dark:text-white">Étape 3 : La
+                                            Consultation</h5>
+                                        <p class="text-[10px] text-slate-500">Appel TV et rédaction de l'ordonnance</p>
+                                    </div>
+                                    <i class="fas fa-user-md text-emerald-500 text-lg absolute right-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 1: PATIENT -->
+            <section id="section-patient" class="section-content hidden py-6 animate-fade">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="p-3 bg-primary-100 dark:bg-primary-900/30 text-primary-500 rounded-2xl"><i
+                            class="fas fa-user-injured text-2xl"></i></span>
+                    <div>
+                        <h2 class="text-2xl font-black font-display text-slate-900 dark:text-white">1. Portail Web
+                            Patient (Projet: sys_hospital_website)</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Le portail principal en ligne pour
+                            l'inscription, la prise de RDV et le dossier médical.</p>
+                    </div>
+                </div>
+
+                <!-- Stepper Navigation -->
+                <div
+                    class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+                    <button id="btn-patient-step-1"
+                        class="step-btn px-4 py-2 bg-primary-500 text-white rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 1, 6)">1. Inscription</button>
+                    <button id="btn-patient-step-2"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 2, 6)">2. Connexion</button>
+                    <button id="btn-patient-step-3"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 3, 6)">3. Dashboard & Données</button>
+                    <button id="btn-patient-step-4"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 4, 6)">4. Prise de RDV</button>
+                    <button id="btn-patient-step-5"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 5, 6)">5. Paiement</button>
+                    <button id="btn-patient-step-6"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('patient', 6, 6)">6. Dossier & Ordonnances</button>
+                </div>
+
+                <!-- Step Content Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left: IMAGE Mockup Container -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div
+                            class="mockup-screen bg-slate-900 rounded-[2rem] p-3 border-4 border-slate-800 aspect-[16/10] w-full relative overflow-hidden flex flex-col bg-slate-950">
+                            <!-- Device Header -->
+                            <div class="flex items-center justify-between px-4 pb-2 border-b border-slate-800">
+                                <div class="flex gap-1.5">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono">Projet: sys_hospital_website</div>
+                                <div class="w-6"></div>
+                            </div>
+
+                            <!-- Browser viewport content containing user's PHOTOS -->
+                            <div class="flex-1 bg-slate-900 rounded-b-xl overflow-hidden relative">
+
+                                <div id="mockup-patient-step-1" class="w-full h-full">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Inscription+register.html)"
+                                        alt="Inscription" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-patient-step-2" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Connexion+login.html)"
+                                        alt="Connexion" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-patient-step-3" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Tableau+de+bord+%26+Constantes+IoT)"
+                                        alt="Dashboard" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-patient-step-4" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Prise+de+RDV+book-appointment.html)"
+                                        alt="Prise RDV" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-patient-step-5" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Paiement+Stripe+checkout.html)"
+                                        alt="Paiement Stripe" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-patient-step-6" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/38bdf8?text=Photo+Patient\n(Dossier+Medical+%26+Ordonnance)"
+                                        alt="Dossier et Ordonnances" class="w-full h-full object-contain">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Guide Panel -->
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+
+                        <!-- Guide Patient Step 1 -->
+                        <div id="guide-patient-step-1"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-user-plus text-primary-500 mr-2"></i>Création de compte (Inscription)
+                            </h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Tout commence par la création d'un compte patient. Le système vérifie l'email de
+                                l'utilisateur pour activer le profil.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Comment
+                                    faire ?</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Allez sur la page d'inscription (`register.html`).</li>
+                                    <li>Renseignez vos informations personnelles.</li>
+                                    <li>Validez votre inscription. Un email contenant un lien ou token de vérification
+                                        vous est envoyé.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Guide Patient Step 2 -->
+                        <div id="guide-patient-step-2"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-sign-in-alt text-primary-500 mr-2"></i>Connexion Sécurisée</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Une fois le compte vérifié, le patient se connecte avec son adresse email et son code
+                                PIN personnel.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Comment
+                                    faire ?</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Sur la page de connexion (`login.html`), saisissez votre <strong>adresse
+                                            email</strong>.</li>
+                                    <li>Entrez votre <strong>code PIN</strong> (mot de passe).</li>
+                                    <li>Cliquez sur se connecter pour accéder au tableau de bord.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Guide Patient Step 3 -->
+                        <div id="guide-patient-step-3"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-home text-primary-500 mr-2"></i>Tableau de Bord & Données IoT</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le tableau de bord (`dashboard.html`) est le point névralgique. Le patient peut y
+                                retrouver des raccourcis vers ses informations de santé.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Ce
+                                    que vous pouvez y faire :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-arrow-right text-primary-400 mr-2 text-xs"></i>Consulter
+                                        l'historique et les <strong>Constantes IoT</strong> (`sensors-dashboard.html`).
+                                    </li>
+                                    <li><i class="fas fa-arrow-right text-primary-400 mr-2 text-xs"></i>Gérer les
+                                        membres de votre famille rattachés au compte.</li>
+                                    <li><i class="fas fa-arrow-right text-primary-400 mr-2 text-xs"></i>Lancer une
+                                        nouvelle prise de rendez-vous.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Patient Step 4 -->
+                        <div id="guide-patient-step-4"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-calendar-check text-primary-500 mr-2"></i>Prise de Rendez-vous</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le patient peut réserver une consultation en temps réel en fonction du planning
+                                (Disponibilités) géré par les administrateurs.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Étapes
+                                    de réservation :</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Sélectionnez un médecin disponible.</li>
+                                    <li>Choisissez une <strong>date</strong> et une <strong>heure (créneau)</strong> et
+                                        ajoutez y un <strong>motif</strong> bien détaillé.</li>
+                                    <li>Passez à l'étape suivante pour finaliser.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Guide Patient Step 5 -->
+                        <div id="guide-patient-step-5"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-credit-card text-primary-500 mr-2"></i>Paiement en ligne (Stripe)</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Pour valider un rendez-vous, le patient est redirigé vers la page de paiement.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Comment
+                                    finaliser ?</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-info-circle text-primary-400 mr-2 text-xs"></i>Vous devriez
+                                        chosiir entre un paiment par carte ou à l'acceuil </li>
+                                    <li><i class="fas fa-info-circle text-primary-400 mr-2 text-xs"></i>Si vous
+                                        choisissez le paiement par carte, vous serez redirigé vers la page de paiement
+                                        sécurisé Stripe.</li>
+                                    <li><i class="fas fa-info-circle text-primary-400 mr-2 text-xs"></i>Saisissez les
+                                        informations de carte bancaire dans le formulaire Stripe sécurisé.</li>
+                                    <li><i class="fas fa-info-circle text-primary-400 mr-2 text-xs"></i>Validez le
+                                        paiement. Une fois approuvé, le RDV est définitivement confirmé dans la base de
+                                        données.</li>
+                                    <li><i class="fas fa-info-circle text-primary-400 mr-2 text-xs"></i>Si vous
+                                        choisissez le paiement à l'accueil, vous devrez régler les frais requis à
+                                        l'acceuil le jour j avant d'etre pris en compte par le système.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Patient Step 6 -->
+                        <div id="guide-patient-step-6"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-notes-medical text-primary-500 mr-2"></i>Dossier Médical et
+                                Ordonnances</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Après la consultation en cabinet, le patient retrouve son historique clinique.
+                            </p>
+                            <div
+                                class="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-xl border border-primary-100 dark:border-primary-800/30">
+                                <span
+                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider block mb-2">Fonctionnalités
+                                    :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-check text-primary-400 mr-2 text-xs"></i><strong>Dossier
+                                            Médical :</strong> Observations et détails renseignés par le médecin.</li>
+                                    <li><i class="fas fa-check text-primary-400 mr-2 text-xs"></i><strong>Ordonnances
+                                            (`ordonnance.html`) :</strong> Téléchargement et génération au format PDF
+                                        des prescriptions.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: BORNE D'ACCUEIL TACTILE -->
+            <section id="section-borne" class="section-content hidden py-6 animate-fade">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500 rounded-2xl"><i
+                            class="fas fa-tablet-alt text-2xl"></i></span>
+                    <div>
+                        <h2 class="text-2xl font-black font-display text-slate-900 dark:text-white">2. Borne Tactile
+                            Hôpital (Projet: Tablette)</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Le point d'entrée physique à l'hôpital.
+                            Interface SPA tactile avec lecteur de carte RFID et Assistant Vocal intelligent.</p>
+                    </div>
+                </div>
+
+                <!-- Stepper Navigation -->
+                <div
+                    class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+                    <button id="btn-borne-step-1"
+                        class="step-btn px-4 py-2 bg-indigo-500 text-white rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('borne', 1, 4)">1. Scan RFID / Visiteur</button>
+                    <button id="btn-borne-step-2"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('borne', 2, 4)">2. Check-in & Assistant Vocal</button>
+                    <button id="btn-borne-step-3"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('borne', 3, 4)">3. Paiement Caisse / Stripe</button>
+                    <button id="btn-borne-step-4"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('borne', 4, 4)">4. Impression du Ticket</button>
+                </div>
+
+                <!-- Step Content Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                    <!-- Left: IMAGE Mockup -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div
+                            class="mockup-screen bg-slate-900 rounded-[2.5rem] p-4 border-8 border-slate-800 aspect-[16/10] w-full relative overflow-hidden flex flex-col bg-slate-950">
+                            <!-- Kiosk Header -->
+                            <div class="flex items-center justify-between px-4 pb-2 border-b border-slate-800/50">
+                                <div
+                                    class="flex items-center gap-2 text-[10px] text-indigo-400 uppercase tracking-widest font-black">
+                                    <i class="fas fa-tablet-alt"></i> Borne Tactile CareTrack
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono">Projet: Tablette (SPA)</div>
+                            </div>
+
+                            <!-- Kiosk viewport content containing user's PHOTOS -->
+                            <div class="flex-1 bg-slate-900 rounded-b-xl overflow-hidden relative">
+
+                                <div id="mockup-borne-step-1" class="w-full h-full">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/818cf8?text=Photo+Borne\n(Accueil+Scan+RFID+ou+Guest)"
+                                        alt="Scan Carte" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-borne-step-2" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/818cf8?text=Photo+Borne\n(Assistant+Vocal+%26+Choix+Service)"
+                                        alt="Confirmation RDV" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-borne-step-3" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/818cf8?text=Photo+Borne\n(Choix+Paiement+Stripe/Especes)"
+                                        alt="Paiement Borne" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-borne-step-4" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/818cf8?text=Photo+Borne\n(Ticket+File+d'attente)"
+                                        alt="Impression Ticket" class="w-full h-full object-contain">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Guide Panel -->
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+
+                        <!-- Guide Borne Step 1 -->
+                        <div id="guide-borne-step-1"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-id-badge text-indigo-500 mr-2"></i>Identification sur Borne</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                À son arrivée, le patient s'identifie de manière autonome, via mode j'ai ma carte
+                                patient ou mode
+                                je suis nouveau.
+                            </p>
+                            <div
+                                class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                                <span
+                                    class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-2">Options
+                                    possibles :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-arrow-right text-indigo-400 mr-2 text-xs"></i><strong>Carte
+                                            :</strong> il scanne la carte et est directement dirigé vers la verification
+                                        :sinon il entre son numero de carte, il met le code PIN via le pavé et ensuite
+                                        vers la verification de son rendez-vous du jour.</li>
+                                    <li><i class="fas fa-arrow-right text-indigo-400 mr-2 text-xs"></i><strong>Mode
+                                            Visiteur (Guest) :</strong> Le patient est dirigé automatiquement vers le
+                                        choix de la spécialité et n'est pas enregistré dans la base de données.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Borne Step 2 -->
+                        <div id="guide-borne-step-2"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-microphone-alt text-indigo-500 mr-2"></i>Assistant Vocal et Check-in
+                            </h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                L'interface est dotée d'un système de synthèse multilingue
+                                (Web Speech API) pour guider le patient.
+                            </p>
+                            <div
+                                class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                                <span
+                                    class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-2">Déroulement
+                                    :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li>Il a justé besoin de cliquer sur le magnétophone et on lui dira quoi faire
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Borne Step 3 -->
+                        <div id="guide-borne-step-3"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-coins text-indigo-500 mr-2"></i>Règlement de la consultation</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Si le patient (ex: visiteur) n'a pas encore payé, il doit valider son paiement pour
+                                confirmer son insertion dans la file d'attente.
+                            </p>
+                            <div
+                                class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                                <span
+                                    class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-2">Méthodes
+                                    :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-check-circle text-indigo-400 mr-2 text-xs"></i><strong>Paiement
+                                            Stripe :</strong> Directement sur la borne.</li>
+                                    <li><i class="fas fa-check-circle text-indigo-400 mr-2 text-xs"></i><strong>Paiement
+                                            en caisse :</strong> Le patient sera dirigé vers l'Accueil physique avant
+                                        d'entrer en salle d'attente médicale.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Borne Step 4 -->
+                        <div id="guide-borne-step-4"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-print text-indigo-500 mr-2"></i>Ticket de Passage</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Fin du parcours borne. L'application génère un ticket pour le patient.
+                            </p>
+                            <div
+                                class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                                <span
+                                    class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-2">Informations
+                                    imprimées :</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Le <strong>Numéro de file</strong> (ex: `RAD-03`).</li>
+                                    <li>Le nom du service et du médecin assigné en temps réel .
+                                    </li>
+                                    <li>Le patient est alors officiellement mis en attente sur l'écran du Médecin !</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: MEDECIN -->
+            <section id="section-medecin" class="section-content hidden py-6 animate-fade">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-2xl"><i
+                            class="fas fa-user-md text-2xl"></i></span>
+                    <div>
+                        <h2 class="text-2xl font-black font-display text-slate-900 dark:text-white">3. Espace Médecin
+                            (Projet: Medecin_dashboard)</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Le tableau de bord central du médecin pour
+                            la gestion de sa file d'attente et l'examen médical.</p>
+                    </div>
+                </div>
+
+                <!-- Stepper Navigation -->
+                <div
+                    class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+                    <button id="btn-medecin-step-1"
+                        class="step-btn px-4 py-2 bg-emerald-500 text-white rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('medecin', 1, 3)">1. Dashboard & File d'attente</button>
+                    <button id="btn-medecin-step-2"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('medecin', 2, 3)">2. Appel TV du Patient</button>
+                    <button id="btn-medecin-step-3"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('medecin', 3, 3)">3. Consultation & Ordonnance</button>
+                </div>
+
+                <!-- Step Content Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                    <!-- Left: IMAGE Mockup -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div
+                            class="mockup-screen bg-slate-900 rounded-[2rem] p-3 border-4 border-slate-800 aspect-[16/10] w-full relative overflow-hidden flex flex-col bg-slate-950">
+                            <!-- Device Header -->
+                            <div class="flex items-center justify-between px-4 pb-2 border-b border-slate-800">
+                                <div class="flex gap-1.5">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono">Projet: Medecin_dashboard</div>
+                                <div class="w-6"></div>
+                            </div>
+
+                            <!-- viewport containing user's PHOTOS -->
+                            <div class="flex-1 bg-slate-900 rounded-b-xl overflow-hidden relative">
+
+                                <div id="mockup-medecin-step-1" class="w-full h-full">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/34d399?text=Photo+Medecin\n(Dashboard+%26+File+attente)"
+                                        alt="File d'attente Medecin" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-medecin-step-2" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/34d399?text=Photo+Medecin\n(Appel+du+Patient)"
+                                        alt="Appel du patient" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-medecin-step-3" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/34d399?text=Photo+Medecin\n(Consultation+%26+Ordonnance)"
+                                        alt="Consultation" class="w-full h-full object-contain">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Guide Panel -->
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+
+                        <!-- Guide Medecin Step 1 -->
+                        <div id="guide-medecin-step-1"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-users text-emerald-500 mr-2"></i>Vue sur la File d'attente</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le médecin connecté accède à son tableau de bord (`index.html`). Il voit instantanément
+                                les patients qui ont été checkés (par la borne ou l'accueil) et qui l'attendent.
+                            </p>
+                            <div
+                                class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                                <span
+                                    class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-2">Informations
+                                    visibles :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-arrow-right text-emerald-400 mr-2 text-xs"></i>L'identité du
+                                        patient ou son numéro d'anonymat.</li>
+                                    <li><i class="fas fa-arrow-right text-emerald-400 mr-2 text-xs"></i>L'heure
+                                        d'arrivée enregistrée par la borne.</li>
+                                    <li><i class="fas fa-arrow-right text-emerald-400 mr-2 text-xs"></i>Le statut
+                                        d'attente (en attente, en cours...).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Medecin Step 2 -->
+                        <div id="guide-medecin-step-2"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-volume-up text-emerald-500 mr-2"></i>Appel du Patient</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le médecin déclenche le système d'appel directement depuis son bureau, en un clic.
+                            </p>
+                            <div
+                                class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                                <span
+                                    class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-2">Impact
+                                    de l'action :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-check text-emerald-400 mr-2 text-xs"></i>En cliquant sur
+                                        "Appeler", une notification (via Socket.io/API) est envoyée au portail
+                                        d'Administration (`display.html`).</li>
+                                    <li><i class="fas fa-check text-emerald-400 mr-2 text-xs"></i>L'écran de la salle
+                                        d'attente s'anime et énonce vocalement le numéro du patient pour l'inviter à
+                                        rejoindre la salle.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Medecin Step 3 -->
+                        <div id="guide-medecin-step-3"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-notes-medical text-emerald-500 mr-2"></i>La Consultation et
+                                l'Ordonnance</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Durant l'examen, le praticien consigne la visite numériquement via le script de
+                                prescription (`prescription-service.js`).
+                            </p>
+                            <div
+                                class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                                <span
+                                    class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-2">Comment
+                                    faire ?</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Consultez l'historique du patient si nécessaire.</li>
+                                    <li>Saisissez votre diagnostic et rédigez l'ordonnance médicale.</li>
+                                    <li>Cliquez sur <strong>Clôturer</strong>. L'ordonnance est sauvegardée et poussée
+                                        instantanément sur le portail Web du patient.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: ADMIN -->
+            <section id="section-admin" class="section-content hidden py-6 animate-fade">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-2xl"><i
+                            class="fas fa-network-wired text-2xl"></i></span>
+                    <div>
+                        <h2 class="text-2xl font-black font-display text-slate-900 dark:text-white">4. Admin & File
+                            d'attente (Projet: Admin)</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Le système central pour la caisse, la
+                            diffusion TV en salle d'attente, et l'administration de la clinique (Médecins, RFID).</p>
+                    </div>
+                </div>
+
+                <!-- Stepper Navigation -->
+                <div
+                    class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+                    <button id="btn-admin-step-1"
+                        class="step-btn px-4 py-2 bg-amber-500 text-white rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('admin', 1, 4)">1. Gestion Caisse & Accueil</button>
+                    <button id="btn-admin-step-2"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('admin', 2, 4)">2. Écran TV d'Attente</button>
+                    <button id="btn-admin-step-3"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('admin', 3, 4)">3. Création Médecins & RFID</button>
+                    <button id="btn-admin-step-4"
+                        class="step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap"
+                        onclick="showStep('admin', 4, 4)">4. Gestion des Plannings</button>
+                </div>
+
+                <!-- Step Content Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                    <!-- Left: IMAGE Mockup -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div
+                            class="mockup-screen bg-slate-900 rounded-[2rem] p-3 border-4 border-slate-800 aspect-[16/10] w-full relative overflow-hidden flex flex-col bg-slate-950">
+                            <!-- Device Header -->
+                            <div class="flex items-center justify-between px-4 pb-2 border-b border-slate-800">
+                                <div class="flex gap-1.5">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 font-mono">Projet: Admin (Front/Back)</div>
+                                <div class="w-6"></div>
+                            </div>
+
+                            <!-- viewport containing user's PHOTOS -->
+                            <div class="flex-1 bg-slate-900 rounded-b-xl overflow-hidden relative">
+
+                                <div id="mockup-admin-step-1" class="w-full h-full">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/fbbf24?text=Photo+Admin\n(Accueil+%26+Caisse)"
+                                        alt="Caisse et Accueil" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-admin-step-2" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/fbbf24?text=Photo+Admin\n(Ecran+TV+display.html)"
+                                        alt="Ecran Salle Attente" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-admin-step-3" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/fbbf24?text=Photo+Admin\n(Creation+Medecins+%26+Cartes+RFID)"
+                                        alt="Creation medecins RFID" class="w-full h-full object-contain">
+                                </div>
+
+                                <div id="mockup-admin-step-4" class="w-full h-full hidden">
+                                    <!-- REMPLACEZ LE LIEN SRC PAR LE CHEMIN DE VOTRE PHOTO -->
+                                    <img src="https://placehold.co/800x500/0f172a/fbbf24?text=Photo+Admin\n(Disponibilites+et+Plannings)"
+                                        alt="Plannings" class="w-full h-full object-contain">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Guide Panel -->
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+
+                        <!-- Guide Admin Step 1 -->
+                        <div id="guide-admin-step-1"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-cash-register text-amber-500 mr-2"></i>Espace Accueil & Caisse</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                L'interface utilisée par la secrétaire médicale pour superviser l'arrivée des patients
+                                et valider les paiements physiques.
+                            </p>
+                            <div
+                                class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                <span
+                                    class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-2">Fonctionnalités
+                                    :</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-arrow-right text-amber-400 mr-2 text-xs"></i><strong>Paiements
+                                            :</strong> Validation de la caisse (Espèces, Mutuelle) si le visiteur n'a
+                                        pas payé sur la borne.</li>
+                                    <li><i class="fas fa-arrow-right text-amber-400 mr-2 text-xs"></i><strong>Supervision
+                                            :</strong> Validation de l'entrée d'un patient en salle de consultation.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Admin Step 2 -->
+                        <div id="guide-admin-step-2"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-tv text-amber-500 mr-2"></i>Écran d'Affichage (TV Salle d'attente)
+                            </h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le projet inclut l'écran `display.html`, conçu pour être diffusé sur les téléviseurs des
+                                salles d'attente de l'hôpital.
+                            </p>
+                            <div
+                                class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                <span
+                                    class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-2">Comment
+                                    ça fonctionne ?</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li>L'affichage tourne via un <strong>carrousel automatique</strong> montrant les
+                                        files par spécialité.</li>
+                                    <li>Lorsqu'un médecin appelle un patient, une alerte vocale retentit et une pop-up
+                                        géante s'affiche temporairement ("Patient X au cabinet Y").</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Guide Admin Step 3 -->
+                        <div id="guide-admin-step-3"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-id-card text-amber-500 mr-2"></i>Administration : Médecins & Cartes
+                                RFID</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Le directeur de l'hôpital ou l'administrateur informatique ajoute de nouveaux médecins
+                                dans le système et gère la sécurité matérielle.
+                            </p>
+                            <div
+                                class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                <span
+                                    class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-2">Scripts
+                                    Matériels :</span>
+                                <ol
+                                    class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                                    <li>Création du profil médecin avec un code PIN (haché par `bcrypt`).</li>
+                                    <li>Utilisation de l'outil Python (`rfid_tool.py`) pour <strong>programmer une carte
+                                            intelligente ACOS3 physique</strong> qui servira de badge d'authentification
+                                        ou d'identité.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Guide Admin Step 4 -->
+                        <div id="guide-admin-step-4"
+                            class="glass dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800 flex flex-col gap-4 hidden">
+                            <h4 class="font-bold text-slate-950 dark:text-white text-md"><i
+                                    class="fas fa-calendar-alt text-amber-500 mr-2"></i>Administration : Plannings</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Les administrateurs publient l'emploi du temps des médecins pour alimenter les choix de
+                                prise de RDV sur le site Patient web.
+                            </p>
+                            <div
+                                class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                                <span
+                                    class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-2">Comment
+                                    faire ?</span>
+                                <ul class="text-sm text-slate-700 dark:text-slate-300 space-y-2">
+                                    <li><i class="fas fa-check text-amber-400 mr-2 text-xs"></i>Générez les créneaux
+                                        horaires hebdomadaires pour chaque médecin.</li>
+                                    <li><i class="fas fa-check text-amber-400 mr-2 text-xs"></i>Ces disponibilités sont
+                                        automatiquement synchronisées et affichées en direct sur le projet
+                                        `sys_hospital_website` (côté patient).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer
+            class="w-full py-8 text-center text-xs text-slate-400 glass border-t border-slate-200/40 dark:border-slate-800 mt-auto">
+            <p>© 2026 CareTrack Systems — Réalisé pour soutenance universitaire et validation académique.</p>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT DE LA PRESENTATION -->
+    <script>
+        // --- Navigation globale de la soutenance ---
+        function switchSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(s => s.classList.replace('block', 'hidden'));
+            // Show target
+            document.getElementById(`section-${sectionId}`).classList.replace('hidden', 'block');
+
+            // Manage Active Class in Nav Bar buttons
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-primary-600', 'bg-primary-50', 'dark:bg-slate-800', 'dark:text-white');
+                b.classList.add('text-slate-600', 'dark:text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+                activeBtn.classList.add('text-primary-600', 'bg-primary-50', 'dark:bg-slate-800', 'dark:text-white');
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize Section steps
+            if (sectionId === 'patient') showStep('patient', 1, 6);
+            if (sectionId === 'borne') showStep('borne', 1, 4);
+            if (sectionId === 'medecin') showStep('medecin', 1, 3);
+            if (sectionId === 'admin') showStep('admin', 1, 4);
+        }
+
+        // --- GESTION DES ETAPES ---
+        function getSectionColor(sectionId) {
+            switch (sectionId) {
+                case 'patient': return 'primary'; // blue
+                case 'borne': return 'indigo';
+                case 'medecin': return 'emerald';
+                case 'admin': return 'amber';
+                default: return 'primary';
+            }
+        }
+
+        function showStep(sectionId, stepId, totalSteps) {
+            const color = getSectionColor(sectionId);
+
+            // 1. Update Stepper Buttons
+            for (let i = 1; i <= totalSteps; i++) {
+                const btn = document.getElementById(`btn-${sectionId}-step-${i}`);
+                if (btn) {
+                    if (i === stepId) {
+                        btn.className = `step-btn px-4 py-2 bg-${color}-500 text-white rounded-full text-xs font-bold whitespace-nowrap active-step`;
+                    } else {
+                        btn.className = `step-btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold whitespace-nowrap`;
+                    }
+                }
+            }
+
+            // 2. Hide all mockups and guide panels for this section
+            for (let i = 1; i <= totalSteps; i++) {
+                const mockup = document.getElementById(`mockup-${sectionId}-step-${i}`);
+                const guide = document.getElementById(`guide-${sectionId}-step-${i}`);
+                if (mockup) mockup.classList.add('hidden');
+                if (guide) guide.classList.add('hidden');
+            }
+
+            // 3. Show the active mockup and guide panel
+            const activeMockup = document.getElementById(`mockup-${sectionId}-step-${stepId}`);
+            const activeGuide = document.getElementById(`guide-${sectionId}-step-${stepId}`);
+            if (activeMockup) activeMockup.classList.remove('hidden');
+            if (activeGuide) activeGuide.classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
