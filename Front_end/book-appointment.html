@@ -599,7 +599,7 @@
         async function loadSpecialties() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://localhost:5000/api/rdv/specialites', {
+                const response = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/rdv/specialites', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -623,7 +623,7 @@
         async function loadDoctors() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://localhost:5000/api/rdv/medecins', {
+                const response = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/rdv/medecins', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -636,7 +636,7 @@
         async function loadFamilyMembers() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://localhost:5000/api/family', {
+                const response = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/family', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -795,7 +795,7 @@
 
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`http://localhost:5000/api/rdv/medecins/${selectedDoctor.id}/disponibilites?date=${selectedDate}`, {
+                const response = await fetch(`${(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000'}/api/rdv/medecins/${selectedDoctor.id}/disponibilites?date=${selectedDate}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -861,7 +861,7 @@
             btn.innerHTML = '<span class="loading"></span> Traitement...';
 
             try {
-                const response = await fetch('http://localhost:5000/api/rdv', {
+                const response = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/rdv', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
