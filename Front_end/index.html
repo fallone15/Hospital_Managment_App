@@ -411,8 +411,8 @@
                             </div>
                             <h5 class="text-xl font-bold dark:text-white mb-3 group-hover:text-white font-display">
                                 Téléphone</h5>
-                            <p class="text-slate-500 text-sm group-hover:text-white/80 transition-colors">+212 5 37 68
-                                68 68<br />Ligne directe 24h/7</p>
+                            <p class="text-slate-500 text-sm group-hover:text-white/80 transition-colors">+212 6 42 98
+                                27 56<br />Ligne directe 24h/7</p>
                         </div>
                     </div>
                 </div>
@@ -423,34 +423,34 @@
                     </div>
                     <h4 class="text-3xl font-black mb-10 dark:text-white font-display">Envoyez un <span
                             class="text-primary">Message</span></h4>
-                    <form class="space-y-8 relative z-10">
+                    <form class="space-y-8 relative z-10" id="contactForm">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-3">
                                 <label class="block text-sm font-bold ml-1 text-slate-700 dark:text-slate-300">Nom
                                     complet</label>
-                                <input
+                                <input id="contactName"
                                     class="w-full bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-slate-700 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none"
-                                    placeholder="Nacoulma Fallone" type="text" />
+                                    placeholder="Nacoulma Fallone" type="text" required />
                             </div>
                             <div class="space-y-3">
                                 <label
                                     class="block text-sm font-bold ml-1 text-slate-700 dark:text-slate-300">Email</label>
-                                <input
+                                <input id="contactEmail"
                                     class="w-full bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-slate-700 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none"
-                                    placeholder="fallone@example.com" type="email" />
+                                    placeholder="fallone@example.com" type="email" required />
                             </div>
                         </div>
                         <div class="space-y-3">
                             <label class="block text-sm font-bold ml-1 text-slate-700 dark:text-slate-300">Votre
                                 message</label>
-                            <textarea
+                            <textarea id="contactMessage"
                                 class="w-full bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-slate-700 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none resize-none"
-                                placeholder="Comment pouvons-nous vous aider ?" rows="5"></textarea>
+                                placeholder="Comment pouvons-nous vous aider ?" rows="5" required></textarea>
                         </div>
-                        <button
-                            class="w-full bg-primary text-white font-black py-6 rounded-[2rem] shadow-[0_20px_40px_rgba(59,130,246,0.3)] hover:shadow-[0_25px_50px_rgba(59,130,246,0.4)] hover:scale-[1.02] transition-all text-lg font-display"
+                        <button id="contactSubmitBtn"
+                            class="w-full bg-primary text-white font-black py-6 rounded-[2rem] shadow-[0_20px_40px_rgba(59,130,246,0.3)] hover:shadow-[0_25px_50px_rgba(59,130,246,0.4)] hover:scale-[1.02] transition-all text-lg font-display flex items-center justify-center gap-3"
                             type="submit">
-                            Envoyer le message
+                            <span>Envoyer le message</span>
                         </button>
                     </form>
                 </div>
@@ -504,6 +504,131 @@
         document.querySelectorAll('section > div').forEach(section => {
             section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
             observer.observe(section);
+        });
+    </script>
+
+    <!-- Formulaire de contact asynchrone et Notification premium -->
+    <script>
+        function showNotification(message, type = 'success') {
+            // Supprimer le toast existant s'il y en a un
+            const existingToast = document.getElementById('contact-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Éléments du toast
+            const toast = document.createElement('div');
+            toast.id = 'contact-toast';
+
+            // Couleurs vibrantes adaptées
+            const iconColor = type === 'success' ? 'text-emerald-500' : 'text-rose-500';
+            const iconName = type === 'success' ? 'check_circle' : 'error';
+            const borderColor = type === 'success' ? 'border-emerald-500/20' : 'border-rose-500/20';
+
+            toast.className = `fixed top-28 right-6 z-50 flex items-center gap-4 p-5 rounded-2xl glass border ${borderColor} shadow-2xl transition-all duration-500 ease-out translate-x-12 opacity-0 max-w-md`;
+
+            toast.innerHTML = `
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 shadow-md">
+                    <span class="material-icons-round ${iconColor} text-2xl">${iconName}</span>
+                </div>
+                <div class="flex-1">
+                    <h5 class="font-bold text-sm dark:text-white">${type === 'success' ? 'Succès !' : 'Erreur'}</h5>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                    <span class="material-icons-round text-sm">close</span>
+                </button>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Lancer l'animation
+            setTimeout(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+                toast.classList.add('translate-x-0', 'opacity-100');
+            }, 100);
+
+            // Fermeture automatique
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.remove('translate-x-0', 'opacity-100');
+                    toast.classList.add('translate-x-12', 'opacity-0');
+                    setTimeout(() => toast.remove(), 500);
+                }
+            }, 4500);
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('contactName');
+            const emailInput = document.getElementById('contactEmail');
+            const messageInput = document.getElementById('contactMessage');
+            const submitBtn = document.getElementById('contactSubmitBtn');
+            const submitBtnText = submitBtn.querySelector('span');
+
+            const originalText = submitBtnText.textContent;
+
+            // Désactiver les entrées et le bouton
+            nameInput.disabled = true;
+            emailInput.disabled = true;
+            messageInput.disabled = true;
+            submitBtn.disabled = true;
+
+            // État de chargement élégant
+            submitBtn.classList.remove('bg-primary');
+            submitBtn.classList.add('bg-slate-400', 'cursor-not-allowed');
+            submitBtnText.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Envoi en cours...
+            `;
+
+            // URL intelligente de l'API
+            const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000/api/contact'
+                : '/api/contact';
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nom: nameInput.value,
+                        email: emailInput.value,
+                        message: messageInput.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showNotification(data.message, 'success');
+                    // Réinitialiser le formulaire
+                    nameInput.value = '';
+                    emailInput.value = '';
+                    messageInput.value = '';
+                } else {
+                    showNotification(data.message || "Une erreur est survenue lors de l'envoi.", 'error');
+                }
+            } catch (err) {
+                console.error("Erreur de soumission:", err);
+                showNotification("Impossible de contacter le serveur de messagerie. Veuillez vérifier votre connexion.", 'error');
+            } finally {
+                // Réactiver les entrées et le bouton
+                nameInput.disabled = false;
+                emailInput.disabled = false;
+                messageInput.disabled = false;
+                submitBtn.disabled = false;
+
+                submitBtn.classList.remove('bg-slate-400', 'cursor-not-allowed');
+                submitBtn.classList.add('bg-primary');
+                submitBtnText.textContent = originalText;
+            }
         });
     </script>
 

@@ -76,6 +76,40 @@ app.use('/api/ordonnances',   ordonnancesRoutes);
 app.use('/api/patients',      patientsRoutes);
 app.use('/api/family',        familyRoutes);
 
+// ── Route de contact publique ──────────────────────────────────────────────
+app.post('/api/contact', async (req, res) => {
+  const { nom, email, message } = req.body;
+  if (!nom || !email || !message) {
+    return res.status(400).json({
+      success: false,
+      message: 'Veuillez remplir tous les champs (nom, email, message).'
+    });
+  }
+
+  try {
+    const { sendContactEmail, sendContactConfirmationEmail } = require('./utils/mailer');
+    
+    // Envoyer l'email à l'administration
+    await sendContactEmail(email, nom, message);
+    
+    // Envoyer l'accusé de réception en arrière-plan
+    sendContactConfirmationEmail(email, nom).catch(err => {
+      console.error('⚠️ Erreur lors de l\'envoi de l\'accusé de réception:', err);
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Votre message a été envoyé avec succès ! Un email de confirmation vous a été envoyé.'
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors du traitement du formulaire de contact:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Une erreur interne est survenue lors de l\'envoi du message. Veuillez réessayer plus tard.'
+    });
+  }
+});
+
 // ── Route de test ──────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
