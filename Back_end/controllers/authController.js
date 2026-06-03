@@ -121,7 +121,19 @@ const registerPatient = async (req, res) => {
 
     // Envoyer l'email de vérification
     try {
-      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5502'}/Front_end/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+      // Détecter automatiquement l'URL du frontend à partir de la requête du client
+      let frontendUrl = req.headers.origin && req.headers.origin !== 'null' ? req.headers.origin : null;
+      if (!frontendUrl && req.headers.referer) {
+        try {
+          const url = new URL(req.headers.referer);
+          frontendUrl = `${url.protocol}//${url.host}`;
+        } catch (e) {}
+      }
+      if (!frontendUrl) {
+        frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5502';
+      }
+
+      const verificationUrl = `${frontendUrl}/Front_end/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
       await sendVerificationEmail(email, nom, prenom, verificationUrl);
     } catch (emailError) {
       console.error('❌ Erreur lors de l\'envoi de l\'email:', emailError);
@@ -430,7 +442,19 @@ const requestResetPin = async (req, res) => {
     );
 
     // Envoyer l'email
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5502'}/Front_end/reset-pin.html?token=${resetToken}&email=${encodeURIComponent(patient.email)}`;
+    // Détecter automatiquement l'URL du frontend à partir de la requête du client
+    let frontendUrl = req.headers.origin && req.headers.origin !== 'null' ? req.headers.origin : null;
+    if (!frontendUrl && req.headers.referer) {
+      try {
+        const url = new URL(req.headers.referer);
+        frontendUrl = `${url.protocol}//${url.host}`;
+      } catch (e) {}
+    }
+    if (!frontendUrl) {
+      frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5502';
+    }
+
+    const resetUrl = `${frontendUrl}/Front_end/reset-pin.html?token=${resetToken}&email=${encodeURIComponent(patient.email)}`;
 
     try {
       const { sendResetPinEmail } = require('../utils/mailer');
