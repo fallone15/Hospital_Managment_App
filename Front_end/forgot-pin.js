@@ -1,4 +1,4 @@
-const API_URL = ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api';
+const API_URL = 'http://172.17.129.173:5000' + '/api';
 
 const forgotForm = document.getElementById('forgotForm');
 const messageBox = document.getElementById('messageBox');

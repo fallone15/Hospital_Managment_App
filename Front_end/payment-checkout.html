@@ -464,7 +464,7 @@
         // Initialiser Stripe
         document.addEventListener('DOMContentLoaded', async function() {
             // Récupérer la clé publique depuis le backend
-            const response = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/paiements/tarifs');
+            const response = await fetch('http://172.17.129.173:5000' + '/api/paiements/tarifs');
             
             // Initialiser Stripe
             const publishableKey = localStorage.getItem('stripePublishableKey') || 'pk_test_YOUR_PUBLISHABLE_KEY';
@@ -593,7 +593,7 @@
 
             try {
                 // Créer un payment intent
-                const paymentResponse = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/paiements', {
+                const paymentResponse = await fetch('http://172.17.129.173:5000' + '/api/paiements', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -632,7 +632,7 @@
 
                 if (paymentIntent && paymentIntent.status === 'succeeded') {
                     // Confirmer le paiement au backend
-                    const confirmResponse = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/paiements/confirm', {
+                    const confirmResponse = await fetch('http://172.17.129.173:5000' + '/api/paiements/confirm', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -673,7 +673,7 @@
             const payBtn = document.getElementById('pay-button');
             payBtn.disabled = true;
 
-            fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/paiements', {
+            fetch('http://172.17.129.173:5000' + '/api/paiements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -728,7 +728,7 @@
             }
 
             try {
-                const res = await fetch(((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) ? 'http://localhost:5000' : 'http://' + window.location.hostname + ':5000') + '/api/paiements/historique', {
+                const res = await fetch('http://172.17.129.173:5000' + '/api/paiements/historique', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
