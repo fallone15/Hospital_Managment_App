@@ -42,19 +42,19 @@ const getClient = async () => {
   const client = await pool.connect();
   const query = client.query;
   const release = client.release;
-  
+
   // Surcharge de la méthode release pour inclure un timeout
   const timeout = setTimeout(() => {
     console.error('Un client n\'a pas été libéré à temps');
   }, 5000);
-  
+
   client.release = () => {
     clearTimeout(timeout);
     client.query = query;
     client.release = release;
     return release.apply(client);
   };
-  
+
   return client;
 };
 

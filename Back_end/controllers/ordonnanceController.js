@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Répertoire de stockage des PDFs (depuis l'autre projet Medecin_dashboard)
-const EXTERNAL_PDF_BASE = 'D:\\Medecin_dashboard\\Back_end\\';
+const EXTERNAL_PDF_BASE = process.platform === 'win32'
+  ? 'D:\\Medecin_dashboard\\Back_end\\'
+  : '/home/caretrack2/Medecin_dashboard/Back_end/';
 
 // Répertoire de stockage des PDFs local
 const PDF_STORAGE_DIR = path.join(__dirname, '../uploads/ordonnances');
@@ -18,7 +20,7 @@ const resolvePDFPath = (cheminFromDb) => {
   if (!cheminFromDb) return null;
   
   // Si le chemin contient déjà le chemin complet, le retourner
-  if (cheminFromDb.startsWith('D:\\') || cheminFromDb.startsWith('/')) {
+  if (cheminFromDb.startsWith('D:\\') || cheminFromDb.startsWith('/') || cheminFromDb.startsWith('/home/')) {
     return cheminFromDb;
   }
   
