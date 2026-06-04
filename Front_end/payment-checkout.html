@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -132,7 +133,7 @@
             height: 20px;
         }
 
-        .method-option input[type="radio"]:checked + .method-info {
+        .method-option input[type="radio"]:checked+.method-info {
             color: #667eea;
         }
 
@@ -277,8 +278,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .alert {
@@ -358,6 +364,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="payment-container">
         <div class="payment-header">
@@ -365,7 +372,8 @@
             <p>Confirmez votre rendez-vous médical</p>
         </div>
 
-        <div class="stripe-test-badge">SIMULATION - Mode TEST | Aucun argent réel débité | Utilisez les cartes fictives ci-dessous</div>
+        <div class="stripe-test-badge">SIMULATION - Mode TEST | Aucun argent réel débité | Utilisez les cartes fictives
+            ci-dessous</div>
 
         <div id="alert" class="alert"></div>
 
@@ -410,7 +418,7 @@
         <!-- Méthodes de paiement -->
         <div class="payment-methods">
             <h3>Méthode de paiement</h3>
-            
+
             <label class="method-option">
                 <input type="radio" name="payment-method" value="stripe" checked>
                 <div class="method-info">
@@ -448,7 +456,7 @@
         </div>
 
         <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-            SIMULATION Stripe Test Mode 
+            SIMULATION Stripe Test Mode
         </p>
     </div>
 
@@ -462,10 +470,10 @@
         let appointmentData = {};
 
         // Initialiser Stripe
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             // Récupérer la clé publique depuis le backend
-            const response = await fetch('http://172.17.129.173:5000' + '/api/paiements/tarifs');
-            
+            const response = await fetch('http://172.16.84.81:5000' + '/api/paiements/tarifs');
+
             // Initialiser Stripe
             const publishableKey = localStorage.getItem('stripePublishableKey') || 'pk_test_YOUR_PUBLISHABLE_KEY';
             stripe = Stripe(publishableKey);
@@ -486,10 +494,10 @@
 
             // Charger les données du RDV depuis localStorage
             loadAppointmentData();
-            
+
             // Gérer le changement de méthode de paiement
             document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
-                radio.addEventListener('change', function() {
+                radio.addEventListener('change', function () {
                     if (this.value === 'stripe') {
                         document.querySelector('.stripe-card-wrapper').classList.add('show');
                         document.getElementById('transfer-form').classList.remove('show');
@@ -527,7 +535,7 @@
         function loadAppointmentData() {
             // Récupérer depuis sessionStorage ou localStorage
             const data = JSON.parse(sessionStorage.getItem('appointmentData') || localStorage.getItem('appointmentData') || '{}');
-            
+
             if (Object.keys(data).length === 0) {
                 // Valeurs par défaut pour test
                 data.medecin_nom = 'Dr. Ahmed Al-Mansouri';
@@ -541,9 +549,9 @@
             appointmentData = data;
 
             // Afficher les informations
-            document.getElementById('medecin-name').textContent = 
+            document.getElementById('medecin-name').textContent =
                 `Dr. ${data.medecin_prenom} ${data.medecin_nom}`;
-            document.getElementById('rdv-date').textContent = 
+            document.getElementById('rdv-date').textContent =
                 new Date(data.date_rdv).toLocaleDateString('fr-FR', {
                     weekday: 'long',
                     year: 'numeric',
@@ -552,7 +560,7 @@
                 });
             document.getElementById('rdv-time').textContent = data.heure_rdv || '-';
             document.getElementById('service-name').textContent = data.service_nom || '-';
-            
+
             // Calculer la répartition (Total - 15 pour la consultation, 15 fixe pour frais dossier)
             const total = parseFloat(data.montant || 265);
             const adminFees = 15;
@@ -593,7 +601,7 @@
 
             try {
                 // Créer un payment intent
-                const paymentResponse = await fetch('http://172.17.129.173:5000' + '/api/paiements', {
+                const paymentResponse = await fetch('http://172.16.84.81:5000' + '/api/paiements', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -632,7 +640,7 @@
 
                 if (paymentIntent && paymentIntent.status === 'succeeded') {
                     // Confirmer le paiement au backend
-                    const confirmResponse = await fetch('http://172.17.129.173:5000' + '/api/paiements/confirm', {
+                    const confirmResponse = await fetch('http://172.16.84.81:5000' + '/api/paiements/confirm', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -648,7 +656,7 @@
                     if (confirmData.success) {
                         showAlert('✅ Paiement réussi! Votre rendez-vous est confirmé.', 'success');
                         payBtn.innerHTML = '✅ Paiement confirmé';
-                        
+
                         // Rediriger après 2 secondes
                         setTimeout(() => {
                             window.location.href = 'mes-consultations.html';
@@ -673,7 +681,7 @@
             const payBtn = document.getElementById('pay-button');
             payBtn.disabled = true;
 
-            fetch('http://172.17.129.173:5000' + '/api/paiements', {
+            fetch('http://172.16.84.81:5000' + '/api/paiements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -686,22 +694,22 @@
                     description: `Paiement par virement - RDV ${appointmentData.date_rdv}`
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert('✅ Demande de virement enregistrée. Vous recevrez les détails par email.', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'mes-consultations.html';
-                    }, 2000);
-                } else {
-                    showAlert(`❌ Erreur: ${data.message}`, 'error');
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('✅ Demande de virement enregistrée. Vous recevrez les détails par email.', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'mes-consultations.html';
+                        }, 2000);
+                    } else {
+                        showAlert(`❌ Erreur: ${data.message}`, 'error');
+                        payBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    showAlert(`❌ Erreur: ${error.message}`, 'error');
                     payBtn.disabled = false;
-                }
-            })
-            .catch(error => {
-                showAlert(`❌ Erreur: ${error.message}`, 'error');
-                payBtn.disabled = false;
-            });
+                });
         }
 
         // Afficher les alertes
@@ -709,7 +717,7 @@
             const alertEl = document.getElementById('alert');
             alertEl.textContent = message;
             alertEl.className = `alert alert-${type} show`;
-            
+
             if (type === 'success') {
                 setTimeout(() => {
                     alertEl.classList.remove('show');
@@ -728,7 +736,7 @@
             }
 
             try {
-                const res = await fetch('http://172.17.129.173:5000' + '/api/paiements/historique', {
+                const res = await fetch('http://172.16.84.81:5000' + '/api/paiements/historique', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -768,4 +776,5 @@
         }
     </script>
 </body>
+
 </html>

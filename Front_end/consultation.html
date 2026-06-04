@@ -523,7 +523,8 @@
                     </div>
                     <div class="slots-grid" id="slotsGrid"></div>
                     <div id="noSlotsMsg" class="hidden" style="color: #e65100; font-size: 0.85rem; margin-top: 0.5rem;">
-                        <i class="fas fa-info-circle"></i> Désolé, aucun créneau disponible pour ce médecin à cette date.
+                        <i class="fas fa-info-circle"></i> Désolé, aucun créneau disponible pour ce médecin à cette
+                        date.
                     </div>
                 </div>
 
@@ -573,7 +574,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://172.17.129.173:5000' + '/api';
+        const API_URL = 'http://172.16.84.81:5000' + '/api';
 
         function checkAuth() {
             const t = localStorage.getItem('token');
@@ -716,7 +717,7 @@
             el.classList.add('selected');
 
             document.getElementById('dateSection').classList.remove('hidden');
-            
+
             // Re-check slots if date was already selected
             const date = document.getElementById('dateInput').value;
             if (date) {

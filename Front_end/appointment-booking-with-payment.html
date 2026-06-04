@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             padding: 30px;
             border-radius: 10px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
@@ -43,7 +44,7 @@
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .form-group {
@@ -224,8 +225,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading .btn-primary {
@@ -242,13 +248,15 @@
                 padding: 0;
             }
 
-            .header, .form-card {
+            .header,
+            .form-card {
                 border-radius: 0;
                 margin-bottom: 0;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -263,7 +271,8 @@
             <div class="success" id="success-message"></div>
 
             <div class="info-box info">
-                <strong>🧪 Simulation:</strong> Un paiement simulé (cartes fictives) est requis pour confirmer votre rendez-vous. Aucun argent réel n'est débité.
+                <strong>🧪 Simulation:</strong> Un paiement simulé (cartes fictives) est requis pour confirmer votre
+                rendez-vous. Aucun argent réel n'est débité.
             </div>
 
             <form id="appointment-form">
@@ -293,7 +302,8 @@
                 <!-- Motif -->
                 <div class="form-group">
                     <label for="motif">💬 Motif de la consultation *</label>
-                    <textarea id="motif" placeholder="Décrivez brièvement votre raison de consultation..." required></textarea>
+                    <textarea id="motif" placeholder="Décrivez brièvement votre raison de consultation..."
+                        required></textarea>
                 </div>
 
                 <!-- Membre familial -->
@@ -311,7 +321,8 @@
                 </div>
 
                 <div class="info-box warning">
-                    <strong>⚠️ Attention:</strong> Le paiement sera effectué après la création du rendez-vous. Vous serez redirigé vers la page de paiement sécurisée.
+                    <strong>⚠️ Attention:</strong> Le paiement sera effectué après la création du rendez-vous. Vous
+                    serez redirigé vers la page de paiement sécurisée.
                 </div>
 
                 <!-- Bouton de soumission -->
@@ -340,7 +351,7 @@
         // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('token');
-            
+
             if (!token) {
                 showError('Veuillez vous connecter pour réserver un rendez-vous');
                 setTimeout(() => {
@@ -367,20 +378,20 @@
         // ============================================
         async function chargerMedecins() {
             const token = localStorage.getItem('token');
-            
+
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/rdv/medecins', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/rdv/medecins', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     const select = document.getElementById('medecin');
                     select.innerHTML = '<option value="">-- Sélectionner un médecin --</option>';
-                    
+
                     data.data.forEach(medecin => {
                         doctorsData[medecin.id] = medecin;
                         const option = document.createElement('option');
@@ -404,19 +415,19 @@
         // ============================================
         async function chargerMembresfamiliaux() {
             const token = localStorage.getItem('token');
-            
+
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/family', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/family', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success && data.data.length > 0) {
                     const select = document.getElementById('member');
-                    
+
                     data.data.forEach(member => {
                         const option = document.createElement('option');
                         option.value = member.id_member;
@@ -438,13 +449,13 @@
             // Change de médecin
             document.getElementById('medecin').addEventListener('change', async (e) => {
                 const medecinId = e.target.value;
-                
+
                 if (medecinId) {
                     medecinSelectionne = doctorsData[medecinId];
-                    
+
                     // Afficher les infos du médecin
                     afficherInfoMedecin(medecinSelectionne);
-                    
+
                     // Charger les crénéaux si une date est sélectionnée
                     const date = document.getElementById('date').value;
                     if (date) {
@@ -460,7 +471,7 @@
             document.getElementById('date').addEventListener('change', async (e) => {
                 const medecinId = document.getElementById('medecin').value;
                 const date = e.target.value;
-                
+
                 if (medecinId && date) {
                     await chargerCreneaux(medecinId, date);
                 }
@@ -478,7 +489,7 @@
         // ============================================
         function afficherInfoMedecin(medecin) {
             const prix = getMontantConsultation(medecin.specialite);
-            
+
             const infoDiv = document.getElementById('doctor-info');
             infoDiv.innerHTML = `
                 <div class="doctor-name">👨‍⚕️ Dr. ${medecin.prenom} ${medecin.nom}</div>
@@ -486,7 +497,7 @@
                 <div class="doctor-price">💰 ${prix} MAD</div>
             `;
             infoDiv.classList.add('show');
-            
+
             document.getElementById('price-display').textContent = `${prix} MAD`;
         }
 
@@ -495,10 +506,10 @@
         // ============================================
         async function chargerCreneaux(medecinId, date) {
             const token = localStorage.getItem('token');
-            
+
             try {
                 const response = await fetch(
-                    `${'http://172.17.129.173:5000'}/api/rdv/medecins/${medecinId}/disponibilites?date=${date}`,
+                    `${'http://172.16.84.81:5000'}/api/rdv/medecins/${medecinId}/disponibilites?date=${date}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -508,17 +519,17 @@
 
                 const data = await response.json();
                 const select = document.getElementById('heure');
-                
+
                 if (data.success && data.data.disponible && data.data.creneaux.length > 0) {
                     select.innerHTML = '<option value="">-- Sélectionner une heure --</option>';
-                    
+
                     data.data.creneaux.forEach(creneau => {
                         const option = document.createElement('option');
                         option.value = creneau;
                         option.textContent = creneau;
                         select.appendChild(option);
                     });
-                    
+
                     console.log('✅ Crénéaux chargés');
                 } else {
                     select.innerHTML = '<option value="">❌ Aucun créneau disponible</option>';
@@ -535,7 +546,7 @@
         async function creerRendezVousEtPayer() {
             const token = localStorage.getItem('token');
             const submitBtn = document.getElementById('submit-btn');
-            
+
             // Validation
             const medecinId = document.getElementById('medecin').value;
             const date = document.getElementById('date').value;
@@ -553,7 +564,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/rdv', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/rdv', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -646,4 +657,5 @@
         }
     </script>
 </body>
+
 </html>

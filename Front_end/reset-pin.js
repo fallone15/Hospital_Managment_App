@@ -1,4 +1,4 @@
-const API_URL = 'http://172.17.129.173:5000' + '/api';
+const API_URL = 'http://172.16.84.81:5000' + '/api';
 
 const resetForm = document.getElementById('resetForm');
 const messageBox = document.getElementById('messageBox');
@@ -55,8 +55,8 @@ resetForm.addEventListener('submit', async (e) => {
 function showMessage(msg, type) {
     messageBox.textContent = msg;
     messageBox.className = `mt-6 p-4 rounded-xl text-sm font-medium text-center ${type === 'success'
-            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
         }`;
     messageBox.classList.remove('hidden');
 }

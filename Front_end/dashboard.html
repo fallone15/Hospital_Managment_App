@@ -669,7 +669,7 @@
             color: #dde;
         }
 
-#addFamilyBtn {
+        #addFamilyBtn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -716,12 +716,16 @@
     <div class="dashboard-container">
         <!-- Welcome Card -->
         <div class="welcome-card" style="display: flex; align-items: center; gap: 3rem; flex-wrap: wrap;">
-            <div class="profile-photo-container" style="position: relative; width: 180px; height: 180px; flex-shrink: 0;">
-                <img id="profilePhoto" src="https://via.placeholder.com/180" alt="Photo de profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 6px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.15); background-color: #f0f0f0; image-orientation: from-image;">
-                <label for="photoUpload" title="Changer la photo" style="position: absolute; bottom: 5px; right: 5px; background: #fff; color: #0a6f96; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: all 0.3s ease; font-size: 1.2rem;">
+            <div class="profile-photo-container"
+                style="position: relative; width: 180px; height: 180px; flex-shrink: 0;">
+                <img id="profilePhoto" src="https://via.placeholder.com/180" alt="Photo de profil"
+                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 6px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.15); background-color: #f0f0f0; image-orientation: from-image;">
+                <label for="photoUpload" title="Changer la photo"
+                    style="position: absolute; bottom: 5px; right: 5px; background: #fff; color: #0a6f96; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: all 0.3s ease; font-size: 1.2rem;">
                     <i class="fas fa-camera"></i>
                 </label>
-                <input type="file" id="photoUpload" accept="image/png, image/jpeg" style="display: none;" onchange="uploadPhoto(event)">
+                <input type="file" id="photoUpload" accept="image/png, image/jpeg" style="display: none;"
+                    onchange="uploadPhoto(event)">
             </div>
             <div style="flex: 1; min-width: 250px;">
                 <h1 style="font-size: 2.5rem; margin-bottom: 0.8rem;">🏥 Tableau de Bord Patient</h1>
@@ -998,7 +1002,7 @@
             loadFamilyMembers();
             document.getElementById('addFamilyBtn').onclick = showFamilyModal;
         });
-        const API_URL = 'http://172.17.129.173:5000' + '/api';
+        const API_URL = 'http://172.16.84.81:5000' + '/api';
 
         // Vérifier l'authentification
         function checkAuth() {
@@ -1026,7 +1030,7 @@
 
                 if (result.success) {
                     const user = result.data;
-                    
+
                     // Stocker et appliquer le sexe de l'utilisateur
                     userGender = user.sexe;
                     document.body.classList.remove('gender-male', 'gender-female');
@@ -1039,7 +1043,7 @@
                     // Message de bienvenue
                     document.getElementById('welcomeMessage').innerHTML =
                         `Bienvenue <strong>${user.prenom} ${user.nom}</strong> 👋`;
-                    
+
                     // Photo de Profil
                     const photoImg = document.getElementById('profilePhoto');
                     if (user.photo_url) {
@@ -1167,7 +1171,7 @@
                     body: formData
                 });
                 const data = await res.json();
-                
+
                 if (data.success) {
                     // Mettre à jour l'image directement ou recharger les informations
                     loadUserInfo();

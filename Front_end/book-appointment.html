@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +30,7 @@
             padding: 30px;
             border-radius: 15px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
@@ -68,7 +69,7 @@
             display: inline-block;
             width: 40px;
             height: 40px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             line-height: 40px;
             margin-bottom: 8px;
@@ -84,7 +85,7 @@
             background: white;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
 
@@ -170,14 +171,16 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
 
-        .specialty-card.selected, .specialty-card.active {
+        .specialty-card.selected,
+        .specialty-card.active {
             background: #667eea;
             color: white !important;
             border-color: #667eea;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .specialty-card.selected div, .specialty-card.active div {
+        .specialty-card.selected div,
+        .specialty-card.active div {
             color: white !important;
         }
 
@@ -393,8 +396,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @media (max-width: 600px) {
@@ -420,6 +428,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -471,8 +480,10 @@
                 </div>
 
                 <div id="family-member-container" style="display: none; margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Sélectionner le membre :</label>
-                    <select id="family-member-id" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 16px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Sélectionner le membre
+                        :</label>
+                    <select id="family-member-id"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 16px;">
                         <option value="">-- Charger les membres --</option>
                     </select>
                 </div>
@@ -493,26 +504,32 @@
             <!-- ÉTAPE 4: Date & Heure -->
             <div class="form-section" data-section="4">
                 <h2 style="margin-bottom: 20px; color: #333;">Choisir une date et une heure</h2>
-                
+
                 <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Date de la consultation :</label>
-                    <input type="date" id="appointment-date" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 16px;" onchange="loadTimes()">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Date de la consultation
+                        :</label>
+                    <input type="date" id="appointment-date"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 16px;"
+                        onchange="loadTimes()">
                 </div>
 
                 <div id="times-container" style="display: none;">
                     <label style="display: block; margin-bottom: 10px; font-weight: 600;">Créneaux disponibles :</label>
                     <div class="time-grid" id="times-grid"></div>
                 </div>
-                
+
                 <div style="margin-top: 20px;">
-                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Motif de la consultation :</label>
-                    <textarea id="appointment-reason" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 14px; min-height: 80px;" placeholder="Ex: Consultation de routine, douleur..."></textarea>
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Motif de la consultation
+                        :</label>
+                    <textarea id="appointment-reason"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0; font-size: 14px; min-height: 80px;"
+                        placeholder="Ex: Consultation de routine, douleur..."></textarea>
                 </div>
             </div>
 
             <div class="form-section" data-section="5">
                 <h2 style="margin-bottom: 20px; color: #333;">Choisir la méthode de paiement</h2>
-                
+
                 <div class="summary-box">
                     <div class="summary-item">
                         <span>Patient:</span>
@@ -532,7 +549,8 @@
                     </div>
                 </div>
 
-                <label style="margin-top: 25px; margin-bottom: 15px; display: block; font-weight: 600;">Comment voulez-vous payer ?</label>
+                <label style="margin-top: 25px; margin-bottom: 15px; display: block; font-weight: 600;">Comment
+                    voulez-vous payer ?</label>
                 <div class="payment-methods">
                     <div class="payment-option" data-payment="online" onclick="selectPayment('online')">
                         <div class="payment-title">Payer en ligne</div>
@@ -545,13 +563,16 @@
                 </div>
             </div>
 
-            <div class="button-group" style="display: flex; justify-content: space-between; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                <button class="btn btn-secondary" id="btn-back" style="display: none;" onclick="previousStep()">Précédent</button>
+            <div class="button-group"
+                style="display: flex; justify-content: space-between; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button class="btn btn-secondary" id="btn-back" style="display: none;"
+                    onclick="previousStep()">Précédent</button>
                 <button class="btn btn-primary" id="btn-next" onclick="nextStep()" disabled>Suivant</button>
-                <button class="btn btn-primary" id="btn-confirm" style="display: none;" onclick="confirmAppointment()">Confirmer le RDV</button>
+                <button class="btn btn-primary" id="btn-confirm" style="display: none;"
+                    onclick="confirmAppointment()">Confirmer le RDV</button>
             </div>
         </div>
-        </div>
+    </div>
     </div>
 
     <!-- Scripts -->
@@ -585,9 +606,9 @@
                 loadDoctors(),
                 loadFamilyMembers()
             ]);
-            
+
             updateStepsUI();
-            
+
             // Set min date
             const today = new Date();
             document.getElementById('appointment-date').min = today.toISOString().split('T')[0];
@@ -599,7 +620,7 @@
         async function loadSpecialties() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/rdv/specialites', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/rdv/specialites', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -609,7 +630,7 @@
                     data.data.forEach(s => {
                         specialtyPrices[s.specialite] = s.tarif || 250;
                     });
-                    
+
                     const grid = document.getElementById('specialty-grid');
                     grid.innerHTML = specialties.map(s => `
                         <div class="specialty-card" data-specialty="${s.specialite}" onclick="selectSpecialty('${s.specialite}')">
@@ -623,7 +644,7 @@
         async function loadDoctors() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/rdv/medecins', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/rdv/medecins', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -636,18 +657,18 @@
         async function loadFamilyMembers() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/family', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/family', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
                 if (data.success) {
                     familyMembers = data.members;
                     const select = document.getElementById('family-member-id');
-                    select.innerHTML = '<option value="">-- Sélectionner le membre --</option>' + 
+                    select.innerHTML = '<option value="">-- Sélectionner le membre --</option>' +
                         (familyMembers || []).map(m => `
                             <option value="${m.id_member}">${m.prenom} ${m.nom} (${m.lien})</option>
                         `).join('');
-                    
+
                     select.addEventListener('change', (e) => {
                         selectedFamilyMemberId = e.target.value;
                         validateStep1();
@@ -661,12 +682,12 @@
         // ==================================
         function selectPatientType(type) {
             selectedPatientType = type;
-            
+
             // Update UI
             document.getElementById('patient-self').classList.remove('selected');
             document.getElementById('patient-family').classList.remove('selected');
             document.getElementById(`patient-${type}`).classList.add('selected');
-            
+
             const familyContainer = document.getElementById('family-member-container');
             if (type === 'family') {
                 familyContainer.style.display = 'block';
@@ -675,7 +696,7 @@
                 familyContainer.style.display = 'none';
                 selectedFamilyMemberId = null;
             }
-            
+
             validateStep1();
         }
 
@@ -724,7 +745,7 @@
             const btnConfirm = document.getElementById('btn-confirm');
 
             btnBack.style.display = currentStep === 1 ? 'none' : 'block';
-            
+
             if (currentStep === 5) {
                 btnNext.style.display = 'none';
                 btnConfirm.style.display = 'block';
@@ -755,7 +776,7 @@
             document.querySelectorAll('#specialty-grid .specialty-card').forEach(c => {
                 c.classList.toggle('selected', c.dataset.specialty === spec);
             });
-            
+
             // Filtraner doctors
             const filtered = doctors.filter(d => d.specialite === spec);
             const list = document.getElementById('doctors-list');
@@ -768,7 +789,7 @@
                     </div>
                 </div>
             `).join('');
-            
+
             document.getElementById('btn-next').disabled = false;
         }
 
@@ -777,9 +798,9 @@
             document.querySelectorAll('.doctor-card').forEach(c => {
                 c.classList.toggle('selected', parseInt(c.dataset.id) === id);
             });
-            
+
             document.getElementById('btn-next').disabled = false;
-            
+
             selectedDate = null;
             selectedTime = null;
             document.getElementById('appointment-date').value = '';
@@ -795,15 +816,15 @@
 
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`${'http://172.17.129.173:5000'}/api/rdv/medecins/${selectedDoctor.id}/disponibilites?date=${selectedDate}`, {
+                const response = await fetch(`${'http://172.16.84.81:5000'}/api/rdv/medecins/${selectedDoctor.id}/disponibilites?date=${selectedDate}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                
+
                 const container = document.getElementById('times-container');
                 const grid = document.getElementById('times-grid');
                 container.style.display = 'block';
-                
+
                 if (data.success && data.data.creneaux && data.data.creneaux.length > 0) {
                     grid.innerHTML = data.data.creneaux.map(time => `
                         <div class="time-slot" onclick="selectTime('${time}')">${time}</div>
@@ -844,7 +865,7 @@
             document.getElementById('summary-patient').textContent = patientName;
             document.getElementById('summary-doctor').textContent = `Dr. ${selectedDoctor.prenom} ${selectedDoctor.nom}`;
             document.getElementById('summary-datetime').textContent = `${selectedDate} à ${selectedTime}`;
-            
+
             const price = parseFloat(selectedDoctor.tarif || 250) + 15;
             document.getElementById('summary-price').textContent = `${price} MAD`;
         }
@@ -855,17 +876,17 @@
         async function confirmAppointment() {
             const token = localStorage.getItem('token');
             const reason = document.getElementById('appointment-reason').value || "Consultation standard";
-            
+
             const btn = document.getElementById('btn-confirm');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> Traitement...';
 
             try {
-                const response = await fetch('http://172.17.129.173:5000' + '/api/rdv', {
+                const response = await fetch('http://172.16.84.81:5000' + '/api/rdv', {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         medecin_id: selectedDoctor.id,
@@ -917,4 +938,5 @@
         }
     </script>
 </body>
+
 </html>

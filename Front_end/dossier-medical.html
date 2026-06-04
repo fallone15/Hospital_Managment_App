@@ -797,7 +797,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://172.17.129.173:5000' + '/api';
+        const API_URL = 'http://172.16.84.81:5000' + '/api';
         let selfUser = null;
         let familyMembers = [];
 
@@ -901,7 +901,7 @@
                 const dt = new Date(d);
                 if (isNaN(dt.getTime())) return '—';
                 return dt.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-            } catch(e) { return '—'; }
+            } catch (e) { return '—'; }
         }
         function fmtTime(d) {
             if (!d) return '--:--';
@@ -909,7 +909,7 @@
                 const dt = new Date(d);
                 if (isNaN(dt.getTime())) return '--:--';
                 return dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            } catch(e) { return '--:--'; }
+            } catch (e) { return '--:--'; }
         }
 
         /* Échappe les caractères HTML pour éviter de casser le DOM */
@@ -943,7 +943,7 @@
             sorted.forEach((d, i) => {
                 try {
                     cards.push(renderCard(d, i));
-                } catch(err) {
+                } catch (err) {
                     console.error('Erreur rendu dossier', i, err, d);
                 }
             });
@@ -951,12 +951,12 @@
         }
 
         function renderCard(d, i) {
-                const dateRef = d.heure_fin || d.heure_arrivee || d.date_consultation;
-                const dateStr = fmtDate(dateRef);
+            const dateRef = d.heure_fin || d.heure_arrivee || d.date_consultation;
+            const dateStr = fmtDate(dateRef);
 
-                /* --- CONSTANTES --- */
-                const constantesHtml = d.constantes && d.constantes.length > 0
-                    ? `<div class="entry-row collapsible">
+            /* --- CONSTANTES --- */
+            const constantesHtml = d.constantes && d.constantes.length > 0
+                ? `<div class="entry-row collapsible">
                         <div class="entry-label">Constantes vitales</div>
                         <div class="constantes-grid">
                             ${d.constantes.map(c => `
@@ -968,14 +968,14 @@
                         </div>
                     </div>` : '';
 
-                /* --- ORDONNANCES --- */
-                const ordonnancesHtml = d.ordonnances && d.ordonnances.length > 0
-                    ? `<div class="entry-row">
+            /* --- ORDONNANCES --- */
+            const ordonnancesHtml = d.ordonnances && d.ordonnances.length > 0
+                ? `<div class="entry-row">
                         <div class="entry-label"><i class="fas fa-prescription" style="margin-right:0.3rem"></i>Ordonnances (${d.ordonnances.length})</div>
                         <div class="ordonnances-list">
                             ${d.ordonnances.map(o => {
-                                const datePrescrit = o.date_prescription ? (() => { try { const dt = new Date(o.date_prescription); return isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('fr-FR'); } catch(e) { return '—'; } })() : '—';
-                                return `
+                    const datePrescrit = o.date_prescription ? (() => { try { const dt = new Date(o.date_prescription); return isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('fr-FR'); } catch (e) { return '—'; } })() : '—';
+                    return `
                                 <div class="ordonnance-item">
                                     <div class="ordonnance-info">
                                         <div class="ordonnance-name"><i class="fas fa-pills" style="margin-right:0.35rem;opacity:0.7"></i>${esc(o.posologie || o.medicament || 'Ordonnance')}</div>
@@ -985,13 +985,13 @@
                                         <i class="fas fa-download"></i> PDF
                                     </button>
                                 </div>`;
-                            }).join('')}
+                }).join('')}
                         </div>
                     </div>` : '';
 
-                /* --- EXAMENS --- */
-                const examensHtml = d.examens && d.examens.length > 0
-                    ? `<div class="entry-row collapsible">
+            /* --- EXAMENS --- */
+            const examensHtml = d.examens && d.examens.length > 0
+                ? `<div class="entry-row collapsible">
                         <div class="entry-label">Examens demandés</div>
                         <div class="examens-list">
                             ${d.examens.map(ex => `
@@ -999,28 +999,28 @@
                                     <i class="fas fa-flask" style="color:#6366f1;font-size:0.8rem"></i>
                                     <span>${esc(ex.type_examen)}</span>
                                     ${ex.conclusion
-                            ? `<span class="examen-badge done"><i class="fas fa-check"></i> ${esc(ex.conclusion)}</span>`
-                            : `<span class="examen-badge pending">En attente</span>`}
+                        ? `<span class="examen-badge done"><i class="fas fa-check"></i> ${esc(ex.conclusion)}</span>`
+                        : `<span class="examen-badge pending">En attente</span>`}
                                 </div>
                             `).join('')}
                         </div>
                     </div>` : '';
 
-                /* --- PAIEMENT --- */
-                const paiementHtml = d.montant_paye
-                    ? `<div class="entry-row collapsible">
+            /* --- PAIEMENT --- */
+            const paiementHtml = d.montant_paye
+                ? `<div class="entry-row collapsible">
                         <div class="entry-label">Paiement</div>
                         <span class="paiement-badge"><i class="fas fa-check-circle"></i> ${esc(d.montant_paye)} MAD · ${esc(d.mode_paiement || 'N/A')}</span>
                     </div>` : '';
 
-                /* --- TIMESTAMPS --- */
-                const timestampsHtml = `<div class="card-timestamps">
+            /* --- TIMESTAMPS --- */
+            const timestampsHtml = `<div class="card-timestamps">
                     <span><i class="far fa-clock"></i> Arrivée : ${fmtTime(d.heure_arrivee)}</span>
                     ${d.heure_debut ? `<span><i class="fas fa-play-circle"></i> Début : ${fmtTime(d.heure_debut)}</span>` : ''}
                     <span><i class="fas fa-flag-checkered"></i> Fin : ${fmtTime(d.heure_fin)}</span>
                 </div>`;
 
-                return `
+            return `
                 <div class="timeline-entry">
                     <div class="timeline-dot diagnostic"><i class="fas fa-notes-medical"></i></div>
                     <div class="timeline-card">

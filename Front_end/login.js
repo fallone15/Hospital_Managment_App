@@ -1,5 +1,5 @@
 // Configuration de l'API
-const API_URL = 'http://172.17.129.173:5000' + '/api';
+const API_URL = 'http://172.16.84.81:5000' + '/api';
 
 // Éléments du DOM
 const loginForm = document.getElementById('loginForm');
